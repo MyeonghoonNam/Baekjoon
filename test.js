@@ -1,8 +1,5 @@
-const a = [];
+const num = 123.1234;
+const num2 = 123.1235;
 
-a.push(1);
-console.log(a);
-a.push(2);
-a.push(3);
-a.splice(1);
-console.log(a);
+console.log(num.toFixed(3));
+console.log(num2.toFixed(3));
