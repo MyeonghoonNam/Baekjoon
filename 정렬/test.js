@@ -1,4 +1,5 @@
-const test = [2, 3];
+const visited = new Array(3);
 
-console.log(test.slice(-1)[0]);
-console.log(test);
+visited[0] = true;
+
+console.log(visited);
