@@ -1,9 +1,9 @@
-const table = new Array(3);
-for (let i = 0; i < 3; ++i) {
-  table[i] = new Array(3);
-  for (let j = 0; j < 3; ++j) {
-    table[i][j] = new Array(3).fill(0);
-  }
-}
+const a = [1, [2, 3, 4, 5]];
+console.log(a);
+const b = a[1];
+console.log(b);
 
-console.log(table);
+b.sort((a, b) => b - a);
+
+console.log(a);
+console.log(b);
