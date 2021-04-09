@@ -3,38 +3,26 @@ const input = ["6","10 20 10 30 20 50"];
 const N = input[0];
 const numbers = input[1].split(' ').map(el => parseInt(el));
 
-const list = [numbers[0]];
+const dp = [];
+let maxLength = 0;
+for(let i = 0; i < N; i++){
+  dp[i] = 1;
 
-for(let i = 1; i < N; i++){
-  const num = numbers[i];
-
-  if(list[list.length - 1] < num){
-    list.push(num);
-  } else {
-    const idx = binarySearch(num);
-    list[idx] = num;
-  }
-}
-
-console.log(list.length);
-
-function binarySearch(target){
-  let low = 0;
-  let high = list.length - 1; // 5;
-
-  while(low < high) {
-    let mid = Math.floor((low + high) / 2);
-    let targetIdx = mid
-
-    if(list[mid] === target){
-      return targetIdx;
-    } else if(list[mid] < target){
-      low = mid + 1;
-    } else {
-      // list[mid] > target
-      high = mid;
+  for(let j = 0; j < i; j++){
+    if(numbers[i] > numbers[j] && dp[i] < dp[j] + 1){
+      dp[i] = dp[j] + 1;
+      maxLength = Math.max(dp[i], maxLength);
     }
   }
-
-  return high;
 }
+
+const result = [];
+for(let i = N - 1; i >= 0; i--){
+  if(maxLength === dp[i]){
+    result.push(numbers[i]);
+    maxLength--;
+  }
+}
+
+console.log(result.length);
+console.log(result.reverse().join(' '));
