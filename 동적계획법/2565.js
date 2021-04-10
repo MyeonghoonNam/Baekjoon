@@ -39,5 +39,6 @@ require('readline')
         return max < curDp ? curDp : max 
     },0) 
     
-    console.log(max - result - zeroCount) });
+    console.log(max - result - zeroCount) 
+  });
 
