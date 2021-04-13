@@ -1,40 +1,15 @@
-const input = [
-  "10 4200",
-  "1",
-  "5",
-  "10",
-  "50",
-  "100",
-  "500",
-  "1000",
-  "5000",
-  "10000",
-  "50000"
-]
+const input = [[5], [3, 1, 4, 3, 2]];
 
-const tmp = input[0].split(' ').map(el => Number(el));
+const N = input[0][0];
+const withDrawTime = input[1];
 
-const N = tmp[0];
-const K = tmp[1];
-const coins = input.slice(1).map(el => Number(el));
+withDrawTime.sort((a, b) => a - b);
 
-coins.sort((a, b) => b - a);
-
-solve(N, K, coins);
-
-function solve(N, K, coins){
-  let count = 0;
-
-  for(let el of coins){
-    if(K === 0){
-      break;
-    }
-
-    if(el <= K){
-      count += parseInt(K / el);
-      K = K % el;
-    }
+let minTotalWithDrawTime = 0;
+for(let i = 0; i < N; i++){
+  for(let j = 0; j <= i; j++){
+    minTotalWithDrawTime += withDrawTime[j];
   }
-
-  console.log(count);
 }
+
+console.log(minTotalWithDrawTime);
