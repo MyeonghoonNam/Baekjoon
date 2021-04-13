@@ -1,15 +1,28 @@
-const input = [[5], [3, 1, 4, 3, 2]];
+const input = "55-50+40";
 
-const N = input[0][0];
-const withDrawTime = input[1];
+let list = input.split('-');
 
-withDrawTime.sort((a, b) => a - b);
+solve(list);
 
-let minTotalWithDrawTime = 0;
-for(let i = 0; i < N; i++){
-  for(let j = 0; j <= i; j++){
-    minTotalWithDrawTime += withDrawTime[j];
+function solve(list){
+
+  let tmp = [];
+
+  for(let i of list){
+    let count = 0;
+    let n = i.split('+');
+
+    for(let j of n){
+      count += parseInt(j);
+    }
+
+    tmp.push(count);
   }
-}
 
-console.log(minTotalWithDrawTime);
+  let result = tmp.reduce((acc, cur) => {
+    return acc - cur;
+  });
+
+  console.log(result);
+  
+}
