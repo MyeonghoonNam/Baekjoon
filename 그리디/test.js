@@ -1,28 +1,24 @@
-const input = "55-50+40";
+// const input = [[4], [2, 3, 1], [5, 2, 4, 1]];
 
-let list = input.split('-');
+// const N = input[0][0];
+// const dist = input[1];
+// const cost = input[2];
 
-solve(list);
+// let sum = 0n;
+// let minCost = BigInt(cost[0]);
 
-function solve(list){
+// for (let i = 0; i < N - 1; i++) {
+//   if (BigInt(cost[i]) < minCost) {
+//     minCost = BigInt(cost[i]);
+//   }
 
-  let tmp = [];
+//   sum += minCost * BigInt(dist[i]);
+// }
 
-  for(let i of list){
-    let count = 0;
-    let n = i.split('+');
+// console.log(sum.toString());
 
-    for(let j of n){
-      count += parseInt(j);
-    }
+const i = [1n, 2n];
 
-    tmp.push(count);
-  }
-
-  let result = tmp.reduce((acc, cur) => {
-    return acc - cur;
-  });
-
-  console.log(result);
-  
+if (i[1] < 3n) {
+  console.log('hi');
 }
