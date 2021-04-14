@@ -1,18 +1,33 @@
-const input = [[4], [2, 3, 1], [5, 2, 4, 1]];
+const input = [
+  [11],
+  [1, 4],
+  [3, 5],
+  [0, 6],
+  [5, 7],
+  [3, 8],
+  [5, 9],
+  [6, 10],
+  [8, 11],
+  [8, 12],
+  [2, 13],
+  [12, 14],
+];
 
 const N = input[0][0];
-const dist = input[1];
-const cost = input[2];
+const times = input.slice(1);
 
-let sum = 0n;
-let minCost = BigInt(cost[0]);
+times.sort((a, b) => {
+  return a[1] - b[1] || a[0] - b[0];
+});
 
-for (let i = 0; i < N - 1; i++) {
-  if (BigInt(cost[i]) < minCost) {
-    minCost = BigInt(cost[i]);
+let count = 0;
+let prevEndTime = 0;
+
+for (let i = 0; i < N; i++) {
+  if (prevEndTime <= times[i][0]) {
+    prevEndTime = times[i][1];
+    count++;
   }
-
-  sum += minCost * BigInt(dist[i]);
 }
 
-console.log(sum.toString());
+console.log(count);
