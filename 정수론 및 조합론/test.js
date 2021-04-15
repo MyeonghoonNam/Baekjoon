@@ -1,39 +1,25 @@
-const input = [24, 18];
-const firstNumber = input[0];
-const secondNumber = input[1];
+const input = [[3], [1, 45000], [6, 10], [13, 17]];
 
-// 첫 번째 수의 약수
-const factorsOf_FirstNumber = [];
+const N = input[0][0];
+const numbers = input.slice(1);
 
-for (let i = 1; i <= firstNumber; i++) {
-  if (firstNumber % i === 0) {
-    factorsOf_FirstNumber.push(i);
-  }
+let result = '';
+for (let i = 0; i < N; i++) {
+  result +=
+    LCM(numbers[i][0] * numbers[i][1], GCD(numbers[i][0], numbers[i][1])) +
+    '\n';
 }
-
-// 두 번째 수의 약수
-const factorsOf_SecondNumber = [];
-
-for (let i = 1; i <= secondNumber; i++) {
-  if (secondNumber % i === 0) {
-    factorsOf_SecondNumber.push(i);
-  }
-}
-
-// 두 수의 공약수
-const CommonDivisor = factorsOf_FirstNumber.filter((number) => {
-  return factorsOf_SecondNumber.includes(number);
-});
-
-// 최대 공약수
-const greatestCommonDivisor = Math.max(...CommonDivisor);
-
-// 최소 공배수
-const leastCommonMultiple =
-  greatestCommonDivisor *
-  (firstNumber / greatestCommonDivisor) *
-  (secondNumber / greatestCommonDivisor);
-
-let result = `${greatestCommonDivisor}\n${leastCommonMultiple}`;
 
 console.log(result);
+
+function GCD(number1, number2) {
+  if (number2 === 0) {
+    return number1;
+  } else {
+    return GCD(number2, number1 % number2);
+  }
+}
+
+function LCM(numbersMultiple, GCD) {
+  return numbersMultiple / GCD;
+}
