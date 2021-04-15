@@ -1,23 +1,8 @@
-const input = [
-  [8, 16],
-  [32, 4],
-  [17, 5],
-];
+const input = [[4], [4, 2, 3, 6]];
 
-let result = '';
-for (let numbers of input) {
-  const max = Math.max(...numbers);
-  const min = Math.min(...numbers);
+const N = input[0][0];
+const factors = input[1];
 
-  if (max % min === 0) {
-    if (max === numbers[0]) {
-      result += 'multiple\n';
-    } else {
-      result += 'factor\n';
-    }
-  } else {
-    result += 'neither\n';
-  }
-}
+factors.sort((a, b) => a - b);
 
-console.log(result);
+console.log(factors[0] * factors[N - 1]);
