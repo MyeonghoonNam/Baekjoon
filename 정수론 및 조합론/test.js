@@ -1,24 +1,13 @@
-const input = [[4], [12, 3, 8, 4]];
+const input = [5, 2];
+const N = input[0];
+const K = input[1];
 
-const N = input[0][0];
-const rings = input[1];
+console.log(BC(N, K));
 
-const firstRing = rings[0];
-let result = '';
-
-for (let i = 1; i < N; i++) {
-  const otherRing = rings[i];
-  const gcdValue = GCD(firstRing, otherRing);
-
-  result += `${firstRing / gcdValue}/${otherRing / gcdValue}\n`;
-}
-
-console.log(result);
-
-function GCD(a, b) {
-  if (b === 0) {
-    return a;
+function BC(n, k) {
+  if (k === 0 || n === k) {
+    return 1;
   } else {
-    return GCD(b, a % b);
+    return BC(n - 1, k - 1) + BC(n - 1, k);
   }
 }
