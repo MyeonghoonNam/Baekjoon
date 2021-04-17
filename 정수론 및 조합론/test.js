@@ -1,32 +1,29 @@
-const numberInput = [2, 3, 3];
-const stringInput = [
-  ['hat', 'headgear'],
-  ['sunglasses', 'eyewear'],
-  ['turban', 'headgear'],
-  ['mask', 'face'],
-  ['sunglasses', 'face'],
-  ['makeup', 'face'],
+const clothes = [
+  ['yellowhat', 'headgear'],
+  ['bluesunglasses', 'eyewear'],
+  ['green_turban', 'headgear'],
 ];
 
-const T = numberInput[0];
-numberInput.shift();
+solution(clothes);
 
-let firstIdx = 0; // 테스트 케이스 위치 기록
-numberInput.forEach((el) => {
-  const map = {};
-
-  for (let i = firstIdx; i < firstIdx + el; i++) {
-    const key = stringInput[i][1];
-    const value = stringInput[i][0];
-
-    if (map[key]) {
-      map[key].push(value);
+function solution(clothes) {
+  const obj = {};
+  for (let i = 0; i < clothes.length; i++) {
+    const type = clothes[i][1];
+    if (obj[type]) {
+      obj[type]++;
     } else {
-      map[key] = [value];
+      obj[type] = 1;
     }
   }
 
-  firstIdx += el;
+  const count = Object.values(obj)
+    .map((el) => {
+      return el + 1;
+    })
+    .reduce((acc, cur) => {
+      return acc * cur;
+    });
 
-  console.log(map);
-});
+  return count - 1;
+}
