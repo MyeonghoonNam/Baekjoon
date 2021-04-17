@@ -1,23 +1,32 @@
-const input = [[3], [2, 2], [1, 5], [13, 29]];
-const T = input[0][0];
-const siteCount = input.splice(1);
+const numberInput = [2, 3, 3];
+const stringInput = [
+  ['hat', 'headgear'],
+  ['sunglasses', 'eyewear'],
+  ['turban', 'headgear'],
+  ['mask', 'face'],
+  ['sunglasses', 'face'],
+  ['makeup', 'face'],
+];
 
-for (let i = 0; i < T; i++) {
-  const N = siteCount[i][0];
-  const M = siteCount[i][1];
+const T = numberInput[0];
+numberInput.shift();
 
-  const dp = Array.from(new Array(M + 1), () => new Array(N + 1).fill(0));
+let firstIdx = 0; // 테스트 케이스 위치 기록
+numberInput.forEach((el) => {
+  const map = {};
 
-  for (let i = 0; i <= M; i++) {
-    dp[i][i] = 1;
-    dp[i][0] = 1;
-  }
+  for (let i = firstIdx; i < firstIdx + el; i++) {
+    const key = stringInput[i][1];
+    const value = stringInput[i][0];
 
-  for (let i = 2; i <= M; i++) {
-    for (let j = 1; j <= N; j++) {
-      dp[i][j] = dp[i - 1][j - 1] + dp[i - 1][j];
+    if (map[key]) {
+      map[key].push(value);
+    } else {
+      map[key] = [value];
     }
   }
 
-  console.log(dp[M][N]);
-}
+  firstIdx += el;
+
+  console.log(map);
+});
