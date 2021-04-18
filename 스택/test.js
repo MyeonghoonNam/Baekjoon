@@ -1,65 +1,37 @@
-class Node {
-  constructor(value) {
-    this.value = value;
-    this.next = null;
-  }
-}
-
 class Stack {
   constructor() {
-    this.topElement = null;
-    this.bottomElement = null;
-    this.length = 0;
+    this.list = [];
   }
 
   push(value) {
-    const newNode = new Node(value);
-
-    if (this.length !== 0) {
-      const pointer = this.topElement;
-      this.topElement = newNode;
-      this.topElement.next = pointer;
-    } else {
-      this.topElement = newNode;
-      this.bottomElement = newNode;
-    }
-
-    this.length++;
+    this.list.push(value);
   }
 
   pop() {
-    if (!this.topElement) {
+    if (this.list.length === 0) {
       return -1;
+    } else {
+      return this.list.pop();
     }
-
-    if (this.topElement === this.bottomElement) {
-      this.bottomElement = null;
-    }
-
-    const popNode = this.topElement;
-    this.topElement = this.topElement.next;
-    this.length--;
-
-    return popNode.value;
   }
 
   size() {
-    return this.length;
+    return this.list.length;
   }
 
   empty() {
-    if (this.length === 0) {
-      return -1;
+    if (this.list.length === 0) {
+      return 1;
     } else {
       return 0;
     }
   }
 
   top() {
-    if (this.topElement) {
-      return this.topElement.value;
-    } else {
+    if (this.list.length === 0) {
       return -1;
+    } else {
+      return this.list[this.list.length - 1];
     }
   }
 }
@@ -79,7 +51,8 @@ const N = input[0][0];
 input.shift();
 
 const stack = new Stack();
-const list = [];
+const callStack = [];
+
 for (let i = 0; i < N; i++) {
   const method = input[i][0];
 
@@ -88,20 +61,21 @@ for (let i = 0; i < N; i++) {
       stack.push(input[i][1]);
       break;
     case 'pop':
-      list.push(stack.pop());
+      callStack.push(stack.pop());
       break;
     case 'size':
-      list.push(stack.size());
+      callStack.push(stack.size());
       break;
     case 'empty':
-      list.push(stack.empty());
+      callStack.push(stack.empty());
       break;
     case 'top':
-      list.push(stack.top());
+      callStack.push(stack.top());
       break;
     default:
-      console.log('잘못된 명령입니다.');
+      console.log('잘못된 명령 입니다.');
+      return;
   }
 }
 
-console.log(list.join('\n'));
+console.log(callStack.join('\n'));
