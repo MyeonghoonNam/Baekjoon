@@ -8,9 +8,15 @@ const rl = readline.createInterface({
 const input = [];
 rl.on('line', (line) => {
   // 입력
-  input.push(line.split(' ').map((el) => parseInt(el)));
+  input.push(line.split(' '));
 }).on('close', () => {
   // 스택 자료구조 구현 - 단일 리스트
+  class Node {
+    constructor(value) {
+      this.value = value;
+      this.next = null;
+    }
+  }
   class Stack {
     constructor() {
       this.topElement = null;
@@ -96,6 +102,7 @@ rl.on('line', (line) => {
         break;
       default:
         console.log('잘못된 명령입니다.');
+        return;
     }
   }
 
