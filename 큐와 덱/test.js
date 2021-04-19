@@ -1,46 +1,79 @@
+class Node {
+  constructor(value) {
+    this.value = value;
+    this.next = null;
+  }
+}
 class Queue {
   constructor() {
-    this.queue = [];
+    this.head = null;
+    this.tail = null;
+    this.length = 0;
   }
 
   push(value) {
-    this.queue.push(value);
+    const newNode = new Node(value);
+
+    if (this.length === 0) {
+      this.head = newNode;
+      this.tail = newNode;
+      this.length++;
+    } else if (this.head === this.tail) {
+      this.head.next = newNode;
+      this.tail = newNode;
+      this.length++;
+    } else {
+      this.tail.next = newNode;
+      this.tail = newNode;
+      this.length++;
+    }
   }
 
   pop() {
-    if (this.queue.length === 0) {
+    if (this.length === 0) {
       return -1;
     }
 
-    return this.queue.shift();
+    if (this.head === this.tail) {
+      this.tail == null;
+    }
+
+    if (this.head !== null) {
+      const popNode = this.head;
+
+      this.head = popNode.next;
+      this.length--;
+
+      return popNode.value;
+    }
   }
 
   size() {
-    return this.queue.length;
+    return this.length;
   }
 
   empty() {
-    if (this.queue.length === 0) {
+    if (this.length === 0) {
       return 1;
+    } else {
+      return 0;
     }
-
-    return 0;
   }
 
   front() {
-    if (this.queue.length === 0) {
+    if (this.length === 0) {
       return -1;
+    } else {
+      return this.head.value;
     }
-
-    return this.queue[0];
   }
 
   back() {
-    if (this.queue.length === 0) {
+    if (this.length === 0) {
       return -1;
+    } else {
+      return this.tail.value;
     }
-
-    return this.queue[this.queue.length - 1];
   }
 }
 
