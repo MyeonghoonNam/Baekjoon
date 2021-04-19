@@ -1,3 +1,10 @@
+const readline = require('readline');
+
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout,
+});
+
 class Node {
   constructor(value) {
     this.value = value;
@@ -48,27 +55,33 @@ class Queue {
   }
 }
 
-const input = '7 3';
-const [N, K] = input.split(' ');
+rl.on('line', (line) => {
+  // 입력 관리
 
-const queue = new Queue();
+  const input = line;
+  const [N, K] = input.split(' ');
 
-for (let i = 1; i <= N; i++) {
-  queue.enqueue(i);
-}
+  const queue = new Queue();
 
-let result = '<';
-while (queue.length > 1) {
-  for (let i = 0; i < K - 1; i++) {
-    const front = queue.front();
-    queue.enqueue(front);
-    queue.dequeue();
+  for (let i = 1; i <= N; i++) {
+    queue.enqueue(i);
   }
 
-  const remove = queue.dequeue();
-  result += `${remove}, `;
-}
+  let result = '<';
+  while (queue.length > 1) {
+    for (let i = 0; i < K - 1; i++) {
+      const front = queue.front();
+      queue.enqueue(front);
+      queue.dequeue();
+    }
 
-result += `${queue.dequeue()}>`;
+    const remove = queue.dequeue();
+    result += `${remove}, `;
+  }
 
-console.log(result);
+  result += `${queue.dequeue()}>`;
+
+  console.log(result);
+}).on('close', () => {
+  process.exit();
+});
