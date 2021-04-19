@@ -8,6 +8,6 @@ const rl = readline.createInterface({
 rl.on('line', (line) => {
   // 입력 관리
 }).on('close', () => {
-  //
+  // 구현
   process.exit();
 });

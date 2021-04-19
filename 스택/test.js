@@ -1,37 +1,31 @@
-const input = ['([ (([( [ ] ) ( ) (( ))] )) ]).'];
+// const input = [8, 4, 3, 6, 8, 7, 5, 2, 1];
+const input = [5, 1, 2, 5, 3, 4];
 
-for (str of input) {
-  console.log(solve(str));
-}
+const N = input[0];
+input.shift();
 
-process.exit();
+const stack = [];
 
-function solve(str) {
-  const stack = [];
+let result = '';
+let startNum = 0; // 1을 비교하기 위해 0으로 시작
+for (let i = 0; i < N; i++) {
+  const temp = input[i];
 
-  for (let i = 0; i < str.length; i++) {
-    const char = str[i];
-
-    if (char === '(' || char === '[') {
-      stack.push(char);
-    } else if (char === ')') {
-      if (stack.length === 0 || stack[stack.length - 1] !== '(') {
-        return 'no';
-      } else {
-        stack.pop();
-      }
-    } else if (char === ']') {
-      if (stack.length === 0 || stack[stack.length - 1] !== '[') {
-        return 'no';
-      } else {
-        stack.pop();
-      }
+  if (temp > startNum) {
+    for (let j = startNum + 1; j <= temp; j++) {
+      stack.push(j);
+      result += '+\n';
     }
+
+    startNum = temp;
+  } else if (stack[stack.length - 1] !== temp) {
+    console.log('NO');
+
+    return;
   }
 
-  if (stack.length === 0) {
-    return 'yes';
-  } else {
-    return 'no';
-  }
+  stack.pop();
+  result += '-\n';
 }
+
+console.log(result);
