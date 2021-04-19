@@ -46,29 +46,48 @@ class Queue {
   front() {
     return this.head.value;
   }
+
+  empty() {
+    if (this.legth === 0) {
+      return 1;
+    } else {
+      return 0;
+    }
+  }
 }
 
-const input = '7 3';
-const [N, K] = input.split(' ');
+const input = [
+  [3],
+  [1, 0],
+  [5],
+  [4, 2],
+  [1, 2, 3, 4],
+  [6, 0],
+  [1, 1, 9, 1, 1, 1],
+];
 
-const queue = new Queue();
+const T = input[0][0];
 
-for (let i = 1; i <= N; i++) {
-  queue.enqueue(i);
+const N = [];
+const M = [];
+const priorty = [];
+
+for (let i = 1; i < T * 2; i += 2) {
+  N.push(input[i][0]);
+  M.push(input[i][1]);
 }
 
-let result = '<';
-while (queue.length > 1) {
-  for (let i = 0; i < K - 1; i++) {
-    const front = queue.front();
-    queue.enqueue(front);
-    queue.dequeue();
+for (let i = 2; i <= T * 2; i += 2) {
+  priorty.push(input[i]);
+}
+
+for (let i = 0; i < T; i++) {
+  const queue = new Queue();
+
+  for (let j = 0; j < N[i]; j++) {
+    queue.enqueue(priorty[i][j]);
   }
 
-  const remove = queue.dequeue();
-  result += `${remove}, `;
+  const temp = M[i];
+  while (!queue.empty()) {}
 }
-
-result += `${queue.dequeue()}>`;
-
-console.log(result);
