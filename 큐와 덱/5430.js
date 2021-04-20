@@ -1,40 +1,53 @@
-const input = require('fs')
-  .readFileSync('/dev/stdin')
-  .toString()
-  .trim()
-  .split('\n')
-  .slice(1);
+const readline = require('readline');
 
-while (input.length) {
-  const orders = input.shift();
-  input.shift();
-  let arr = input.shift();
-  arr = arr
-    .slice(1, arr.length - 1)
-    .split(',')
-    .map((v) => parseInt(v, 10));
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout,
+});
 
-  arr = arr[0] ? arr : [];
+const input = [];
+rl.on('line', (line) => {
+  // 입력 관리
+  input.push(line);
+}).on('close', () => {
+  // 구현
+  const T = parseInt(input[0]);
 
-  console.log(ex(orders, arr));
-}
-function ex(orders, arr) {
-  let revers = false;
-  let start_pointer = 0;
-  let end_pointer = arr.length;
-  for (v of orders) {
-    if (v === 'R') {
-      revers = !revers;
-    } else if (v === 'D') {
-      if (start_pointer >= end_pointer || !arr[start_pointer]) return 'error';
+  for (let i = 1; i <= T * 3; i += 3) {
+    const P = input[i];
+    const N = input[i + 1];
+    const INPUT_ARRAY = input[i + 2]
+      .slice(1, input[i + 2].length - 1)
+      .split(',');
 
-      if (revers) {
-        end_pointer--;
-      } else start_pointer++;
-    }
+    console.log(Solve(P, INPUT_ARRAY));
   }
 
-  const answer = arr.slice(start_pointer, end_pointer);
+  function Solve(orders, arr) {
+    let isReverse = false;
+    let startPointer = 0;
+    let endPointer = arr.length;
 
-  return revers ? `[${answer.reverse().join(',')}]` : `[${answer.join(',')}]`;
-}
+    for (v of orders) {
+      if (v === 'R') {
+        isReverse = !isReverse;
+      } else if (v === 'D') {
+        if (startPointer >= endPointer || !arr[startPointer]) {
+          return 'error';
+        }
+
+        if (isReverse) {
+          endPointer--;
+        } else {
+          startPointer++;
+        }
+      }
+    }
+
+    const answer = arr.slice(startPointer, endPointer);
+
+    return isReverse
+      ? `[${answer.reverse().join(',')}]`
+      : `[${answer.join(',')}]`;
+  }
+});

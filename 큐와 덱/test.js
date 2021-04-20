@@ -1,40 +1,52 @@
-const input = require('fs')
-  .readFileSync('/dev/stdin')
-  .toString()
-  .trim()
-  .split('\n')
-  .slice(1);
+const input = [
+  '4',
+  'RDD',
+  '4',
+  '[1,2,3,4]',
+  'DD',
+  '1',
+  '[42]',
+  'RRD',
+  '6',
+  '[1,1,2,3,5,8]',
+  'D',
+  '0',
+  '[]',
+];
 
-while (input.length) {
-  const orders = input.shift();
-  input.shift();
-  let arr = input.shift();
-  arr = arr
-    .slice(1, arr.length - 1)
-    .split(',')
-    .map((v) => parseInt(v, 10));
+const T = parseInt(input[0]);
 
-  arr = arr[0] ? arr : [];
+for (let i = 1; i <= T * 3; i += 3) {
+  const P = input[i];
+  const N = input[i + 1];
+  const INPUT_ARRAY = input[i + 2].slice(1, input[i + 2].length - 1).split(',');
 
-  console.log(ex(orders, arr));
+  console.log(Solve(P, INPUT_ARRAY));
 }
-function ex(orders, arr) {
-  let revers = false;
-  let start_pointer = 0;
-  let end_pointer = arr.length;
+
+function Solve(orders, arr) {
+  let isReverse = false;
+  let startPointer = 0;
+  let endPointer = arr.length;
+
   for (v of orders) {
     if (v === 'R') {
-      revers = !revers;
+      isReverse = !isReverse;
     } else if (v === 'D') {
-      if (start_pointer >= end_pointer || !arr[start_pointer]) return 'error';
-
-      if (revers) {
-        end_pointer--;
-      } else start_pointer++;
+      if (startPointer >= endPointer || !arr[startPointer]) {
+        return 'error';
+      }
+      if (isReverse) {
+        endPointer--;
+      } else {
+        startPointer++;
+      }
     }
   }
 
-  const answer = arr.slice(start_pointer, end_pointer);
+  const answer = arr.slice(startPointer, endPointer);
 
-  return revers ? `[${answer.reverse().join(',')}]` : `[${answer.join(',')}]`;
+  return isReverse
+    ? `[${answer.reverse().join(',')}]`
+    : `[${answer.join(',')}]`;
 }
