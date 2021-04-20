@@ -1,58 +1,18 @@
-class Node {
-  constructor(value) {
-    this.value = value;
-    this.next = null;
-  }
-}
-
 class Queue {
   constructor() {
-    this.head = null;
-    this.tail = null;
-    this.length = 0;
+    this.store = [];
   }
 
   enqueue(value) {
-    const newNode = new Node(value);
-
-    if (this.length === 0) {
-      this.head = newNode;
-      this.tail = newNode;
-    } else {
-      this.tail.next = newNode;
-      this.tail = newNode;
-    }
-
-    this.length++;
+    this.store.push(value);
   }
 
   dequeue() {
-    if (!this.head) {
-      return null;
-    }
-
-    if (this.head === this.tail) {
-      this.tail = null;
-    }
-
-    const pointer = this.head;
-
-    this.head = this.head.next;
-    this.length--;
-
-    return pointer.value;
+    return this.store.shift();
   }
 
   front() {
-    return this.head.value;
-  }
-
-  empty() {
-    if (this.legth === 0) {
-      return 1;
-    } else {
-      return 0;
-    }
+    return this.store[0];
   }
 }
 
@@ -68,26 +28,48 @@ const input = [
 
 const T = input[0][0];
 
-const N = [];
-const M = [];
-const priorty = [];
-
 for (let i = 1; i < T * 2; i += 2) {
-  N.push(input[i][0]);
-  M.push(input[i][1]);
-}
+  const N = input[i][0];
+  const M = input[i][1];
+  const priority = input[i + 1];
 
-for (let i = 2; i <= T * 2; i += 2) {
-  priorty.push(input[i]);
-}
-
-for (let i = 0; i < T; i++) {
   const queue = new Queue();
 
-  for (let j = 0; j < N[i]; j++) {
-    queue.enqueue(priorty[i][j]);
+  for (let j = 0; j < N; j++) {
+    queue.enqueue([j, priority[j]]);
   }
 
-  const temp = M[i];
-  while (!queue.empty()) {}
+  let count = 0;
+  let flag = true;
+  while (flag) {
+    let max = 0;
+    for (let i = 0; i < queue.store.length; i++) {
+      let maxTemp = queue.store[i][1];
+
+      if (max < maxTemp) {
+        max = maxTemp;
+      }
+    }
+
+    while (1) {
+      let queueTemp = queue.front();
+
+      if (queueTemp[1] === max) {
+        count++;
+
+        queue.dequeue();
+
+        if (queueTemp[0] === M) {
+          console.log(count);
+
+          flag = false;
+        }
+
+        break;
+      } else {
+        queue.enqueue(queueTemp);
+        queue.dequeue();
+      }
+    }
+  }
 }
