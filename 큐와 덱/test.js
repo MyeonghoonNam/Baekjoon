@@ -1,95 +1,40 @@
-class Deque {
-  constructor() {
-    this.storage = [];
-  }
+const input = require('fs')
+  .readFileSync('/dev/stdin')
+  .toString()
+  .trim()
+  .split('\n')
+  .slice(1);
 
-  push_back(value) {
-    this.storage.push(value);
-  }
+while (input.length) {
+  const orders = input.shift();
+  input.shift();
+  let arr = input.shift();
+  arr = arr
+    .slice(1, arr.length - 1)
+    .split(',')
+    .map((v) => parseInt(v, 10));
 
-  pop_front() {
-    return this.storage.shift();
-  }
+  arr = arr[0] ? arr : [];
 
-  pop_back() {
-    return this.storage.pop();
-  }
-
-  size() {
-    return this.storage.length;
-  }
-
-  empty() {
-    return this.storage.length === 0 ? 1 : 0;
-  }
+  console.log(ex(orders, arr));
 }
+function ex(orders, arr) {
+  let revers = false;
+  let start_pointer = 0;
+  let end_pointer = arr.length;
+  for (v of orders) {
+    if (v === 'R') {
+      revers = !revers;
+    } else if (v === 'D') {
+      if (start_pointer >= end_pointer || !arr[start_pointer]) return 'error';
 
-const input = [
-  '4',
-  'RDD',
-  '4',
-  '[1,2,3,4]',
-  'DD',
-  '1',
-  '[42]',
-  'RRD',
-  '6',
-  '[1,1,2,3,5,8]',
-  'D',
-  '0',
-  '[]',
-];
-
-const T = parseInt(input[0]);
-
-let print = '';
-for (let i = 1; i <= T * 3; i += 3) {
-  const P = input[i];
-  const N = parseInt(input[i + 1]);
-  const INPUT_ARRAY = input[i + 2].slice(1, input[i + 2].length - 1).split(',');
-  const deque = new Deque();
-  let result = '';
-
-  for (let i = 0; i < N; i++) {
-    deque.push_back(INPUT_ARRAY[i]);
-  }
-
-  let flag = true; // 방향 상태 변수
-  for (let i = 0; i < P.length; i++) {
-    if (P[i] === 'R') {
-      flag = !flag;
-      continue;
-    }
-
-    if (flag) {
-      if (deque.pop_front() === undefined) {
-        result += 'error\n';
-      }
-    } else {
-      if (deque.pop_back() === undefined) {
-        result += 'error\n';
-      }
+      if (revers) {
+        end_pointer--;
+      } else start_pointer++;
     }
   }
 
-  if (deque.size() > 0) {
-    result += '[';
-    if (flag) {
-      result += deque.pop_front();
+  const answer = arr.slice(start_pointer, end_pointer);
 
-      while (!deque.empty()) {
-        result += ',' + deque.pop_front();
-      }
-    } else {
-      result += deque.pop_back();
-
-      while (!deque.empty()) {
-        result += ',' + deque.pop_back();
-      }
-    }
-    result += ']\n';
-  }
-
-  print += result;
+  return revers ? `[${answer.reverse().join(',')}]` : `[${answer.join(',')}]`;
 }
-console.log(print);
