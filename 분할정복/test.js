@@ -1,42 +1,56 @@
 const input = [
-  [8],
-  [1, 1, 1, 1, 0, 0, 0, 0],
-  [1, 1, 1, 1, 0, 0, 0, 0],
-  [0, 0, 0, 1, 1, 1, 0, 0],
-  [0, 0, 0, 1, 1, 1, 0, 0],
-  [1, 1, 1, 1, 0, 0, 0, 0],
-  [1, 1, 1, 1, 0, 0, 0, 0],
-  [1, 1, 1, 1, 0, 0, 1, 1],
-  [1, 1, 1, 1, 0, 0, 1, 1],
+  [9],
+  [0, 0, 0, 1, 1, 1, -1, -1, -1],
+  [0, 0, 0, 1, 1, 1, -1, -1, -1],
+  [0, 0, 0, 1, 1, 1, -1, -1, -1],
+  [1, 1, 1, 0, 0, 0, 0, 0, 0],
+  [1, 1, 1, 0, 0, 0, 0, 0, 0],
+  [1, 1, 1, 0, 0, 0, 0, 0, 0],
+  [0, 1, -1, 0, 1, -1, 0, 1, -1],
+  [0, -1, 1, 0, 1, -1, 0, 1, -1],
+  [0, 1, -1, 1, 0, -1, 0, 1, -1],
 ];
 
 const N = input[0][0];
 const board = input.slice(1);
-let result = '';
+
+let zeroCount = 0;
+let oneCount = 0;
+let minusOneCount = 0;
 
 Solution(0, 0, N);
 
-console.log(result);
+console.log(`${minusOneCount}\n${zeroCount}\n${oneCount}`);
 
 function Solution(row, col, size) {
-  if (isPossible(row, col, size)) {
-    result += board[row][col];
+  if (numberCheck(row, col, size)) {
+    if (board[row][col] === 0) {
+      zeroCount++;
+    } else if (board[row][col] === 1) {
+      oneCount++;
+    } else {
+      minusOneCount++;
+    }
+
     return;
   }
 
-  const newSize = size / 2;
+  const newSize = size / 3;
 
-  result += '(';
+  Solution(row, col, newSize); // 왼쪽 위
+  Solution(row, col + newSize, newSize); // 중앙 위
+  Solution(row, col + 2 * newSize, newSize); // 오른쪽 위
 
-  Solution(row, col, newSize); // 2사분면
-  Solution(row, col + newSize, newSize); // 1사분면
-  Solution(row + newSize, col, newSize); // 3사분면
-  Solution(row + newSize, col + newSize, newSize); // 4사분면
+  Solution(row + newSize, col, newSize); // 왼쪽 중간
+  Solution(row + newSize, col + newSize, newSize); // 중앙 중간
+  Solution(row + newSize, col + 2 * newSize, newSize); // 오른쪽 중간
 
-  result += ')';
+  Solution(row + 2 * newSize, col, newSize); // 왼쪽 아래
+  Solution(row + 2 * newSize, col + newSize, newSize); // 중앙 아래
+  Solution(row + 2 * newSize, col + 2 * newSize, newSize); // 오른쪽 아래
 }
 
-function isPossible(row, col, size) {
+function numberCheck(row, col, size) {
   const value = board[row][col];
 
   for (let i = row; i < row + size; i++) {
