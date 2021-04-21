@@ -1,65 +1,32 @@
-const input = [
-  [9],
-  [0, 0, 0, 1, 1, 1, -1, -1, -1],
-  [0, 0, 0, 1, 1, 1, -1, -1, -1],
-  [0, 0, 0, 1, 1, 1, -1, -1, -1],
-  [1, 1, 1, 0, 0, 0, 0, 0, 0],
-  [1, 1, 1, 0, 0, 0, 0, 0, 0],
-  [1, 1, 1, 0, 0, 0, 0, 0, 0],
-  [0, 1, -1, 0, 1, -1, 0, 1, -1],
-  [0, -1, 1, 0, 1, -1, 0, 1, -1],
-  [0, 1, -1, 1, 0, -1, 0, 1, -1],
-];
+const input = [10, 11, 12];
 
-const N = input[0][0];
-const board = input.slice(1);
+const A = BigInt(input[0]);
+const B = BigInt(input[1]);
+const C = BigInt(input[2]);
 
-let zeroCount = 0;
-let oneCount = 0;
-let minusOneCount = 0;
+// 일반적인 반복의 거듭제곱의 경우 시간복잡도 = O(n)
+// 분할 정복을 이용한 거듭제곱 공식, 시간복잡도 = O(log2(n))
 
-Solution(0, 0, N);
+// C^N
+// (1) N = 짝수, C^N/2 * C^N/2
+// (2) N = 홀수, C^(N-1)/2 * C^(N-1)/2 * C
 
-console.log(`${minusOneCount}\n${zeroCount}\n${oneCount}`);
+// MOD 연산
+// (A * B) % C = ((A % C) * (B % C)) % C
 
-function Solution(row, col, size) {
-  if (numberCheck(row, col, size)) {
-    if (board[row][col] === 0) {
-      zeroCount++;
-    } else if (board[row][col] === 1) {
-      oneCount++;
-    } else {
-      minusOneCount++;
-    }
+console.log(Solution(A, B).toString());
 
-    return;
+function Solution(A, B) {
+  if (B === BigInt(1)) {
+    return A % C;
   }
 
-  const newSize = size / 3;
+  const temp = Solution(A, B / BigInt(2));
 
-  Solution(row, col, newSize); // 왼쪽 위
-  Solution(row, col + newSize, newSize); // 중앙 위
-  Solution(row, col + 2 * newSize, newSize); // 오른쪽 위
-
-  Solution(row + newSize, col, newSize); // 왼쪽 중간
-  Solution(row + newSize, col + newSize, newSize); // 중앙 중간
-  Solution(row + newSize, col + 2 * newSize, newSize); // 오른쪽 중간
-
-  Solution(row + 2 * newSize, col, newSize); // 왼쪽 아래
-  Solution(row + 2 * newSize, col + newSize, newSize); // 중앙 아래
-  Solution(row + 2 * newSize, col + 2 * newSize, newSize); // 오른쪽 아래
-}
-
-function numberCheck(row, col, size) {
-  const value = board[row][col];
-
-  for (let i = row; i < row + size; i++) {
-    for (let j = col; j < col + size; j++) {
-      if (board[i][j] !== value) {
-        return false;
-      }
-    }
+  // 홀수
+  if (B % BigInt(2) === BigInt(1)) {
+    return (((temp * temp) % C) * (A % C)) % C;
   }
-
-  return true;
+  // 짝수
+  return (temp * temp) % C;
 }
