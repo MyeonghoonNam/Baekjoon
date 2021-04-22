@@ -1,52 +1,40 @@
 const input = [
-  '4',
-  'RDD',
-  '4',
-  '[1,2,3,4]',
-  'DD',
-  '1',
-  '[42]',
-  'RRD',
-  '6',
-  '[1,1,2,3,5,8]',
-  'D',
-  '0',
-  '[]',
+  [3, 2],
+  [1, 2],
+  [3, 4],
+  [5, 6],
+  [2, 3],
+  [-1, -2, 0],
+  [0, 0, 3],
 ];
 
-const T = parseInt(input[0]);
+const N = input[0][0];
+const M = input[N + 1][0];
+const K = input[N + 1][1];
 
-for (let i = 1; i <= T * 3; i += 3) {
-  const P = input[i];
-  const N = input[i + 1];
-  const INPUT_ARRAY = input[i + 2].slice(1, input[i + 2].length - 1).split(',');
+const A = [];
+const B = [];
 
-  console.log(Solve(P, INPUT_ARRAY));
+for (i = 1; i <= N; i++) {
+  A.push(input[i]);
 }
 
-function Solve(orders, arr) {
-  let isReverse = false;
-  let startPointer = 0;
-  let endPointer = arr.length;
+for (i = N + 2; i <= N + M + 1; i++) {
+  B.push(input[i]);
+}
 
-  for (v of orders) {
-    if (v === 'R') {
-      isReverse = !isReverse;
-    } else if (v === 'D') {
-      if (startPointer >= endPointer || !arr[startPointer]) {
-        return 'error';
-      }
-      if (isReverse) {
-        endPointer--;
-      } else {
-        startPointer++;
-      }
+const multiply = Array.from(new Array(N), () => new Array(K).fill(0));
+for (let i = 0; i < N; i++) {
+  for (let j = 0; j < K; j++) {
+    for (let k = 0; k < M; k++) {
+      multiply[i][j] += A[i][k] * B[k][j];
     }
   }
-
-  const answer = arr.slice(startPointer, endPointer);
-
-  return isReverse
-    ? `[${answer.reverse().join(',')}]`
-    : `[${answer.join(',')}]`;
 }
+
+let result = '';
+for (let i = 0; i < multiply.length; i++) {
+  result += `${multiply[i].join(' ')}\n`;
+}
+
+console.log(result);
