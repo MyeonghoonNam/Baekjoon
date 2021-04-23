@@ -1,64 +1,83 @@
-const input = [
-  [7],
-  [0, 1, 1, 0, 1, 0, 0],
-  [0, 1, 1, 0, 1, 0, 1],
-  [1, 1, 1, 0, 1, 0, 1],
-  [0, 0, 0, 0, 1, 1, 1],
-  [0, 1, 0, 0, 0, 0, 0],
-  [0, 1, 1, 1, 1, 1, 0],
-  [0, 1, 1, 1, 0, 0, 0],
-];
+function Solution(map) {
+  const [W, H] = map;
 
-const N = input[0][0];
-input.shift();
+  let count = 0;
 
-const graph = [];
-const dx = [-1, 1, 0, 0];
-const dy = [0, 0, -1, 1];
-
-const count = []; // 단지별 아파트 개수를 담는 배열
-let home = 0; // 단지별 아파트 개수
-for (let i = 0; i < N; i++) {
-  graph.push(input[i]);
-}
-
-Solution();
-
-function Solution() {
-  for (let i = 0; i < N; i++) {
-    for (let j = 0; j < N; j++) {
+  for (let i = 0; i < H; i++) {
+    for (let j = 0; j < W; j++) {
       if (graph[i][j] === 1) {
-        DFS(i, j);
-        count.push(home);
-        home = 0;
+        DFS(i, j, map);
+        count++;
       }
     }
   }
 
-  let result = '';
-  result += count.length + '\n';
-
-  count.sort((a, b) => a - b);
-  result += count.join('\n');
-
-  console.log(result);
+  console.log(count);
 }
 
-function DFS(i, j) {
-  if (RangeCheck(i, j) && graph[i][j] === 1) {
+function DFS(i, j, map) {
+  const dx = [-1, 1, 0, 0, -1, -1, 1, 1];
+  const dy = [0, 0, -1, 1, -1, 1, -1, 1];
+
+  if (CheckRange(i, j, map) && graph[i][j] === 1) {
     graph[i][j] = 0;
-    home += 1;
 
     for (let k = 0; k < dx.length; k++) {
-      DFS(i + dx[k], j + dy[k]);
+      DFS(i + dx[k], j + dy[k], map);
     }
   }
 }
 
-function RangeCheck(i, j) {
-  if (i >= 0 && i < N && j >= 0 && j < N) {
+function CheckRange(i, j, map) {
+  const [W, H] = map;
+
+  if (i >= 0 && i < H && j >= 0 && j < W) {
     return true;
   } else {
     return false;
   }
+}
+
+const input = [
+  '1 1',
+  '0',
+  '2 2',
+  '0 1',
+  '1 0',
+  '3 2',
+  '1 1 1',
+  '1 1 1',
+  '5 4',
+  '1 0 1 0 0',
+  '1 0 0 0 0',
+  '1 0 1 0 1',
+  '1 0 0 1 0',
+  '5 4',
+  '1 1 1 0 1',
+  '1 0 1 0 1',
+  '1 0 1 0 1',
+  '1 0 1 1 1',
+  '5 5',
+  '1 0 1 0 1',
+  '0 0 0 0 0',
+  '1 0 1 0 1',
+  '0 0 0 0 0',
+  '1 0 1 0 1',
+];
+
+let graph = [];
+
+while (input.length !== 0) {
+  const [W, H] = input[0].split(' ').map((el) => parseInt(el));
+  input.shift();
+
+  for (let i = 0; i < H; i++) {
+    graph[i] = input[0].split(' ').map((el) => parseInt(el));
+    input.shift();
+  }
+
+  const map = [W, H];
+  Solution(map);
+
+  graph = [];
 }
