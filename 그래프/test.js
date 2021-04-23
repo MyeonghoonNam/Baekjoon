@@ -1,88 +1,64 @@
 const input = [
-  [2],
-  [3, 2],
-  [1, 3],
-  [2, 3],
-  [4, 4],
-  [1, 2],
-  [2, 3],
-  [3, 4],
-  [4, 2],
+  [7],
+  [0, 1, 1, 0, 1, 0, 0],
+  [0, 1, 1, 0, 1, 0, 1],
+  [1, 1, 1, 0, 1, 0, 1],
+  [0, 0, 0, 0, 1, 1, 1],
+  [0, 1, 0, 0, 0, 0, 0],
+  [0, 1, 1, 1, 1, 1, 0],
+  [0, 1, 1, 1, 0, 0, 0],
 ];
 
-let K = input[0][0];
+const N = input[0][0];
 input.shift();
 
-let graph = [];
-let colors = [];
-let checkBipartite = true;
+const graph = [];
+const dx = [-1, 1, 0, 0];
+const dy = [0, 0, -1, 1];
 
-let idx = 0;
-while (K-- > 0) {
-  const [V, E] = input[idx];
-
-  graph = Array.from(new Array(V + 1), () => new Array());
-  colors = new Array(V + 1).fill(0); // 1 : red, -1 : blue, 0 : none
-
-  let start = idx + 1;
-  let end = start + E;
-  for (let i = start; i < end; i++) {
-    const [v1, v2] = input[i];
-
-    insertEdge(v1, v2);
-    insertEdge(v2, v1);
-  }
-
-  for (let i = 1; i <= V; i++) {
-    if (!checkBipartite) {
-      break;
-    }
-
-    if (colors[i] === 0) {
-      bfs(i, 1);
-    }
-  }
-
-  console.log(checkBipartite ? 'YES' : 'NO');
-  idx += E + 1; // 입력 idx 관리
+const count = []; // 단지별 아파트 개수를 담는 배열
+let home = 0; // 단지별 아파트 개수
+for (let i = 0; i < N; i++) {
+  graph.push(input[i]);
 }
 
-function insertEdge(vFront, vBack) {
-  graph[vFront].push(vBack);
-}
+Solution();
 
-function dfs(v, color) {
-  colors[v] = color;
-
-  graph[v].forEach((vertex) => {
-    if (colors[vertex] === color) {
-      checkBipartite = false;
-      return;
-    }
-
-    if (colors[vertex] === 0) {
-      dfs(vertex, -color);
-    }
-  });
-}
-
-function bfs(v, color) {
-  const q = [];
-
-  q.push(v);
-  colors[v] = color;
-
-  while (q.length !== 0 && checkBipartite) {
-    const v = q.shift();
-
-    graph[v].forEach((vertex) => {
-      if (colors[vertex] === 0) {
-        q.push(vertex);
-        colors[vertex] = -colors[v];
-      } else if (colors[v] === colors[vertex]) {
-        checkBipartite = false;
-        return;
+function Solution() {
+  for (let i = 0; i < N; i++) {
+    for (let j = 0; j < N; j++) {
+      if (graph[i][j] === 1) {
+        DFS(i, j);
+        count.push(home);
+        home = 0;
       }
-    });
+    }
+  }
+
+  let result = '';
+  result += count.length + '\n';
+
+  count.sort((a, b) => a - b);
+  result += count.join('\n');
+
+  console.log(result);
+}
+
+function DFS(i, j) {
+  if (RangeCheck(i, j) && graph[i][j] === 1) {
+    graph[i][j] = 0;
+    home += 1;
+
+    for (let k = 0; k < dx.length; k++) {
+      DFS(i + dx[k], j + dy[k]);
+    }
+  }
+}
+
+function RangeCheck(i, j) {
+  if (i >= 0 && i < N && j >= 0 && j < N) {
+    return true;
+  } else {
+    return false;
   }
 }
