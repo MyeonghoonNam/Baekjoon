@@ -1,60 +1,93 @@
-// const input = ['4 6', '101111', '101010', '101011', '111011'];
-// const input = ['3 5', '10000', '10100', '11111'];
-// const input = ['4 6', '110110', '110110', '111111', '111101'];
 // const input = [
-//   '2 25',
-//   '1011101110111011101110111',
-//   '1110111011101110111011101',
+//   '6 4',
+//   '0 0 0 0 0 0',
+//   '0 0 0 0 0 0',
+//   '0 0 0 0 0 0',
+//   '0 0 0 0 0 1',
+// ];
+// const input = [
+//   '6 4',
+//   '0 -1 0 0 0 0',
+//   '-1 0 0 0 0 0',
+//   '0 0 0 0 0 0',
+//   '0 0 0 0 0 1',
 // ];
 const input = [
-  '7 7',
-  '1011111',
-  '1110001',
-  '1000001',
-  '1000001',
-  '1000001',
-  '1000001',
-  '1111111',
+  '6 4',
+  '1 -1 0 0 0 0',
+  '0 -1 0 0 0 0',
+  '0 0 0 0 -1 0',
+  '0 0 0 0 -1 1',
 ];
 
-const [N, M] = input[0].split(' ').map((el) => parseInt(el));
+const [M, N] = input[0].split(' ').map((el) => parseInt(el));
 input.shift();
 
-const maze = new Array(N);
-
+const box = new Array(N);
 for (let i = 0; i < N; i++) {
-  maze[i] = input[i].split('').map((el) => parseInt(el));
+  box[i] = input[i].split(' ').map((el) => parseInt(el));
 }
 
-console.log(BFS(N, M));
+BFS();
 
-function BFS(N, M) {
+function BFS() {
+  const q = [];
+  let day = 0;
+  let zeroCount = 0;
+
   const dx = [-1, 1, 0, 0];
   const dy = [0, 0, -1, 1];
 
-  const q = [[0, 0]];
-  const visited = Array.from(new Array(N), () => new Array(M).fill(false));
+  for (let i = 0; i < N; i++) {
+    for (let j = 0; j < M; j++) {
+      if (box[i][j] === 1) {
+        q.push([i, j, day]); // 이미 익은 토마토 이므로 day = 0
+      } else if (box[i][j] === 0) {
+        zeroCount++;
+      }
+    }
+  }
 
-  while (q.length !== 0) {
-    const current = q.shift();
+  let head = 0;
+  while (q.length > head) {
+    const size = q.length - head;
+    for (let s = 0; s < size; s++) {
+      const current = q[head++];
 
-    const x = current[0];
-    const y = current[1];
+      const x = current[0];
+      const y = current[1];
+      day = current[2];
 
-    for (let i = 0; i < dx.length; i++) {
-      const next_X = x + dx[i];
-      const next_Y = y + dy[i];
+      for (let i = 0; i < 4; i++) {
+        const next_X = x + dx[i];
+        const next_Y = y + dy[i];
 
-      if (next_X >= 0 && next_X < N && next_Y >= 0 && next_Y < M) {
-        if (maze[next_X][next_Y] === 1 && !visited[next_X][next_Y]) {
-          visited[next_X][next_Y] = true;
-          maze[next_X][next_Y] = maze[x][y] + 1;
-
-          q.push([next_X, next_Y]);
+        if (next_X >= 0 && next_X < N && next_Y >= 0 && next_Y < M) {
+          if (box[next_X][next_Y] === 0) {
+            zeroCount--;
+            box[next_X][next_Y] = 1;
+            q.push([next_X, next_Y, day + 1]);
+          }
         }
       }
     }
   }
 
-  return maze[N - 1][M - 1];
+  if (zeroCount !== 0) {
+    console.log(-1);
+  } else {
+    console.log(day);
+  }
 }
+
+// function checkTomato() {
+//   for (let i = 0; i < N; i++) {
+//     for (let j = 0; j < M; j++) {
+//       if (box[i][j] === 0) {
+//         return false;
+//       }
+//     }
+//   }
+
+//   return true;
+// }
