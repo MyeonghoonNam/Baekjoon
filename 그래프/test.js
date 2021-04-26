@@ -1,72 +1,73 @@
-const input = [
-  '3',
-  '8',
-  '0 0',
-  '7 0',
-  '100',
-  '0 0',
-  '30 50',
-  '10',
-  '1 1',
-  '1 1',
-];
+// const input = ['3 4', 'AAAA', 'ABCA', 'AAAA'];
+// const input = ['3 4', 'AAAA', 'ABCA', 'AADA'];
+// const input = ['4 4', 'YYYR', 'BYBY', 'BBBY', 'BBBY'];
+// const input = [
+//   '7 6',
+//   'AAAAAB',
+//   'ABBBAB',
+//   'ABAAAB',
+//   'ABABBB',
+//   'ABAAAB',
+//   'ABBBAB',
+//   'AAAAAB',
+// ];
+const input = ['2 13', 'ABCDEFGHIJKLM', 'NOPQRSTUVWXYZ'];
 
-const T = parseInt(input.shift());
+const [N, M] = input
+  .shift()
+  .split(' ')
+  .map((el) => parseInt(el));
 
-let L = 0;
-let visited = [];
+const map = new Array(N);
+const visited = Array.from(new Array(N), () => new Array(M).fill(false));
 
-for (let i = 0; i < T; i++) {
-  L = parseInt(input.shift());
-  visited = Array.from(new Array(L), () => new Array(L).fill(false));
-
-  const start = input
-    .shift()
-    .split(' ')
-    .map((el) => parseInt(el));
-
-  const end = input
-    .shift()
-    .split(' ')
-    .map((el) => parseInt(el));
-
-  Bfs(start, end);
+for (let i = 0; i < N; i++) {
+  map[i] = input.shift().split('');
 }
 
-function Bfs(start, end) {
-  const q = [];
-  let count = 0;
+let start_X = 0;
+let start_Y = 0;
 
-  q.push([...start, count]);
-
-  while (q.length !== 0) {
-    const current = q.shift();
-    const start_X = current[0];
-    const start_Y = current[1];
-    count = current[2];
-
-    if (start_X === end[0] && start_Y === end[1]) {
-      console.log(count);
-      return;
-    }
-
-    const dx = [-2, -2, -1, 1, 2, 2, 1, -1, -2];
-    const dy = [-1, 1, 2, 2, 1, -1, -2, -2, -1];
-
-    for (let i = 0; i < 9; i++) {
-      const next_X = start_X + dx[i];
-      const next_Y = start_Y + dy[i];
-
-      if (CheckRange(next_X, next_Y) && !visited[next_X][next_Y]) {
-        visited[next_X][next_Y] = true;
-        q.push([next_X, next_Y, count + 1]);
-      }
+for (let i = 0; i < N; i++) {
+  for (let j = 0; j < M; j++) {
+    if (!visited[i][j]) {
+      start_X = i;
+      start_Y = j;
+      Dfs(i, j, 1);
     }
   }
 }
 
+console.log('No');
+
+function Dfs(x, y, count) {
+  visited[x][y] = true;
+
+  const dx = [-1, 1, 0, 0];
+  const dy = [0, 0, 1, -1];
+
+  for (let i = 0; i < 4; i++) {
+    const nx = x + dx[i];
+    const ny = y + dy[i];
+
+    if (CheckRange(nx, ny) && !visited[nx][ny] && map[x][y] === map[nx][ny]) {
+      Dfs(nx, ny, count + 1);
+    } else if (
+      CheckRange(nx, ny) &&
+      start_X === nx &&
+      start_Y === ny &&
+      count >= 4
+    ) {
+      console.log('Yes');
+      process.exit();
+    }
+  }
+
+  visited[x][y] = false;
+}
+
 function CheckRange(x, y) {
-  if (x >= 0 && x < L && y >= 0 && y < L) {
+  if (x >= 0 && x < N && y >= 0 && y < M) {
     return true;
   } else {
     return false;
