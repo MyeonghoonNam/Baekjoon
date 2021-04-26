@@ -1,6 +1,6 @@
 // const input = ['3 4', 'AAAA', 'ABCA', 'AAAA'];
 // const input = ['3 4', 'AAAA', 'ABCA', 'AADA'];
-// const input = ['4 4', 'YYYR', 'BYBY', 'BBBY', 'BBBY'];
+const input = ['4 4', 'YYYR', 'BYBY', 'BBBY', 'BBBY'];
 // const input = [
 //   '7 6',
 //   'AAAAAB',
@@ -11,7 +11,7 @@
 //   'ABBBAB',
 //   'AAAAAB',
 // ];
-const input = ['2 13', 'ABCDEFGHIJKLM', 'NOPQRSTUVWXYZ'];
+// const input = ['2 13', 'ABCDEFGHIJKLM', 'NOPQRSTUVWXYZ'];
 
 const [N, M] = input
   .shift()
@@ -33,6 +33,8 @@ for (let i = 0; i < N; i++) {
     if (!visited[i][j]) {
       start_X = i;
       start_Y = j;
+
+      visited[i][j] = true;
       Dfs(i, j, 1);
     }
   }
@@ -41,8 +43,6 @@ for (let i = 0; i < N; i++) {
 console.log('No');
 
 function Dfs(x, y, count) {
-  visited[x][y] = true;
-
   const dx = [-1, 1, 0, 0];
   const dy = [0, 0, 1, -1];
 
@@ -51,6 +51,7 @@ function Dfs(x, y, count) {
     const ny = y + dy[i];
 
     if (CheckRange(nx, ny) && !visited[nx][ny] && map[x][y] === map[nx][ny]) {
+      visited[x][y] = true;
       Dfs(nx, ny, count + 1);
     } else if (
       CheckRange(nx, ny) &&
