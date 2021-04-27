@@ -1,13 +1,21 @@
-const input = ['5 17'];
+const readline = require('readline');
 
-Solution(input);
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout,
+});
 
-function Solution(input) {
+const input = [];
+rl.on('line', (line) => {
+  // 입력 관리
+  input.push(line.trim());
+}).on('close', () => {
+  // 구현
+
   const [N, K] = input[0].split(' ').map((el) => parseInt(el));
   const visited = new Array(100001).fill(false);
 
-  const queue = [];
-  queue.push([N, 0]);
+  const queue = [[N, 0]];
 
   while (queue.length > 0) {
     const [pos, count] = queue.shift();
@@ -33,4 +41,6 @@ function Solution(input) {
       queue.push([pos - 1, count + 1]);
     }
   }
-}
+
+  process.exit();
+});
