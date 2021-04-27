@@ -1,59 +1,125 @@
-// const input = ['4', '1 2', '1 3', '2 4', '1 2 4 3'];
-// const input = ['4', '1 2', '1 3', '2 4', '1 3 2 4'];
-const input = ['4', '1 2', '1 3', '2 4', '1 2 3 4'];
+const input = [
+  '10',
+  '1 1 1 0 0 0 0 1 1 1',
+  '1 1 1 1 0 0 0 0 1 1',
+  '1 0 1 1 0 0 0 0 1 1',
+  '0 0 1 1 1 0 0 0 0 1',
+  '0 0 0 1 0 0 0 0 0 1',
+  '0 0 0 0 0 0 0 0 0 1',
+  '0 0 0 0 0 0 0 0 0 0',
+  '0 0 0 0 1 1 0 0 0 0',
+  '0 0 0 0 1 1 1 0 0 0',
+  '0 0 0 0 0 0 0 0 0 0',
+];
 
-const N = parseInt(input.shift());
+const dx = [-1, 1, 0, 0];
+const dy = [0, 0, -1, 1];
+let N = 0;
 
-const graph = Array.from(new Array(N + 1), () => new Array());
-const visited = new Array(N + 1).fill(false);
+console.log(Solution(input));
 
-for (let i = 0; i < N - 1; i++) {
-  const [v1, v2] = input
-    .shift()
-    .split(' ')
-    .map((el) => parseInt(el));
+function Solution(input) {
+  N = parseInt(input.shift());
 
-  graph[v1].push(v2);
-  graph[v2].push(v1);
-}
+  const graph = Array.from(new Array(N), () => new Array());
+  const visited = Array.from(new Array(N), () => new Array(N).fill(false));
+  const dist = Array.from(new Array(N), () => new Array(N).fill(-1));
 
-const answer = input
-  .shift()
-  .split(' ')
-  .map((el) => parseInt(el));
-
-const order = [];
-for (let i = 0; i < answer.length; i++) {
-  order[answer[i]] = i + 1;
-}
-
-for (let i = 1; i <= N; i++) {
-  graph[i].sort((a, b) => order[a] - order[b]);
-}
-
-const dfsOrder = [];
-Dfs(1);
-console.log(CheckOrder(answer, dfsOrder));
-
-function Dfs(v) {
-  if (visited[v]) return;
-
-  visited[v] = true;
-  dfsOrder.push(v);
-
-  graph[v].forEach((vertex) => {
-    if (!visited[vertex]) {
-      Dfs(vertex);
-    }
-  });
-}
-
-function CheckOrder(answer, dfsOrder) {
-  for (let i = 0; i < answer.length; i++) {
-    if (answer[i] === dfsOrder[i]) continue;
-
-    return 0;
+  for (let i = 0; i < N; i++) {
+    graph[i] = input
+      .shift()
+      .split(' ')
+      .map((el) => parseInt(el));
   }
 
-  return 1;
+  return Bfs(graph, visited, dist);
+}
+
+function NominateGroup(graph, visited, i, j, groupNumber) {
+  const queue = [];
+  queue.push([i, j]);
+
+  graph[i][j] = groupNumber;
+  visited[i][j] = true;
+
+  while (queue.length > 0) {
+    const [x, y] = queue.shift();
+
+    for (let i = 0; i < 4; i++) {
+      const nx = x + dx[i];
+      const ny = y + dy[i];
+
+      if (CheckRange(nx, ny) && graph[nx][ny] === 1 && !visited[nx][ny]) {
+        graph[nx][ny] = groupNumber;
+        visited[nx][ny] = true;
+        queue.push([nx, ny]);
+      }
+    }
+  }
+}
+
+function CheckRange(x, y) {
+  if (x >= 0 && x < N && y >= 0 && y < N) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+function MeasureDist(graph, dist) {
+  const queue = [];
+
+  for (let i = 0; i < N; i++) {
+    for (let j = 0; j < N; j++) {
+      if (graph[i][j] !== 0) {
+        dist[i][j] = 0;
+        queue.push([i, j]);
+      }
+    }
+  }
+
+  while (queue.length > 0) {
+    const [x, y] = queue.shift();
+
+    for (let i = 0; i < 4; i++) {
+      const nx = x + dx[i];
+      const ny = y + dy[i];
+
+      if (CheckRange(nx, ny) && dist[nx][ny] === -1) {
+        dist[nx][ny] = dist[x][y] + 1;
+        graph[nx][ny] = graph[x][y];
+
+        queue.push([nx, ny]);
+      }
+    }
+  }
+
+  let min = 1000000;
+  for (let x = 0; x < N; x++) {
+    for (let y = 0; y < N; y++) {
+      for (let k = 0; k < 4; k++) {
+        const nx = x + dx[k];
+        const ny = y + dy[k];
+
+        if (CheckRange(nx, ny) && graph[x][y] !== graph[nx][ny]) {
+          min = Math.min(min, dist[x][y] + dist[nx][ny]);
+        }
+      }
+    }
+  }
+
+  return min;
+}
+
+function Bfs(graph, visited, dist) {
+  let groupNumber = 0;
+  for (let i = 0; i < N; i++) {
+    for (let j = 0; j < N; j++) {
+      if (graph[i][j] === 1 && !visited[i][j]) {
+        NominateGroup(graph, visited, i, j, ++groupNumber);
+      }
+    }
+  }
+
+  return MeasureDist(graph, dist);
 }
