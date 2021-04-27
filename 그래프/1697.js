@@ -6,18 +6,18 @@ const rl = readline.createInterface({
 });
 
 const input = [];
+const strToNumArr = (str) => str.split(' ').map(Number);
 rl.on('line', (line) => {
   // 입력 관리
   input.push(line.trim());
 }).on('close', () => {
   // 구현
-
-  const [N, K] = input[0].split(' ').map((el) => parseInt(el));
+  const [N, K] = strToNumArr(input[0]);
   const visited = new Array(100001).fill(false);
 
   const queue = [[N, 0]];
 
-  while (queue.length > 0) {
+  while (queue.length) {
     const [pos, count] = queue.shift();
 
     if (visited[pos]) continue;
@@ -26,7 +26,7 @@ rl.on('line', (line) => {
 
     if (pos === K) {
       console.log(count);
-      return;
+      break;
     }
 
     if (pos * 2 <= 100000) {
@@ -37,10 +37,8 @@ rl.on('line', (line) => {
       queue.push([pos + 1, count + 1]);
     }
 
-    if (pos - 1 <= 100000) {
+    if (pos - 1 >= 0) {
       queue.push([pos - 1, count + 1]);
     }
   }
-
-  process.exit();
 });
