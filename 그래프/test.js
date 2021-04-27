@@ -1,4 +1,6 @@
-const input = ['4', '1 3', '2 4', '2 1', '1 3 2 4'];
+// const input = ['4', '1 2', '1 3', '2 4', '1 2 4 3'];
+// const input = ['4', '1 2', '1 3', '2 4', '1 3 2 4'];
+const input = ['4', '1 2', '1 3', '2 4', '1 2 3 4'];
 
 const N = parseInt(input.shift());
 
@@ -20,44 +22,35 @@ const answer = input
   .split(' ')
   .map((el) => parseInt(el));
 
-// 출력 순서 기록
 const order = [];
 for (let i = 0; i < answer.length; i++) {
   order[answer[i]] = i + 1;
 }
 
-// 출력 순서로 인접리스트 정렬
-for (let i = 1; i < N + 1; i++) {
+for (let i = 1; i <= N; i++) {
   graph[i].sort((a, b) => order[a] - order[b]);
 }
 
-const bfsOrder = Bfs();
-console.log(CheckOrder(answer, bfsOrder));
+const dfsOrder = [];
+Dfs(1);
+console.log(CheckOrder(answer, dfsOrder));
 
-function Bfs() {
-  const queue = [1];
-  const bfsOrder = [1];
+function Dfs(v) {
+  if (visited[v]) return;
 
-  visited[1] = true;
+  visited[v] = true;
+  dfsOrder.push(v);
 
-  while (queue.length > 0) {
-    const current = queue.shift();
-
-    graph[current].forEach((v) => {
-      if (visited[v]) return;
-
-      visited[v] = true;
-      bfsOrder.push(v);
-      queue.push(v);
-    });
-  }
-
-  return bfsOrder;
+  graph[v].forEach((vertex) => {
+    if (!visited[vertex]) {
+      Dfs(vertex);
+    }
+  });
 }
 
-function CheckOrder(answer, bfsOrder) {
+function CheckOrder(answer, dfsOrder) {
   for (let i = 0; i < answer.length; i++) {
-    if (answer[i] === bfsOrder[i]) continue;
+    if (answer[i] === dfsOrder[i]) continue;
 
     return 0;
   }
