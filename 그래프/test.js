@@ -1,87 +1,66 @@
-// const input = ['4', '1 3', '4 3', '4 2', '1 2'];
-// const input = ['6', '1 2', '3 4', '6 4', '2 3', '1 3', '3 5'];
-const input = [
-  '12',
-  '1 3',
-  '3 4',
-  '4 5',
-  '5 6',
-  '6 7',
-  '7 8',
-  '8 4',
-  '2 3',
-  '7 9',
-  '9 12',
-  '7 10',
-  '10 11',
-];
+const input = ['4', '1 3', '2 4', '2 1', '1 3 2 4'];
 
 const N = parseInt(input.shift());
-const graph = Array.from(new Array(N + 1), () => new Array());
-let visited = new Array(N + 1).fill(false);
-const cycle = new Array(N + 1).fill(false);
-const result = [];
 
-for (let i = 0; i < N; i++) {
-  const [x, y] = input
+const graph = Array.from(new Array(N + 1), () => new Array());
+const visited = new Array(N + 1).fill(false);
+
+for (let i = 0; i < N - 1; i++) {
+  const [v1, v2] = input
     .shift()
     .split(' ')
     .map((el) => parseInt(el));
 
-  insertEdge(x, y);
-  insertEdge(y, x);
+  graph[v1].push(v2);
+  graph[v2].push(v1);
 }
 
-for (let i = 1; i <= N; i++) {
-  Dfs(i, i, 0);
-  visited = new Array(N + 1).fill(false);
+const answer = input
+  .shift()
+  .split(' ')
+  .map((el) => parseInt(el));
+
+// 출력 순서 기록
+const order = [];
+for (let i = 0; i < answer.length; i++) {
+  order[answer[i]] = i + 1;
 }
 
-for (let i = 1; i <= N; i++) {
-  if (cycle[i]) {
-    result.push(0);
-  } else {
-    Bfs(i, 0);
-    visited = new Array(N + 1).fill(false);
-  }
+// 출력 순서로 인접리스트 정렬
+for (let i = 1; i < N + 1; i++) {
+  graph[i].sort((a, b) => order[a] - order[b]);
 }
 
-console.log(result.join(' '));
+const bfsOrder = Bfs();
+console.log(CheckOrder(answer, bfsOrder));
 
-function insertEdge(x, y) {
-  graph[x].push(y);
-}
+function Bfs() {
+  const queue = [1];
+  const bfsOrder = [1];
 
-function Dfs(currentVertex, startVertex, edgeCount) {
-  visited[currentVertex] = true;
-
-  graph[currentVertex].forEach((v) => {
-    if (!visited[v]) {
-      Dfs(v, startVertex, edgeCount + 1);
-    } else if (v === startVertex && edgeCount >= 2) {
-      cycle[v] = true;
-      return;
-    }
-  });
-}
-
-function Bfs(startVertex, dist) {
-  const queue = [];
-  queue.push([startVertex, dist]);
+  visited[1] = true;
 
   while (queue.length > 0) {
-    const [currentVertex, dist] = queue.shift();
-    visited[currentVertex] = true;
+    const current = queue.shift();
 
-    if (cycle[currentVertex]) {
-      result.push(dist);
-      return;
-    }
+    graph[current].forEach((v) => {
+      if (visited[v]) return;
 
-    graph[currentVertex].forEach((v) => {
-      if (!visited[v]) {
-        queue.push([v, dist + 1]);
-      }
+      visited[v] = true;
+      bfsOrder.push(v);
+      queue.push(v);
     });
   }
+
+  return bfsOrder;
+}
+
+function CheckOrder(answer, bfsOrder) {
+  for (let i = 0; i < answer.length; i++) {
+    if (answer[i] === bfsOrder[i]) continue;
+
+    return 0;
+  }
+
+  return 1;
 }
