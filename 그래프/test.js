@@ -1,194 +1,38 @@
-// class Node {
-//   constructor(value, priority) {
-//     this.value = value;
-//     this.priority = priority;
-//   }
-// }
+const input = ['5 17'];
 
-// class PriorityQueue {
-//   constructor() {
-//     this.queue = [];
-//   }
+console.log(Solution(input));
 
-//   enqueue(value, priority) {
-//     const newNode = new Node(value, priority);
-//     let flag = false;
+function Solution(input) {
+  const [N, K] = input[0].split(' ').map(Number);
 
-//     for (let i = 0; i < this.queue.length; i++) {
-//       if (this.queue[i].priority > newNode.priority) {
-//         this.queue.splice(i, 0, newNode);
-//         flag = true;
-//         break;
-//       }
-//     }
+  const MAX = 100000;
+  const time = new Array(MAX + 1).fill(-1);
 
-//     if (!flag) {
-//       this.queue.push(newNode);
-//     }
-//   }
+  const q = [N];
+  time[N] = 0;
 
-//   dequeue() {
-//     if (this.queue.length === 0) {
-//       return new Error('큐에 데이터가 없습니다.');
-//     }
+  let head = 0;
+  while (q.length) {
+    const idx = q[head++];
 
-//     return this.queue.shift();
-//   }
-
-//   empty() {
-//     if (this.queue.length === 0) {
-//       return 1;
-//     } else {
-//       return 0;
-//     }
-//   }
-// }
-
-// const input = ['5 17'];
-
-// console.log(Solution(input));
-
-// function Solution(input) {
-//   const [N, K] = input[0].split(' ').map(Number);
-
-//   const q = new PriorityQueue();
-//   const visited = new Array(100001).fill(false);
-
-//   q.enqueue(N, 0);
-//   visited[N] = true;
-
-//   while (!q.empty()) {
-//     const current = q.dequeue();
-
-//     const pos = current.value;
-//     const time = current.priority;
-
-//     if (pos === K) {
-//       return time;
-//     }
-
-//     if (pos * 2 <= 100000 && !visited[pos * 2]) {
-//       q.enqueue(pos * 2, time);
-//       visited[pos * 2] = true;
-//     }
-
-//     if (pos + 1 <= 100000 && !visited[pos + 1]) {
-//       q.enqueue(pos + 1, time + 1);
-//       visited[pos + 1] = true;
-//     }
-
-//     if (pos - 1 >= 0 && !visited[pos - 1]) {
-//       q.enqueue(pos - 1, time + 1);
-//       visited[pos - 1] = true;
-//     }
-
-//     console.log(q.queue);
-//   }
-// }
-
-const readline = require('readline');
-const rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout,
-});
-
-let answer = 100001;
-let inf = 100001;
-let N = 0;
-let K = 0;
-let costs = new Array(100001).fill(inf);
-
-rl.on('line', function (line) {
-  [N, K] = line.split(' ').map((num) => +num);
-  rl.close();
-}).on('close', function () {
-  let queue = [[N, 0]];
-
-  while (queue.length) {
-    let [num, cnt] = queue.shift();
-
-    if (costs[num] < cnt) continue;
-
-    if (num === K) {
-      answer = cnt;
+    if (idx === K) {
       break;
     }
 
-    let x1 = num - 1;
-    let x2 = num + 1;
-    let x3 = num * 2;
-
-    if (0 <= x1 && costs[x1] > cnt + 1) {
-      costs[x1] = cnt + 1;
-      queue.push([x1, cnt + 1]);
+    if (idx * 2 <= MAX && time[idx * 2] === -1) {
+      time[idx * 2] = time[idx];
+      q.push(idx * 2);
     }
 
-    if (x2 <= inf && costs[x2] > cnt + 1) {
-      costs[x2] = cnt + 1;
-      queue.push([x2, cnt + 1]);
+    if (idx - 1 >= 0 && time[idx - 1] === -1) {
+      time[idx - 1] = time[idx] + 1;
+      q.push(idx - 1);
     }
 
-    if (x3 <= inf && costs[x3] > cnt) {
-      costs[x3] = cnt;
-      queue.push([x3, cnt]);
+    if (idx + 1 <= MAX && time[idx + 1] === -1) {
+      time[idx + 1] = time[idx] + 1;
+      q.push(idx + 1);
     }
   }
-
-  console.log(answer);
-  process.exit();
-});
-
-///////
-function solve(N, K) {
-  function dijkstra(start) {
-    distance[start] = 0;
-    let queue = [];
-    queue.push({ currNode: start, currCnt: 0 });
-
-    while (queue.length) {
-      let { currNode, currCnt } = queue.shift();
-
-      if (distance[currNode] < currCnt) continue;
-
-      if (currNode === K) {
-        ans = currCnt;
-        break;
-      }
-      if (currNode + 1 >= 0 && distance[currNode + 1] > currCnt + 1) {
-        distance[currNode + 1] = currCnt + 1;
-        queue.push({ currNode: currNode + 1, currCnt: currCnt + 1 });
-      }
-      if (currNode - 1 >= 0 && distance[currNode - 1] > currCnt + 1) {
-        distance[currNode - 1] = currCnt + 1;
-        queue.push({ currNode: currNode - 1, currCnt: currCnt + 1 });
-      }
-      if (currNode * 2 >= 0 && distance[currNode * 2] > currCnt) {
-        distance[currNode * 2] = currCnt;
-        queue.push({ currNode: currNode * 2, currCnt: currCnt });
-      }
-    }
-  }
-
-  let distance = new Array(K * 2 + 1).fill(Infinity);
-  if (N > K) {
-    console.log(N - K);
-    return;
-  }
-  let ans = 0;
-  dijkstra(N);
-  console.log(ans);
+  return time[K];
 }
-
-const fs = require('fs');
-const stdin = (process.platform === 'linux'
-  ? fs.readFileSync('/dev/stdin').toString()
-  : `5 17`
-).split('\n');
-
-const input = (() => {
-  let line = 0;
-  return () => stdin[line++];
-})();
-
-const [N, K] = input().split(' ').map(Number);
-solve(N, K);
