@@ -1,59 +1,44 @@
-const input = ['5 17'];
+// const input = ['2'];
+// const input = ['4'];
+// const input = ['6'];
+const input = ['18'];
 
-const [time, route] = Solution(input);
-
-console.log(time);
-
-let result = '';
-for (let i = route.length - 1; i >= 0; i--) {
-  if (i === 0) {
-    result += route[i];
-    break;
-  }
-
-  result += `${route[i]} `;
-}
-
-console.log(result);
+console.log(Solution(input));
 
 function Solution(input) {
-  const MAX = 100000;
-  const [N, K] = input[0].split(' ').map(Number);
-  const visited = new Array(MAX + 1).fill(false);
-  const history = new Array(MAX + 1).fill(false);
-  const route = [];
+  const MAX = 2000;
+  const S = Number(input[0]);
+  const visited = Array.from(new Array(MAX + 1), () =>
+    new Array(MAX + 1).fill(false)
+  );
 
-  const q = [[N, 0]];
+  const q = [[1, 0, 0]];
+  visited[1][0] = true;
+
   while (q.length > 0) {
-    const [pos, time] = q.shift();
+    const [display, clip, time] = q.shift();
 
-    if (pos === K) {
-      let idx = pos;
-      while (idx !== N) {
-        route.push(idx);
-        idx = history[idx];
+    if (display === S) return time;
+
+    // 1번, 3번 조건
+    if (display > 0 && display <= MAX) {
+      if (!visited[display][display]) {
+        visited[display][display] = true;
+        q.push([display, display, time + 1]);
       }
 
-      route.push(N);
-      return [time, route];
+      if (!visited[display - 1][clip]) {
+        visited[display - 1][clip] = true;
+        q.push([display - 1, clip, time + 1]);
+      }
     }
 
-    if (pos - 1 >= 0 && !visited[pos - 1]) {
-      visited[pos - 1] = true;
-      history[pos - 1] = pos;
-      q.push([pos - 1, time + 1]);
-    }
-
-    if (pos + 1 <= MAX && !visited[pos + 1]) {
-      visited[pos + 1] = true;
-      history[pos + 1] = pos;
-      q.push([pos + 1, time + 1]);
-    }
-
-    if (pos * 2 <= MAX && !visited[pos * 2]) {
-      visited[pos * 2] = true;
-      history[pos * 2] = pos;
-      q.push([pos * 2, time + 1]);
+    // 2번 조건
+    if (clip > 0 && display + clip <= MAX) {
+      if (!visited[display + clip][clip]) {
+        visited[display + clip][clip] = true;
+        q.push([display + clip, clip, time + 1]);
+      }
     }
   }
 }
