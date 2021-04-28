@@ -1,44 +1,65 @@
-// const input = ['2'];
-// const input = ['4'];
-// const input = ['6'];
-const input = ['18'];
+// const input = ['3 3', '011', '111', '110'];
+const input = ['4 2', '0001', '1000'];
 
 console.log(Solution(input));
 
 function Solution(input) {
-  const MAX = 2000;
-  const S = Number(input[0]);
-  const visited = Array.from(new Array(MAX + 1), () =>
-    new Array(MAX + 1).fill(false)
+  const [M, N] = input.shift().split(' ').map(Number);
+
+  const graph = Array.from(new Array(N + 1), () => new Array());
+
+  for (let i = 1; i <= N; i++) {
+    graph[i] = input.shift().split('').map(Number);
+  }
+
+  const dist = Array.from(new Array(N + 1), () => new Array(M + 1).fill(-1));
+
+  for (let i = 1; i <= N; i++) {
+    for (let j = 1; j <= M; j++) {
+      if (graph[i][j - 1] === 0) {
+        dist[i][j] = 0;
+      }
+    }
+  }
+
+  const visited = Array.from(new Array(N + 1), () =>
+    new Array(M + 1).fill(false)
   );
 
-  const q = [[1, 0, 0]];
-  visited[1][0] = true;
+  // Bfs
+  const q = [[1, 1]];
 
+  const dx = [-1, 1, 0, 0];
+  const dy = [0, 0, -1, 1];
   while (q.length > 0) {
-    const [display, clip, time] = q.shift();
+    const [x, y] = q.shift();
 
-    if (display === S) return time;
+    if (visited[x][y]) continue;
 
-    // 1번, 3번 조건
-    if (display > 0 && display <= MAX) {
-      if (!visited[display][display]) {
-        visited[display][display] = true;
-        q.push([display, display, time + 1]);
-      }
+    visited[x][y] = true;
 
-      if (!visited[display - 1][clip]) {
-        visited[display - 1][clip] = true;
-        q.push([display - 1, clip, time + 1]);
-      }
-    }
+    for (let i = 0; i < 4; i++) {
+      const nx = x + dx[i];
+      const ny = y + dy[i];
 
-    // 2번 조건
-    if (clip > 0 && display + clip <= MAX) {
-      if (!visited[display + clip][clip]) {
-        visited[display + clip][clip] = true;
-        q.push([display + clip, clip, time + 1]);
+      if (CheckRange(nx, ny, N, M) && !visited[nx][ny]) {
+        if (nx === N && ny === M) {
+          return dist[x][y];
+        } else if (dist[nx][ny] === -1) {
+          dist[nx][ny] = dist[x][y] + 1;
+          q.push([nx, ny]);
+        } else if (dist[nx][ny] === 0) {
+          q.push([nx, ny]);
+        }
       }
     }
+  }
+}
+
+function CheckRange(x, y, N, M) {
+  if (x >= 1 && x <= N && y >= 1 && y <= M) {
+    return true;
+  } else {
+    return false;
   }
 }
