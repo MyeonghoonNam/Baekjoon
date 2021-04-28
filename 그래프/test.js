@@ -101,8 +101,7 @@ let costs = new Array(100001).fill(inf);
 rl.on('line', function (line) {
   [N, K] = line.split(' ').map((num) => +num);
   rl.close();
-})
-.on('close', function () {
+}).on('close', function () {
   let queue = [[N, 0]];
 
   while (queue.length) {
@@ -138,3 +137,58 @@ rl.on('line', function (line) {
   console.log(answer);
   process.exit();
 });
+
+///////
+function solve(N, K) {
+  function dijkstra(start) {
+    distance[start] = 0;
+    let queue = [];
+    queue.push({ currNode: start, currCnt: 0 });
+
+    while (queue.length) {
+      let { currNode, currCnt } = queue.shift();
+
+      if (distance[currNode] < currCnt) continue;
+
+      if (currNode === K) {
+        ans = currCnt;
+        break;
+      }
+      if (currNode + 1 >= 0 && distance[currNode + 1] > currCnt + 1) {
+        distance[currNode + 1] = currCnt + 1;
+        queue.push({ currNode: currNode + 1, currCnt: currCnt + 1 });
+      }
+      if (currNode - 1 >= 0 && distance[currNode - 1] > currCnt + 1) {
+        distance[currNode - 1] = currCnt + 1;
+        queue.push({ currNode: currNode - 1, currCnt: currCnt + 1 });
+      }
+      if (currNode * 2 >= 0 && distance[currNode * 2] > currCnt) {
+        distance[currNode * 2] = currCnt;
+        queue.push({ currNode: currNode * 2, currCnt: currCnt });
+      }
+    }
+  }
+
+  let distance = new Array(K * 2 + 1).fill(Infinity);
+  if (N > K) {
+    console.log(N - K);
+    return;
+  }
+  let ans = 0;
+  dijkstra(N);
+  console.log(ans);
+}
+
+const fs = require('fs');
+const stdin = (process.platform === 'linux'
+  ? fs.readFileSync('/dev/stdin').toString()
+  : `5 17`
+).split('\n');
+
+const input = (() => {
+  let line = 0;
+  return () => stdin[line++];
+})();
+
+const [N, K] = input().split(' ').map(Number);
+solve(N, K);
