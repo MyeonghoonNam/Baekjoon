@@ -1,21 +1,25 @@
-const input = ['3', '4', '7', '10'];
+// const input = ['4', '1 5 6 7'];
+// const input = ['5', '10 9 8 7 6'];
+// const input = ['10', '1 1 2 3 5 8 13 21 34 55'];
+// const input = ['10', '5 10 11 12 13 30 35 40 45 47'];
+// const input = ['4', '5 2 8 10'];
+const input = ['4', '3 5 15 16'];
 
-console.log(Solution(input).join('\n'));
+console.log(Solution(input));
 
 function Solution(input) {
-  const T = Number(input.shift());
-  const result = [];
+  const N = Number(input.shift());
+  const cards = input.shift().split(' ').map(Number);
+  cards.unshift(0);
 
-  for (let i = 0; i < T; i++) {
-    const N = Number(input.shift());
+  const dp = [0, cards[1]];
+  for (let i = 2; i <= N; i++) {
+    dp[i] = 0;
 
-    const dp = [0, 1, 2, 4];
-    for (let j = 4; j <= N; j++) {
-      dp[j] = dp[j - 1] + dp[j - 2] + dp[j - 3];
+    for (let j = 1; j <= i; j++) {
+      dp[i] = Math.max(dp[i], dp[i - j] + cards[j]);
     }
-
-    result.push(dp[N]);
   }
 
-  return result;
+  return dp[N];
 }
