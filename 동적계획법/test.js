@@ -1,25 +1,29 @@
-const input = ['4', '1 5 6 7'];
-// const input = ['5', '10 9 8 7 6'];
-// const input = ['10', '1 1 2 3 5 8 13 21 34 55'];
-// const input = ['10', '5 10 11 12 13 30 35 40 45 47'];
-// const input = ['4', '5 2 8 10'];
-// const input = ['4', '3 5 15 16'];
+const input = ['3', '4', '7', '10'];
 
-console.log(Solution(input));
+const dp = Array.from(new Array(100001), () => new Array(4).fill(0));
 
-function Solution(input) {
-  const N = Number(input.shift());
-  const cards = input.shift().split(' ').map(Number);
-  cards.unshift(0);
+dp[1][1] = 1;
+dp[2][2] = 1;
 
-  const dp = [0, cards[1]];
-  for (let i = 2; i <= N; i++) {
-    dp[i] = Number.MAX_SAFE_INTEGER;
+dp[3][1] = 1;
+dp[3][2] = 1;
+dp[3][3] = 1;
 
-    for (let j = 1; j <= i; j++) {
-      dp[i] = Math.min(dp[i], dp[i - j] + cards[j]);
-    }
-  }
+const T = Number(input[0]);
 
-  return dp[N];
+for (let j = 4; j < 100001; j++) {
+  dp[j][1] = (dp[j - 1][2] + dp[j - 1][3]) % 1000000009;
+  dp[j][2] = (dp[j - 2][1] + dp[j - 2][3]) % 1000000009;
+  dp[j][3] = (dp[j - 3][1] + dp[j - 3][2]) % 1000000009;
 }
+
+let result = '';
+for (let i = 1; i < T + 1; i++) {
+  const N = Number(input[i]);
+
+  const sum = (dp[N][1] + dp[N][2] + dp[N][3]) % 1000000009;
+
+  result += `${sum}\n`;
+}
+
+console.log(result);
