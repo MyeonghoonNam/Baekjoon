@@ -44,7 +44,7 @@ function Bfs(graph, dist, N, M) {
 
       if (CheckRange(nx, ny, N, M)) {
         if (graph[nx][ny] === 1) {
-          if (dist[nx][ny] > dist[x][y]) {
+          if (dist[nx][ny] > dist[x][y] + 1) {
             dist[nx][ny] = dist[x][y] + 1;
             q.push([nx, ny]);
           }
@@ -66,3 +66,11 @@ function CheckRange(x, y, N, M) {
     return false;
   }
 }
+
+const [MN, ...graph] = input;
+const [M, N] = MN.split(' ').map(Number);
+const dist = Array.from(new Array(N), () => new Array(M).fill(Infinity));
+
+Bfs(graph, dist, N, M);
+
+return dist[N - 1][M - 1];
