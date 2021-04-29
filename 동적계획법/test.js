@@ -1,19 +1,23 @@
-const input = [[4,7], [6, 13], [4, 8], [3, 6], [5, 12]];
+// const input = ['2'];
+const input = ['10'];
 
-const N = input[0][0];
-const K = input[0][1];
+console.log(Solution(input));
 
-const products = input.slice(1);
-products.unshift("0");
-    
-const dp = new Array(K+1).fill(0);
+function Solution(input) {
+  const N = Number(input[0]);
 
+  const dp = [0, 0];
+  for (let i = 2; i <= N; i++) {
+    dp[i] = dp[i - 1] + 1;
 
-for(let i = 1; i <= N; i++){
-    
-  for(let j = K; j - products[i][0] >= 0; j--){
-    dp[j] = Math.max(dp[j], dp[j - products[i][0]] + products[i][1]);
+    if (i % 2 === 0) {
+      dp[i] = Math.min(dp[i], dp[i / 2] + 1);
+    }
+
+    if (i % 3 === 0) {
+      dp[i] = Math.min(dp[i], dp[i / 3] + 1);
+    }
   }
+
+  return dp[N];
 }
-    
-console.log(dp[K]);
