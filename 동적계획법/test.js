@@ -1,4 +1,6 @@
-const input = ['6', '10 20 10 30 20 50'];
+// const input = ['10', '10 -4 3 1 5 6 -35 12 21 -1'];
+// const input = ['10', '2 1 -4 3 4 -4 6 5 -5 1'];
+const input = ['5', '-1 -2 -3 -4 -5'];
 
 console.log(Solution(input));
 
@@ -6,32 +8,12 @@ function Solution(input) {
   const N = Number(input.shift());
   const arr = input.shift().split(' ').map(Number);
 
-  const dp = [];
-  for (let i = 0; i < N; i++) {
-    dp[i] = 1;
-
-    for (let j = 0; j < i; j++) {
-      if (arr[i] > arr[j] && dp[i] < dp[j] + 1) {
-        dp[i] = dp[j] + 1;
-      }
-    }
+  const dp = [arr[0]];
+  for (let i = 1; i < N; i++) {
+    dp[i] = Math.max(dp[i - 1] + arr[i], arr[i]);
   }
 
-  const result = [];
-  let max = Math.max(...dp);
-  result[0] = max;
+  const result = Math.max(...dp);
 
-  let path = [];
-  for (let i = N - 1; i >= 0; i--) {
-    if (dp[i] === max) {
-      path.push(arr[i]);
-      max--;
-    }
-  }
-
-  result[1] = path.reverse();
-
-  const print = `${result[0]}\n${result[1].join(' ')}`;
-
-  return print;
+  return result;
 }
