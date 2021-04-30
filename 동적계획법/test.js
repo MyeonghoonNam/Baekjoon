@@ -17,7 +17,21 @@ function Solution(input) {
     }
   }
 
-  const result = Math.max(...dp);
+  const result = [];
+  let max = Math.max(...dp);
+  result[0] = max;
 
-  return result;
+  let path = [];
+  for (let i = N - 1; i >= 0; i--) {
+    if (dp[i] === max) {
+      path.push(arr[i]);
+      max--;
+    }
+  }
+
+  result[1] = path.reverse();
+
+  const print = `${result[0]}\n${result[1].join(' ')}`;
+
+  return print;
 }
