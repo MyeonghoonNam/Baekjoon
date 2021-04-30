@@ -1,30 +1,24 @@
-const input = ['3', '4', '7', '10'];
+const input = ['3', '26 40 83', '49 60 57', '13 89 99'];
 
 console.log(Solution(input));
 
 function Solution(input) {
-  const T = Number(input[0]);
+  const N = Number(input.shift());
 
-  const MAX = 1000000;
-  const MOD = 1000000009;
+  const cost = Array.from(new Array(N + 1), () => new Array(3).fill(0));
 
-  const dp = new Array(MAX).fill(0);
-  dp[1] = 1;
-  dp[2] = 2;
-  dp[3] = 4;
-
-  const result = [];
-  for (let i = 1; i < T + 1; i++) {
-    const N = Number(input[i]);
-
-    for (let j = 4; j <= N; j++) {
-      dp[j] = (dp[j - 1] + dp[j - 2] + dp[j - 3]) % MOD;
-    }
-
-    result.push(dp[N]);
+  for (let i = 1; i <= N; i++) {
+    cost[i] = input.shift().split(' ').map(Number);
   }
 
-  const print = result.join('\n');
+  const dp = Array.from(new Array(N + 1), () => new Array(3).fill(0));
 
-  return print;
+  dp[0] = cost[0];
+  for (let i = 1; i <= N; i++) {
+    dp[i][0] = Math.min(dp[i - 1][1], dp[i - 1][2]) + cost[i][0];
+    dp[i][1] = Math.min(dp[i - 1][0], dp[i - 1][2]) + cost[i][1];
+    dp[i][2] = Math.min(dp[i - 1][0], dp[i - 1][1]) + cost[i][2];
+  }
+
+  return Math.min(...dp[N]);
 }
