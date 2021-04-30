@@ -1,25 +1,34 @@
-const input = ['6', '6', '10', '13', '9', '8', '1'];
+const input = ['5', '7', '3 8', '8 1 0', '2 7 4 4', '4 5 2 6 5'];
 
 console.log(Solution(input));
 
 function Solution(input) {
   const N = Number(input.shift());
-  const arr = [0];
-  for (let i = 0; i < N; i++) {
-    const num = Number(input.shift());
-    arr.push(num);
+
+  const arr = new Array(N + 1).fill(0);
+  for (let i = 1; i <= N; i++) {
+    arr[i] = input.shift().split(' ').map(Number);
   }
 
-  const dp = [0];
-  dp[1] = arr[1];
-  dp[2] = dp[1] + arr[2];
-  for (let i = 3; i <= N; i++) {
-    dp[i] = Math.max(
-      dp[i - 1],
-      dp[i - 2] + arr[i],
-      dp[i - 3] + arr[i - 1] + arr[i]
-    );
+  const dp = Array.from(new Array(N + 1), () => new Array());
+  dp[1][0] = arr[1][0];
+
+  for (let i = 2; i <= N; i++) {
+    for (let j = 0; j < i; j++) {
+      // 층의 첫 번째 수
+      if (j === 0) {
+        dp[i][j] = dp[i - 1][j] + arr[i][j];
+      } else if (j === i - 1) {
+        // 층의 마지막 번째 수
+        dp[i][j] = dp[i - 1][j - 1] + arr[i][j];
+      } else {
+        // 처음과 마지막 사이의 수
+        dp[i][j] = Math.max(dp[i - 1][j - 1], dp[i - 1][j]) + arr[i][j];
+      }
+    }
   }
 
-  return dp[N];
+  const result = Math.max(...dp[N]);
+
+  return result;
 }
