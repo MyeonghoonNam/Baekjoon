@@ -1,29 +1,38 @@
-const input = ['3', '4', '7', '10'];
+// const input = ['1'];
+const input = ['2'];
 
-const dp = Array.from(new Array(100001), () => new Array(4).fill(0));
+console.log(Solution(input));
 
-dp[1][1] = 1;
-dp[2][2] = 1;
+function Solution(input) {
+  const N = Number(input[0]);
+  const MOD = 1000000000;
 
-dp[3][1] = 1;
-dp[3][2] = 1;
-dp[3][3] = 1;
+  const dp = Array.from(new Array(N + 1), () => new Array(10).fill(0));
 
-const T = Number(input[0]);
+  for (let i = 1; i <= 9; i++) {
+    dp[1][i] = 1;
+  }
 
-for (let j = 4; j < 100001; j++) {
-  dp[j][1] = (dp[j - 1][2] + dp[j - 1][3]) % 1000000009;
-  dp[j][2] = (dp[j - 2][1] + dp[j - 2][3]) % 1000000009;
-  dp[j][3] = (dp[j - 3][1] + dp[j - 3][2]) % 1000000009;
+  for (let i = 2; i <= N; i++) {
+    // 마지막 자리수가 0인 경우
+    dp[i][0] = dp[i - 1][1];
+
+    for (let j = 1; j <= 9; j++) {
+      // 마지막 자리수가 9인 경우
+      if (j === 9) {
+        dp[i][j] = dp[i - 1][8];
+      } else {
+        // 마지막 자리수가 1~8인 경우;
+        dp[i][j] = dp[i - 1][j - 1] + dp[i - 1][j + 1];
+      }
+
+      dp[i][j] = dp[i][j] % MOD;
+    }
+  }
+
+  const result = dp[N].reduce((acc, cur) => {
+    return acc + cur;
+  });
+
+  return result;
 }
-
-let result = '';
-for (let i = 1; i < T + 1; i++) {
-  const N = Number(input[i]);
-
-  const sum = (dp[N][1] + dp[N][2] + dp[N][3]) % 1000000009;
-
-  result += `${sum}\n`;
-}
-
-console.log(result);
