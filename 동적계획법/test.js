@@ -1,19 +1,19 @@
-// const input = ['10', '10 -4 3 1 5 6 -35 12 21 -1'];
-// const input = ['10', '2 1 -4 3 4 -4 6 5 -5 1'];
-const input = ['5', '-1 -2 -3 -4 -5'];
+const input = ['7'];
 
 console.log(Solution(input));
 
 function Solution(input) {
-  const N = Number(input.shift());
-  const arr = input.shift().split(' ').map(Number);
+  const N = Number(input[0]);
 
-  const dp = [arr[0]];
-  for (let i = 1; i < N; i++) {
-    dp[i] = Math.max(dp[i - 1] + arr[i], arr[i]);
+  const dp = [0];
+
+  for (let i = 1; i <= N; i++) {
+    dp[i] = i;
+
+    for (let j = 1; j * j <= i; j++) {
+      dp[i] = Math.min(dp[i], dp[i - j * j] + 1);
+    }
   }
 
-  const result = Math.max(...dp);
-
-  return result;
+  return dp[N];
 }
