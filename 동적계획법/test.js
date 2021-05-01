@@ -1,34 +1,15 @@
-const input = ['5', '7', '3 8', '8 1 0', '2 7 4 4', '4 5 2 6 5'];
+const input = ['20', '7', '23', '19', '10', '15', '25', '8', '13'];
 
-console.log(Solution(input));
+Solution(input);
 
 function Solution(input) {
-  const N = Number(input.shift());
-
-  const arr = new Array(N + 1).fill(0);
-  for (let i = 1; i <= N; i++) {
-    arr[i] = input.shift().split(' ').map(Number);
+  let sum = 0;
+  for (let i = 0; i < input.length; i++) {
+    console.log(Number(input[i]));
+    sum += Number(input[i]);
+    console.log(sum);
+    return;
   }
 
-  const dp = Array.from(new Array(N + 1), () => new Array());
-  dp[1][0] = arr[1][0];
-
-  for (let i = 2; i <= N; i++) {
-    for (let j = 0; j < i; j++) {
-      // 층의 첫 번째 수
-      if (j === 0) {
-        dp[i][j] = dp[i - 1][j] + arr[i][j];
-      } else if (j === i - 1) {
-        // 층의 마지막 번째 수
-        dp[i][j] = dp[i - 1][j - 1] + arr[i][j];
-      } else {
-        // 처음과 마지막 사이의 수
-        dp[i][j] = Math.max(dp[i - 1][j - 1], dp[i - 1][j]) + arr[i][j];
-      }
-    }
-  }
-
-  const result = Math.max(...dp[N]);
-
-  return result;
+  console.log(sum);
 }
