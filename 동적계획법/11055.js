@@ -14,24 +14,37 @@ rl.on('line', (line) => {
   console.log(Solution(input));
 
   function Solution(input) {
-    const N = Number(input.shift());
-    const numbers = input.shift().split(' ').map(Number);
+    const N = Number(input[0]);
+    const numbers = input[1].split(' ').map(Number);
 
-    const dp = [];
-    let max = Number.MIN_SAFE_INTEGER;
+    const LIS_DP = [];
+    const LDS_DP = [];
 
     for (let i = 0; i < N; i++) {
-      dp[i] = numbers[i];
-
+      LIS_DP[i] = 1;
       for (let j = 0; j < i; j++) {
-        if (numbers[i] > numbers[j] && dp[i] < dp[j] + numbers[i]) {
-          dp[i] = dp[j] + numbers[i];
+        if (numbers[i] > numbers[j] && LIS_DP[i] < LIS_DP[j] + 1) {
+          LIS_DP[i] = LIS_DP[j] + 1;
         }
       }
-
-      max = max < dp[i] ? dp[i] : max;
     }
 
-    return max;
+    for (let i = N - 1; i >= 0; i--) {
+      LDS_DP[i] = 1;
+      for (let j = N - 1; j > i; j--) {
+        if (numbers[i] > numbers[j] && LDS_DP[i] < LDS_DP[j] + 1) {
+          LDS_DP[i] = LDS_DP[j] + 1;
+        }
+      }
+    }
+
+    let max = 0;
+    for (let i = 0; i < N; i++) {
+      if (max < LIS_DP[i] + LDS_DP[i]) {
+        max = LIS_DP[i] + LDS_DP[i];
+      }
+    }
+
+    return max - 1;
   }
 });
