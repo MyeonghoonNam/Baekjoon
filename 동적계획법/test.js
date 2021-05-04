@@ -1,45 +1,22 @@
-const input = ['10', '1 5 2 1 4 3 4 5 2 1'];
+const input = ['10', '10 -4 3 1 5 6 -35 12 21 -1'];
 
-const N = Number(input[0]);
-const numbers = input[1].split(' ').map(Number);
+console.log(Solution(input));
 
-const LIS_DP = [];
-const LDS_DP = [];
+function Solution(input) {
+  const N = Number(input.shift());
+  const arr = input.shift().split(' ').map(Number);
 
-LIS();
-LDS();
+  const dp = Array.from(new Array(N), () => new Array());
+  dp[0][0] = dp[0][1] = arr[0];
 
-let max = 0;
-for (let i = 0; i < N; i++) {
-  if (max < LIS_DP[i] + LDS_DP[i]) {
-    max = LIS_DP[i] + LDS_DP[i];
+  let result = arr[0];
+
+  for (let i = 1; i < N; i++) {
+    dp[i][0] = Math.max(dp[i - 1][0] + arr[i], arr[i]);
+    dp[i][1] = Math.max(dp[i - 1][0], dp[i - 1][1] + arr[i]);
+
+    result = Math.max(result, Math.max(dp[i][0], dp[i][1]));
   }
-}
 
-console.log(LIS_DP);
-console.log(LDS_DP);
-console.log(max - 1);
-
-function LIS() {
-  for (let i = 0; i < N; i++) {
-    LIS_DP[i] = 1;
-
-    for (let j = 0; j < i; j++) {
-      if (numbers[i] > numbers[j] && LIS_DP[i] < LIS_DP[j] + 1) {
-        LIS_DP[i] = LIS_DP[j] + 1;
-      }
-    }
-  }
-}
-
-function LDS() {
-  for (let i = N - 1; i >= 0; i--) {
-    LDS_DP[i] = 1;
-
-    for (let j = N - 1; j > i; j--) {
-      if (numbers[i] > numbers[j] && LDS_DP[i] < LDS_DP[j] + 1) {
-        LDS_DP[i] = LDS_DP[j] + 1;
-      }
-    }
-  }
+  return result;
 }
