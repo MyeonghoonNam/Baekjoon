@@ -13,7 +13,7 @@ rl.on('line', (line) => {
   // 구현
   const N = Number(input.shift());
   const board = Array.from(new Array(N), () => new Array());
-  let result = 0;
+  let max = 0;
 
   for (let i = 0; i < N; i++) {
     board[i] = input.shift().split('');
@@ -38,46 +38,45 @@ rl.on('line', (line) => {
       }
     }
 
-    console.log(result);
+    console.log(max);
   }
 
   function CheckBoard() {
-    let char = '';
     for (let i = 0; i < N; i++) {
+      let char = board[i][0];
       let count = 1;
-      char = board[i][0];
 
       for (let j = 1; j < N; j++) {
         if (board[i][j] === char) {
           count++;
         } else {
-          if (count > result) {
-            result = count;
+          if (count > max) {
+            max = count;
           }
           char = board[i][j];
           count = 1;
         }
 
-        if (count > result) result = count;
+        if (count > max) max = count;
       }
     }
 
     for (let i = 0; i < N; i++) {
       let count = 1;
-      char = board[0][i];
+      let char = board[0][i];
 
       for (let j = 1; j < N; j++) {
         if (board[j][i] === char) {
           count++;
         } else {
-          if (count > result) {
-            result = count;
+          if (count > max) {
+            max = count;
           }
           char = board[j][i];
           count = 1;
         }
 
-        if (count > result) result = count;
+        if (count > max) max = count;
       }
     }
   }
