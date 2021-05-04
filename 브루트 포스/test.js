@@ -1,26 +1,14 @@
-const input = [20, 7, 23, 19, 10, 15, 25, 8, 13];
+const input = ['3', '26 40 83', '49 60 57', '13 89 99'];
 
 console.log(Solution(input));
 
 function Solution(input) {
-  input.sort((a, b) => a - b);
+  const N = Number(input.shift());
+  const cost = Array.from(new Array(N + 1), () => new Array(3).fill(0));
 
-  const sum = input.reduce((acc, cur) => {
-    return acc + cur;
-  });
-
-  let result = '';
-  for (let i = 0; i < input.length; i++) {
-    for (let j = i + 1; j < input.length; j++) {
-      if (sum - input[i] - input[j] === 100) {
-        for (let k = 0; k < input.length; k++) {
-          if (k === i || k === j) continue;
-
-          result += input[k] + '\n';
-        }
-
-        return result;
-      }
-    }
+  for (let i = 0; i < N; i++) {
+    cost[i + 1] = input.shift().split(' ').map(Number);
   }
+
+  console.log(cost);
 }
