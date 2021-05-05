@@ -2,17 +2,12 @@
 // const input = ['100', '5', '0 1 2 3 4'];
 const input = ['500000', '8', '0 2 3 4 6 7 8 9'];
 
-const N = Number(input.shift());
-const M = Number(input.shift());
-const broken = input.shift().split(' ').map(Number);
+const N = Number(input[0]);
+const broken = input[2] ? input[2].split(' ').map(Number) : [];
 const brokenNumbers = new Array(10).fill(false);
 
-if (M !== 0) {
-  for (let i = 0; i < M; i++) {
-    const number = broken[i];
-
-    brokenNumbers[number] = true;
-  }
+for (let i = 0; i < broken.length; i++) {
+  brokenNumbers[broken[i]] = true;
 }
 
 console.log(Solution());
@@ -23,7 +18,7 @@ function Solution() {
 
   for (let i = 0; i <= 1000000; i++) {
     // 숫자 버튼 개수
-    const minNumBtnCnt = CheckNumBtnCnt(i);
+    let minNumBtnCnt = CheckNumBtnCnt(i);
     if (minNumBtnCnt > 0) {
       // 숫자 입력 후 부호 버튼 개수
       let signBtnCnt = Math.abs(N - i);
@@ -50,7 +45,7 @@ function CheckNumBtnCnt(num) {
       return 0;
     }
 
-    num = parseInt(num / 10);
+    num = Math.floor(num / 10);
     len++;
   }
 
