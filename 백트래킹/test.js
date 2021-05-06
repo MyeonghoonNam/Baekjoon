@@ -12,17 +12,17 @@ const numbers = input
 const arr = [];
 let result = '';
 
-Dfs(0);
+Dfs(0, 0);
 console.log(result);
 
-function Dfs(cnt) {
+function Dfs(idx, cnt) {
   if (cnt === M) {
     result += arr.join(' ') + '\n';
     return;
   }
 
-  for (let i = 0; i < N; i++) {
+  for (let i = idx; i < N; i++) {
     arr[cnt] = numbers[i];
-    Dfs(cnt + 1);
+    Dfs(i, cnt + 1);
   }
 }
