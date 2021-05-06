@@ -9,25 +9,20 @@ const numbers = input
   .map(Number)
   .sort((a, b) => a - b);
 
-const visited = new Array(N).fill(false);
 const arr = [];
 let result = '';
 
-Dfs(0, 0);
+Dfs(0);
 console.log(result);
 
-function Dfs(idx, cnt) {
+function Dfs(cnt) {
   if (cnt === M) {
     result += arr.join(' ') + '\n';
     return;
   }
 
-  for (let i = idx; i < N; i++) {
-    if (!visited[i]) {
-      visited[i] = true;
-      arr[cnt] = numbers[i];
-      Dfs(i + 1, cnt + 1);
-      visited[i] = false;
-    }
+  for (let i = 0; i < N; i++) {
+    arr[cnt] = numbers[i];
+    Dfs(cnt + 1);
   }
 }
