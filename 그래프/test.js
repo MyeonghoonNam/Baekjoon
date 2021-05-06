@@ -1,76 +1,32 @@
-// const input = ['3 3', '011', '111', '110'];
-// const input = ['4 2', '0001', '1000'];
-const input = [
-  '6 6',
-  '001111',
-  '010000',
-  '001111',
-  '110001',
-  '011010',
-  '100010',
-];
+const input = ['6 5', '1 2', '2 5', '5 1', '3 4', '4 6'];
 
-console.log(Solution(input));
+const [N, M] = input.shift().split(' ').map(Number);
+const visited = new Array(N + 1).fill(false);
+const graph = Array.from(new Array(N + 1), () => new Array());
+for (let i = 0; i < M; i++) {
+  const [v1, v2] = input[i].split(' ').map(Number);
 
-function Solution(input) {
-  const [M, N] = input.shift().split(' ').map(Number);
-
-  const graph = Array.from(new Array(N), () => new Array());
-  for (let i = 0; i < N; i++) {
-    graph[i] = input.shift().split('').map(Number);
-  }
-
-  const dist = Array.from(new Array(N), () => new Array(M).fill(Infinity));
-
-  Bfs(graph, dist, N, M);
-
-  return dist[N - 1][M - 1];
+  graph[v1].push(v2);
+  graph[v2].push(v1);
 }
 
-function Bfs(graph, dist, N, M) {
-  const q = [[0, 0]];
+let count = 0;
+for (let i = 1; i <= N; i++) {
+  if (!visited[i]) {
+    Dfs(i);
+    count++;
+  }
+}
 
-  dist[0][0] = 0;
+console.log(count);
 
-  const dx = [-1, 1, 0, 0];
-  const dy = [0, 0, -1, 1];
+function Dfs(v) {
+  if (visited[v]) return;
 
-  while (q.length > 0) {
-    const [x, y] = q.shift();
-
-    for (let i = 0; i < 4; i++) {
-      const nx = x + dx[i];
-      const ny = y + dy[i];
-
-      if (CheckRange(nx, ny, N, M)) {
-        if (graph[nx][ny] === 1) {
-          if (dist[nx][ny] > dist[x][y] + 1) {
-            dist[nx][ny] = dist[x][y] + 1;
-            q.push([nx, ny]);
-          }
-        } else if (graph[nx][ny] === 0) {
-          if (dist[nx][ny] > dist[x][y]) {
-            dist[nx][ny] = dist[x][y];
-            q.push([nx, ny]);
-          }
-        }
-      }
+  visited[v] = true;
+  graph[v].forEach((vertex) => {
+    if (!visited[vertex]) {
+      Dfs(vertex);
     }
-  }
+  });
 }
-
-function CheckRange(x, y, N, M) {
-  if (x >= 0 && x < N && y >= 0 && y < M) {
-    return true;
-  } else {
-    return false;
-  }
-}
-
-const [MN, ...graph] = input;
-const [M, N] = MN.split(' ').map(Number);
-const dist = Array.from(new Array(N), () => new Array(M).fill(Infinity));
-
-Bfs(graph, dist, N, M);
-
-return dist[N - 1][M - 1];

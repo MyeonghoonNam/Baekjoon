@@ -8,45 +8,36 @@ const rl = readline.createInterface({
 const input = [];
 rl.on('line', (line) => {
   // 입력 관리
-  input.push(line.split(' ').map((el) => parseInt(el)));
+  input.push(line);
 }).on('close', () => {
   // 구현
-  const [N, M] = input[0];
-  input.shift();
-
-  const graph = Array.from(new Array(N + 1), () => new Array());
+  const [N, M] = input.shift().split(' ').map(Number);
   const visited = new Array(N + 1).fill(false);
-
+  const graph = Array.from(new Array(N + 1), () => new Array());
   for (let i = 0; i < M; i++) {
-    const [v1, v2] = input[i];
+    const [v1, v2] = input[i].split(' ').map(Number);
 
-    insertEdge(v1, v2);
-    insertEdge(v2, v1);
+    graph[v1].push(v2);
+    graph[v2].push(v1);
   }
 
   let count = 0;
   for (let i = 1; i <= N; i++) {
     if (!visited[i]) {
-      dfs(i);
+      Dfs(i);
       count++;
     }
   }
 
   console.log(count);
-  process.exit();
 
-  function insertEdge(vFront, vBack) {
-    graph[vFront].push(vBack);
-  }
-
-  function dfs(v) {
+  function Dfs(v) {
     if (visited[v]) return;
 
     visited[v] = true;
-
     graph[v].forEach((vertex) => {
       if (!visited[vertex]) {
-        dfs(vertex);
+        Dfs(vertex);
       }
     });
   }
