@@ -13,23 +13,21 @@ const visited = new Array(N).fill(false);
 const arr = [];
 let result = '';
 
-Dfs(0, 0);
+Dfs(0);
 console.log(result);
 
-function Dfs(idx, cnt) {
+function Dfs(cnt) {
   if (cnt === M) {
     result += arr.join(' ') + '\n';
     return;
   }
 
   let lastNum = 0;
-  for (let i = idx; i < N; i++) {
-    if (!visited[i] && numbers[i] !== lastNum) {
-      visited[i] = true;
+  for (let i = 0; i < N; i++) {
+    if (numbers[i] !== lastNum) {
       arr[cnt] = numbers[i];
       lastNum = arr[cnt];
-      Dfs(i + 1, cnt + 1);
-      visited[i] = false;
+      Dfs(cnt + 1);
     }
   }
 }
