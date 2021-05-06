@@ -1,53 +1,98 @@
-// const input = ['5457', '3', '6 7 8'];
-// const input = ['100', '5', '0 1 2 3 4'];
-const input = ['500000', '8', '0 2 3 4 6 7 8 9'];
+const input = [
+  '5 5',
+  '1 2 3 4 5',
+  '5 4 3 2 1',
+  '2 3 4 5 6',
+  '6 5 4 3 2',
+  '1 2 1 2 1',
+];
 
-const N = Number(input[0]);
-const broken = input[2] ? input[2].split(' ').map(Number) : [];
-const brokenNumbers = new Array(10).fill(false);
+const [N, M] = input.shift().split(' ').map(Number);
+const map = Array.from(new Array(N), () => new Array());
+const visited = Array.from(new Array(N), () => new Array(M).fill(false));
+let result = 0;
 
-for (let i = 0; i < broken.length; i++) {
-  brokenNumbers[broken[i]] = true;
+for (let i = 0; i < N; i++) {
+  map[i] = input.shift().split(' ').map(Number);
 }
 
 console.log(Solution());
 
 function Solution() {
-  // 기호 버튼만 누른 경우
-  let minBtnCnt = Math.abs(N - 100);
-
-  for (let i = 0; i <= 1000000; i++) {
-    // 숫자 버튼 개수
-    let minNumBtnCnt = CheckNumBtnCnt(i);
-    if (minNumBtnCnt > 0) {
-      // 숫자 입력 후 부호 버튼 개수
-      let signBtnCnt = Math.abs(N - i);
-
-      minBtnCnt = Math.min(minBtnCnt, minNumBtnCnt + signBtnCnt);
+  for (let i = 0; i < N; i++) {
+    for (let j = 0; j < M; j++) {
+      visited[i][j] = true;
+      Dfs(i, j, map[i][j], 1);
+      visited[i][j] = false;
+      CheckShape(i, j);
     }
   }
 
-  return minBtnCnt;
+  return result;
 }
 
-function CheckNumBtnCnt(num) {
-  if (num === 0) {
-    if (brokenNumbers[0]) {
-      return 0;
-    } else {
-      return 1;
-    }
+function Dfs(x, y, sumValue, length) {
+  if (length >= 4) {
+    result = Math.max(result, sumValue);
+    return;
   }
 
-  let len = 0;
-  while (num > 0) {
-    if (brokenNumbers[num % 10]) {
-      return 0;
+  const dx = [-1, 1, 0, 0];
+  const dy = [0, 0, -1, 1];
+
+  for (let i = 0; i < 4; i++) {
+    const nx = x + dx[i];
+    const ny = y + dy[i];
+
+    if (CheckRange(nx, ny) && !visited[nx][ny]) {
+      visited[nx][ny] = true;
+      Dfs(nx, ny, sumValue + map[nx][ny], length + 1);
+      visited[nx][ny] = false;
+    }
+  }
+}
+
+// ㅜ,ㅗ,ㅏ,ㅓ
+function CheckShape(x, y) {
+  const dx = [
+    [0, 0, 0, 1],
+    [0, 0, 0, -1],
+    [0, 1, 2, 1],
+    [0, -1, 0, 1],
+  ];
+  const dy = [
+    [0, 1, 2, 1],
+    [0, 1, 2, 1],
+    [0, 0, 0, 1],
+    [0, 1, 1, 1],
+  ];
+
+  for (let i = 0; i < 4; i++) {
+    let sumValue = 0;
+    let flag = false;
+
+    for (let j = 0; j < 4; j++) {
+      const nx = x + dx[i][j];
+      const ny = y + dy[i][j];
+
+      if (CheckRange(nx, ny)) {
+        sumValue += map[nx][ny];
+      } else {
+        flag = true;
+        break;
+      }
     }
 
-    num = Math.floor(num / 10);
-    len++;
+    if (!flag) {
+      result = Math.max(result, sumValue);
+    }
   }
+}
 
-  return len;
+function CheckRange(x, y) {
+  if (x >= 0 && x < N && y >= 0 && y < M) {
+    return true;
+  } else {
+    return false;
+  }
 }
