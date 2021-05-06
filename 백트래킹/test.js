@@ -6,17 +6,17 @@ const [N, M] = input[0].split(' ').map(Number);
 const arr = [];
 let result = '';
 
-Dfs(0);
+Dfs(1, 0);
 console.log(result);
 
-function Dfs(cnt) {
+function Dfs(idx, cnt) {
   if (cnt === M) {
     result += arr.join(' ') + '\n';
     return;
   }
 
-  for (let i = 1; i <= N; i++) {
+  for (let i = idx; i <= N; i++) {
     arr[cnt] = i;
-    Dfs(cnt + 1);
+    Dfs(i, cnt + 1);
   }
 }
