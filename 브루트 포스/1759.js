@@ -1,7 +1,17 @@
-const input = ['4 6', 'a t c i s w'];
+const fs = require('fs');
+const stdin = (process.platform === 'linux'
+  ? fs.readFileSync('/dev/stdin').toString()
+  : `4 6
+a t c i s w`
+).split('\n');
 
-const [L, C] = input[0].split(' ').map(Number);
-const str = input[1].split(' ').sort();
+const input = (() => {
+  let line = 0;
+  return () => stdin[line++];
+})();
+
+const [L, C] = input().split(' ').map(Number);
+const str = input().split(' ').sort();
 const visited = new Array(C).fill(false);
 const password = [];
 let result = [];

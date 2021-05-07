@@ -1,14 +1,10 @@
-const readline = require('readline');
+const fs = require('fs');
+const stdin = (process.platform === 'linux'
+  ? fs.readFileSync('/dev/stdin').toString()
+  : `입력관리 !`
+).split('\n');
 
-const rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout,
-});
-
-const input = [];
-rl.on('line', (line) => {
-  // 입력 관리
-  input.push(line);
-}).on('close', () => {
-  // 구현
-});
+const input = (() => {
+  let line = 0;
+  return () => stdin[line++];
+})();
