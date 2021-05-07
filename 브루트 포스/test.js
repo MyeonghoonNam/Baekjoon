@@ -1,39 +1,35 @@
-const input = ['4', '0 10 15 20', '5 0 9 10', '6 13 0 12', '8 8 9 0'];
+const input = ['7 1 2 3 4 5 6 7', '8 1 2 3 5 8 13 21 34'];
 
-const N = Number(input.shift());
-const visited = new Array(N).fill(false);
-let startCity = 0;
-let min = Number.MAX_SAFE_INTEGER;
-const map = new Array(N);
-for (let i = 0; i < N; i++) {
-  map[i] = input[i].split(' ').map(Number);
+const T = input.length;
+
+let arr = [];
+let K = 0;
+let visited = [];
+let choice = [];
+let result = '';
+
+for (let i = 0; i < T; i++) {
+  arr = input[i].split(' ').map(Number);
+  K = arr.shift();
+  visited = new Array(K).fill(false);
+  choice = [];
+  result = '';
+
+  Dfs(0, 0);
+  console.log(result);
 }
 
-Solution();
-
-function Solution() {
-  for (let i = 0; i < N; i++) {
-    startCity = i;
-    visited[i] = true;
-    Dfs(i, 0, 0);
-    visited[i] = false;
+function Dfs(idx, cnt) {
+  if (cnt === 6) {
+    result += choice.join(' ') + '\n';
+    return;
   }
 
-  console.log(min);
-}
-
-function Dfs(cur, cnt, cost) {
-  if (cnt === N - 1) {
-    if (map[cur][startCity]) {
-      min = Math.min(min, cost + map[cur][startCity]);
-      return;
-    }
-  }
-
-  for (let i = 0; i < N; i++) {
-    if (!visited[i] && map[cur][i]) {
+  for (let i = idx; i < K; i++) {
+    if (!visited[i]) {
       visited[i] = true;
-      Dfs(i, cnt + 1, cost + map[cur][i]);
+      choice[cnt] = arr[i];
+      Dfs(i, cnt + 1);
       visited[i] = false;
     }
   }
