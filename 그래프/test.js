@@ -1,44 +1,83 @@
-// const input = ['4 4 2 1', '1 2', '1 3', '2 3', '2 4'];
-// const input = ['4 3 2 1', '1 2', '1 3', '1 4'];
-const input = ['4 4 1 1', '1 2', '1 3', '2 3', '2 4'];
+// const input = ['4', '1 2 3 4'];
+// const input = ['4', '1 2 4 3'];
+// const input = ['5', '1 2 3 5 4'];
+const input = ['5', '5 4 3 2 1'];
 
-const [N, M, K, X] = input[0].split(' ').map(Number);
-const graph = Array.from(new Array(N + 1), () => new Array());
-for (let i = 1; i <= M; i++) {
-  const [v1, v2] = input[i].split(' ').map(Number);
-  graph[v1].push(v2);
-}
-const dist = new Array(N + 1).fill(Infinity);
+const N = Number(input[0]);
+const arr = input[1].split(' ').map(Number);
+const visited = new Array(N + 1).fill(false);
+visited[0] = true;
 
-Bfs(X);
+const result = [];
 
-function Bfs(X) {
-  const q = [[X, 0]];
-  dist[X] = 0;
-
-  while (q.length > 0) {
-    const [v, d] = q.shift();
-
-    if (d > K) {
-      continue;
+for (let i = N - 1; i > 0; i++) {
+  if (arr[i - 1] < arr[i]) {
+    // prev
+    for (let j = 0; j < i - 1; j++) {
+      result.push(arr[j]);
+      visited[arr[j]] = true;
     }
 
-    graph[v].forEach((vertex) => {
-      let nextDistance = d + 1;
-      if (nextDistance < dist[vertex]) {
-        q.push([vertex, nextDistance]);
-        dist[vertex] = nextDistance;
+    // next
+    let startIdx = arr[i - 1] + 1;
+    result.push(startIdx);
+    visited[startIdx] = true;
+
+    // 나머지
+    visited.forEach((v, i) => {
+      if (v === false) {
+        result.push(i);
       }
     });
+
+    break;
   }
-
-  let flag = 0;
-  dist.forEach((d, idx) => {
-    if (d === K) {
-      flag = 1;
-      console.log(idx);
-    }
-  });
-
-  if (!flag) console.log(-1);
 }
+
+if (result.length === 0) {
+  console.log(-1);
+} else {
+  console.log(answer.join(' '));
+}
+// const N = Number(input.shift());
+// const cur = input[0].split(' ').map(Number);
+// const visited = new Array(N + 1).fill(false);
+// visited[0] = true;
+
+// let answer = [];
+
+// for (let i = N - 1; i >= 0; i--) {
+//   if (cur[i - 1] > cur[i]) {
+//     //prev 처리
+//     for (let j = 0; j < i - 1; j++) {
+//       let prev = cur[j];
+//       answer.push(prev);
+//       visited[prev] = true;
+//     }
+//     // console.log(answer);
+//     //next 처리
+//     let startIdx = cur[i - 1] - 1;
+//     // console.log(startIdx);
+//     let next = visited.findIndex((v, i) => i >= startIdx && v === false);
+//     answer.push(next);
+//     visited[next] = true;
+
+//     // console.log(answer);
+
+//     //나머지
+//     visited.forEach((v, i) => {
+//       if (v === false) {
+//         answer.push(i);
+//       }
+//     });
+
+//     // console.log(answer);
+//     break;
+//   }
+// }
+
+// if (answer.length === 0) {
+//   console.log(-1);
+// } else {
+//   console.log(answer.join(' '));
+// }

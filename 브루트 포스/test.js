@@ -1,22 +1,42 @@
-// const input = ['100000000'];
-const input = ['8'];
+// const input = ['4', '1 2 3 4'];
+// const input = ['4', '1 2 4 3'];
+// const input = ['5', '1 2 3 5 4'];
+const input = ['5', '5 4 3 2 1'];
 
-console.log(Solution(input));
+const N = Number(input[0]);
+const arr = input[1].split(' ').map(Number);
+const visited = new Array(N + 1).fill(false);
+visited[0] = true;
 
-function Solution() {
-  const N = Number(input[0]);
-  const len = input[0].length;
+const result = [];
 
-  if (len === 1) {
-    return N;
+for (let i = N - 1; i > 0; i--) {
+  if (arr[i - 1] < arr[i]) {
+    // prev
+    for (let j = 0; j < i - 1; j++) {
+      result.push(arr[j]);
+      visited[arr[j]] = true;
+    }
+
+    // next
+    let startIdx = arr[i - 1] + 1;
+    let next = visited.findIndex((v, i) => i >= startIdx && v === false);
+    result.push(next);
+    visited[next] = true;
+
+    // 나머지
+    visited.forEach((v, i) => {
+      if (v === false) {
+        result.push(i);
+      }
+    });
+
+    break;
   }
+}
 
-  let result = 0;
-  for (let i = 1; i < len; i++) {
-    result += 9 * Math.pow(10, i - 1) * i;
-  }
-
-  result += (N - Math.pow(10, len - 1) + 1) * len;
-
-  return result;
+if (result.length === 0) {
+  console.log(-1);
+} else {
+  console.log(result.join(' '));
 }
