@@ -1,50 +1,60 @@
-const fs = require('fs');
-const stdin = (process.platform === 'linux'
-  ? fs.readFileSync('/dev/stdin').toString()
-  : `5 17`
-).split('\n');
+const readline = require('readline');
 
-const input = (() => {
-  let line = 0;
-  return () => stdin[line++];
-})();
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout,
+});
 
-const [N, K] = input().split(' ').map(Number);
-const visited = new Array(100001).fill(false);
+const input = [];
+rl.on('line', (line) => {
+  // 입력 관리
+  input.push(line);
+}).on('close', () => {
+  // 구현
+  let cnt = 0;
+  let time = -1;
 
-console.log(Solution());
+  Solution(input);
+  process.exit();
 
-function Solution() {
-  let q = [[N, 0]];
+  function Solution(input) {
+    const [N, K] = input[0].split(' ').map((el) => parseInt(el));
+    const visited = new Array(100001).fill(false);
 
-  visited[N] = true;
-  let minTime = Number.MAX_SAFE_INTEGER;
-  let count = 0;
-  while (q.length > 0) {
-    const [pos, curTime] = q.shift();
-
-    if (minTime < curTime) continue;
-
-    visited[pos] = true;
-
-    if (pos === K) {
-      minTime = Math.min(minTime, curTime);
-      count++;
-      continue;
-    }
-
-    if (pos + 1 <= 100000 && !visited[pos + 1]) {
-      q.push([pos + 1, curTime + 1]);
-    }
-
-    if (pos * 2 <= 100000 && !visited[pos * 2]) {
-      q.push([pos * 2, curTime + 1]);
-    }
-
-    if (pos - 1 >= 0 && !visited[pos - 1]) {
-      q.push([pos - 1, curTime + 1]);
-    }
+    Bfs(N, K, visited);
+    console.log(`${time}\n${cnt}`);
   }
 
-  return `${minTime}\n${count}`;
-}
+  function Bfs(N, K, visited) {
+    let q = [];
+    q.push(N);
+    while (cnt === 0) {
+      const temp = [];
+
+      q.forEach((v) => {
+        if (v === K) {
+          cnt++;
+        } else {
+          if (v - 1 >= 0 && !visited[v - 1]) {
+            temp.push(v - 1);
+          }
+
+          if (v + 1 <= 100000 && !visited[v + 1]) {
+            temp.push(v + 1);
+          }
+
+          if (v * 2 <= 100000 && !visited[v * 2]) {
+            temp.push(v * 2);
+          }
+        }
+      });
+
+      temp.forEach((v) => {
+        visited[v] = true;
+      });
+
+      time++;
+      q = temp;
+    }
+  }
+});
