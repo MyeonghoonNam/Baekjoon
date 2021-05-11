@@ -12,7 +12,7 @@ const input = (() => {
 const reg = /(<.+?>|\s)/g;
 const temp = input().split(reg);
 
-let result = [];
+let result = '';
 temp.map((x) => {
   if (reg.test(x)) {
     // 정규식.text(문자열) ==> 해당 정규식을 따르는 문자열은 true 반환
