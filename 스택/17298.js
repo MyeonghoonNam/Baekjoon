@@ -1,38 +1,40 @@
-const readline = require('readline');
+const fs = require('fs');
+const stdin = (
+  process.platform === 'linux'
+    ? fs.readFileSync('/dev/stdin').toString()
+    : `4
+3 5 2 7`
+).split('\n');
 
-const rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout,
-});
+const input = (() => {
+  let line = 0;
+  return () => stdin[line++];
+})();
 
-const input = [];
-rl.on('line', (line) => {
-  // 입력 관리
-  input.push(line.split(' ').map((el) => parseInt(el)));
-}).on('close', () => {
-  // 구현
-  const N = input[0][0];
-  const numbers = input[1];
+console.log(solution());
+
+function solution() {
+  const N = Number(input());
+  const arr = input().split(' ').map(Number);
+  const result = [];
   const stack = [];
-  let top = stack.length - 1;
 
-  for (let i = 0; i < N; i++) {
-    NGE(i);
-  }
+  for (let i = N - 1; i >= 0; i--) {
+    let top = stack.length - 1;
 
-  for (let i = top; i >= 0; i--) {
-    numbers[stack.pop()] = -1;
-  }
-
-  console.log(numbers.join(' '));
-
-  function NGE(idx) {
-    while (top !== -1 && numbers[stack[top]] < numbers[idx]) {
-      numbers[stack.pop()] = numbers[idx];
+    while (stack.length > 0 && stack[top] <= arr[i]) {
+      stack.pop();
       top--;
     }
 
-    stack.push(idx);
-    top++;
+    if (stack.length === 0) {
+      result[i] = -1;
+    } else {
+      result[i] = stack[top];
+    }
+
+    stack.push(arr[i]);
   }
-});
+
+  return result.join(' ');
+}
