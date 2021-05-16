@@ -1,51 +1,35 @@
-const readline = require('readline');
+const fs = require('fs');
+const stdin = (
+  process.platform === 'linux'
+    ? fs.readFileSync('/dev/stdin').toString()
+    : `24 18`
+).split('\n');
 
-const rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout,
-});
+const input = (() => {
+  let line = 0;
+  return () => stdin[line++];
+})();
 
-rl.on('line', (line) => {
-  const input = line.split(' ').map((el) => parseInt(el));
+Solution();
 
-  const firstNumber = input[0];
-  const secondNumber = input[1];
+function Solution() {
+  const [num1, num2] = input().split(' ').map(Number);
 
-  // 첫 번째 수의 약수
-  const factorsOf_FirstNumber = [];
+  console.log(GCD(num1, num2));
+  console.log(LCM(num1, num2));
+}
 
-  for (let i = 1; i <= firstNumber; i++) {
-    if (firstNumber % i === 0) {
-      factorsOf_FirstNumber.push(i);
-    }
+function GCD(a, b) {
+  while (b !== 0) {
+    const r = a % b;
+
+    a = b;
+    b = r;
   }
 
-  // 두 번째 수의 약수
-  const factorsOf_SecondNumber = [];
+  return a;
+}
 
-  for (let i = 1; i <= secondNumber; i++) {
-    if (secondNumber % i === 0) {
-      factorsOf_SecondNumber.push(i);
-    }
-  }
-
-  // 두 수의 공약수
-  const CommonDivisor = factorsOf_FirstNumber.filter((number) => {
-    return factorsOf_SecondNumber.includes(number);
-  });
-
-  // 최대 공약수
-  const greatestCommonDivisor = Math.max(...CommonDivisor);
-
-  // 최소 공배수
-  const leastCommonMultiple =
-    greatestCommonDivisor *
-    (firstNumber / greatestCommonDivisor) *
-    (secondNumber / greatestCommonDivisor);
-
-  let result = `${greatestCommonDivisor}\n${leastCommonMultiple}`;
-
-  console.log(result);
-}).on('close', () => {
-  process.exit();
-});
+function LCM(a, b) {
+  return (a * b) / GCD(a, b);
+}
