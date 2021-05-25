@@ -18,7 +18,7 @@ function Solution() {
   const arr = input().split(' ').map(Number);
   let result = 0;
 
-  // 비트마스크 풀이
+  //비트마스크 풀이
   for (let i = 1; i < 1 << N; i++) {
     let sum = 0;
     for (let j = 0; j < N; j++) {
