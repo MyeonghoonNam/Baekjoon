@@ -1,3 +1,5 @@
+// 메모리초과발생, 백준의 nodejs로의 정답자가 존재 하지 않는다.
+
 const fs = require('fs');
 const stdin = (
   process.platform === 'linux'
