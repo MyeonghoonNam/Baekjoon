@@ -1,3 +1,5 @@
+'use strict';
+
 const fs = require('fs');
 const stdin = (
   process.platform === 'linux'
@@ -16,31 +18,30 @@ console.log(Solution());
 function Solution() {
   const K = Number(input());
   const operator = input().split(' ');
-  const permutaion = [];
-  const result = [];
 
-  const numArr = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
-  const checked = new Array(10).fill(false);
+  const permutation = [];
+  const visited = new Array(10).fill(false);
+  const result = [];
 
   const check = (idx, c) => {
     if (c === '<') {
-      if (permutaion[idx] < permutaion[idx + 1]) {
+      if (permutation[idx] < permutation[idx + 1]) {
         return true;
-      } else {
-        return false;
       }
+
+      return false;
     } else if (c === '>') {
-      if (permutaion[idx] > permutaion[idx + 1]) {
+      if (permutation[idx] > permutation[idx + 1]) {
         return true;
-      } else {
-        return false;
       }
+
+      return false;
     }
   };
 
   const calculate = () => {
     for (let i = 0; i < K; i++) {
-      if (check(i, operator[i]) === false) return false;
+      if (!check(i, operator[i])) return false;
     }
 
     return true;
@@ -49,24 +50,18 @@ function Solution() {
   const dfs = (cnt) => {
     if (cnt === K + 1) {
       if (calculate()) {
-        let num = '';
-        permutaion.forEach((n) => {
-          num += String(n);
-        });
-
-        result.push(num);
+        result.push(permutation.join(''));
       }
 
       return;
     }
 
-    for (let i = 0; i < numArr.length; i++) {
-      if (!checked[i]) {
-        checked[i] = true;
-        permutaion.push(numArr[i]);
+    for (let i = 0; i < 10; i++) {
+      if (!visited[i]) {
+        visited[i] = true;
+        permutation[cnt] = i;
         dfs(cnt + 1);
-        permutaion.pop();
-        checked[i] = false;
+        visited[i] = false;
       }
     }
   };
