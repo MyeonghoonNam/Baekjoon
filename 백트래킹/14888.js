@@ -1,54 +1,62 @@
-const readline = require('readline');
+'use strict';
 
-const rl = readline.createInterface({
-  input:process.stdin,
-  output:process.stdout
-});
+const fs = require('fs');
+const stdin = (
+  process.platform === 'linux'
+    ? fs.readFileSync('/dev/stdin').toString()
+    : `2
+5 6
+0 0 1 0`
+).split('\n');
 
-const input = [];
-rl.on('line', line => {
-  input.push(line.split(' ').map(el => parseInt(el)));
-})
-  .on('close', () => {
-    const N = input[0];
-    const numbers = input[1];
-    const operator = input[2];
+const input = (() => {
+  let line = 0;
+  return () => stdin[line++];
+})();
 
-    let max = -1000000000;
-    let min = 1000000000;
+console.log(Solution());
 
-    function dfs(plus, minus, multifly, divide, cnt, sum){
-      if(cnt === N[0]){
-        max = Math.max(max, sum);
-        min = Math.min(min, sum);
-      }
+function Solution() {
+  const N = Number(input());
+  const arr = input().split(' ').map(Number);
+  const operator = input().split(' ').map(Number);
 
-      if(plus > 0){
-        dfs(plus - 1, minus, multifly, divide, cnt + 1, sum + numbers[cnt]);
-      }
+  let MAX = -1000000000;
+  let MIN = 1000000000;
 
-      if(minus > 0){
-        dfs(plus, minus - 1, multifly, divide, cnt + 1, sum - numbers[cnt]);
-      }
+  const dfs = (num, cnt) => {
+    if (cnt === N) {
+      MAX = Math.max(MAX, num);
+      MIN = Math.min(MIN, num);
 
-      if(multifly > 0){
-        dfs(plus, minus, multifly -1 , divide, cnt + 1, sum * numbers[cnt]);
-      }
-
-      if(divide > 0){
-        if(sum < 0){
-          sum = -sum;
-          sum = -parseInt(sum / numbers[cnt]);
-
-          dfs(plus, minus, multifly, divide - 1, cnt + 1, sum);
-        } else{
-
-          dfs(plus, minus, multifly, divide - 1, cnt + 1, parseInt(sum / numbers[cnt]));
-        }
-      }
+      return;
     }
 
-    dfs(operator[0], operator[1], operator[2], operator[3], 1, numbers[0]);
-    console.log(`${max}\n${min}`);
-    process.exit();
-  })
+    for (let i = 0; i < 4; i++) {
+      if (operator[i] > 0) {
+        operator[i]--;
+
+        switch (i) {
+          case 0:
+            dfs(num + arr[cnt], cnt + 1);
+            break;
+          case 1:
+            dfs(num - arr[cnt], cnt + 1);
+            break;
+          case 2:
+            dfs(num * arr[cnt], cnt + 1);
+            break;
+          case 3:
+            dfs(parseInt(num / arr[cnt]), cnt + 1);
+            break;
+        }
+
+        operator[i]++;
+      }
+    }
+  };
+
+  dfs(arr[0], 1);
+
+  return `${MAX}\n${MIN}`;
+}
