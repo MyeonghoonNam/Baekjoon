@@ -1,52 +1,53 @@
-const readline = require('readline');
+'use strict';
 
-const rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout,
-});
+const fs = require('fs');
+const stdin = (
+  process.platform === 'linux'
+    ? fs.readFileSync('/dev/stdin').toString()
+    : `7 1 2 3 4 5 6 7
+8 1 2 3 5 8 13 21 34
+0`
+).split('\n');
 
-const input = [];
-rl.on('line', (line) => {
-  // 입력 관리
-  if (line === '0') {
-    rl.close();
-  }
+const input = (() => {
+  let line = 0;
+  return () => stdin[line++];
+})();
 
-  input.push(line);
-}).on('close', () => {
-  // 구현
-  const T = input.length;
+Solution();
 
-  let arr = [];
+function Solution() {
   let K = 0;
-  let visited = [];
-  let choice = [];
-  let result = '';
+  let S = [];
 
-  for (let i = 0; i < T; i++) {
-    arr = input[i].split(' ').map(Number);
-    K = arr.shift();
-    visited = new Array(K).fill(false);
-    choice = [];
-    result = '';
+  const selected = new Array(K).fill(false);
+  const result = [];
 
-    Dfs(0, 0);
-    console.log(result);
-  }
-
-  function Dfs(idx, cnt) {
+  const dfs = (idx, cnt) => {
     if (cnt === 6) {
-      result += choice.join(' ') + '\n';
+      console.log(result.join(' '));
       return;
     }
 
     for (let i = idx; i < K; i++) {
-      if (!visited[i]) {
-        visited[i] = true;
-        choice[cnt] = arr[i];
-        Dfs(i, cnt + 1);
-        visited[i] = false;
+      if (!selected[i]) {
+        selected[i] = true;
+        result[cnt] = S[i];
+        dfs(i, cnt + 1);
+        selected[i] = false;
       }
     }
+  };
+
+  while (1) {
+    const testcase = input().split(' ').map(Number);
+
+    if (testcase[0] === 0) break;
+
+    K = testcase[0];
+    S = testcase.slice(1);
+
+    dfs(0, 0);
+    console.log();
   }
-});
+}
