@@ -1,43 +1,48 @@
-const readline = require('readline');
+'use strict';
 
-const rl = readline.createInterface({
-  input:process.stdin,
-  output:process.stdout
-});
+const fs = require('fs');
+const stdin = (
+  process.platform === 'linux' ? fs.readFileSync('/dev/stdin').toString() : `8`
+).split('\n');
 
-rl.on('line', line => {
-  const N = parseInt(line);
-  const board = [];
-  let count = 0;
+const input = (() => {
+  let line = 0;
+  return () => stdin[line++];
+})();
 
-  function isPossible(idx){
-    for(let i = 0; i < idx; i++){
-      if(board[idx] === board[i] || idx - i === Math.abs(board[idx]-board[i])){
-        return 0;
+console.log(Solution());
+
+function Solution() {
+  const N = Number(input());
+  const map = [];
+  let result = 0;
+
+  const isPossible = (idx) => {
+    for (let i = 0; i < idx; i++) {
+      if (map[idx] === map[i] || idx - i === Math.abs(map[idx] - map[i])) {
+        return false;
       }
     }
 
-    return 1;
-  }
+    return true;
+  };
 
-  function nQueen(idx){
-    if(idx === N){
-      count++;
+  const nQueen = (cnt) => {
+    if (cnt === N) {
+      result++;
       return;
     }
 
-    for(let i = 0; i < N; i++){
-      board[idx] = i;
+    for (let i = 0; i < N; i++) {
+      map[cnt] = i;
 
-      if(isPossible(idx)){
-        nQueen(idx + 1);
+      if (isPossible(cnt)) {
+        nQueen(cnt + 1);
       }
     }
-  }
+  };
 
   nQueen(0);
-  console.log(count);
-})
-  .on('close', () => {
-    process.exit();
-  })
+
+  return result;
+}
