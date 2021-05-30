@@ -21,22 +21,18 @@ const input = (() => {
 console.log(Solution());
 
 function Solution() {
-  const [N, M] = input().split(' ');
+  const [N, M] = input().split(' ').map(Number);
   const map = new Array(N);
-
-  let coinPos = [];
+  const coinPos = [];
 
   for (let i = 0; i < N; i++) {
     map[i] = input().split('');
 
     for (let j = 0; j < M; j++) {
-      if (map[i][j] === 'o') {
-        coinPos.push([i, j]);
-      }
+      if (map[i][j] === 'o') coinPos.push([i, j]);
     }
   }
 
-  // 동전이 맵 밖으로 떨어지는지 체크
   const checkRange = (x, y) => {
     if (x < 0 || x >= N || y < 0 || y >= M) return true;
     else return false;
@@ -45,18 +41,15 @@ function Solution() {
   const dfs = (coinPos1, coinPos2, cnt) => {
     const [x1, y1] = coinPos1;
     const [x2, y2] = coinPos2;
-
-    const dx = [-1, 1, 0, 0];
-    const dy = [0, 0, -1, 1];
-
     let result = -1;
 
-    if (cnt > 10) {
-      return -1;
-    }
+    if (cnt > 10) return -1;
 
     if (checkRange(x1, y1) && checkRange(x2, y2)) return -1;
     else if (checkRange(x1, y1) || checkRange(x2, y2)) return cnt;
+
+    const dx = [-1, 1, 0, 0];
+    const dy = [0, 0, -1, 1];
 
     for (let i = 0; i < 4; i++) {
       let nx1 = x1 + dx[i];
@@ -64,20 +57,12 @@ function Solution() {
       let ny1 = y1 + dy[i];
       let ny2 = y2 + dy[i];
 
-      if (
-        !checkRange(nx1, ny1) &&
-        !checkRange(nx2, ny2) &&
-        map[nx1][ny1] === '#'
-      ) {
+      if (!checkRange(nx1, ny1) && map[nx1][ny1] === '#') {
         nx1 = x1;
         ny1 = y1;
       }
 
-      if (
-        !checkRange(nx1, ny1) &&
-        !checkRange(nx2, ny2) &&
-        map[nx2][ny2] === '#'
-      ) {
+      if (!checkRange(nx2, ny2) && map[nx2][ny2] === '#') {
         nx2 = x2;
         ny2 = y2;
       }
