@@ -1,77 +1,86 @@
-const readline = require('readline');
+'use strict';
 
-const rl = readline.createInterface({
-  input:process.stdin,
-  output:process.stdout
-});
+const fs = require('fs');
+const stdin = (
+  process.platform === 'linux'
+    ? fs.readFileSync('/dev/stdin').toString()
+    : `0 3 5 4 6 9 2 7 8
+7 8 2 1 0 5 6 0 9
+0 6 0 2 7 8 1 3 5
+3 2 1 0 4 6 8 9 7
+8 0 4 9 1 3 5 0 6
+5 9 6 8 2 0 4 1 3
+9 1 7 6 5 2 0 8 0
+6 0 3 7 0 1 9 5 2
+2 5 8 3 9 4 7 6 0`
+).split('\n');
 
-const board = [];
-rl.on('line', line => {
-  board.push(line.split(' ').map(el => parseInt(el)));
-})
-  .on('close', () => {
-    
-    function sudoku(){
-      let x = -1, y = -1;
+const input = (() => {
+  let line = 0;
+  return () => stdin[line++];
+})();
 
-      for(let i = 0; i < 9; i++){
-        for(let j = 0; j < 9; j++){
-          if(board[i][j] === 0){
-            x = i;
-            y = j;
+Solution();
 
-            break;
-          }
-        }
+function Solution() {
+  const MAX = 9;
 
-        if(x !== -1) break;
-      }
+  const row = Array.from(new Array(MAX), () => new Array(MAX).fill(false));
+  const col = Array.from(new Array(MAX), () => new Array(MAX).fill(false));
+  const square = Array.from(new Array(MAX), () => new Array(MAX).fill(false));
 
-      if(x === -1){
-        printSudoku();
-      }
+  const map = [];
+  for (let i = 0; i < MAX; i++) {
+    map[i] = input().split(' ').map(Number);
 
-      for(let i = 1; i <= 9; i++){
-        if(isPossible(x, y, i)){
-          board[x][y] = i;
-          sudoku();
-          board[x][y] = 0;
-        }
+    for (let j = 0; j < MAX; j++) {
+      if (map[i][j] !== 0) {
+        row[i][map[i][j]] = true;
+        col[j][map[i][j]] = true;
+        square[parseInt(i / 3) * 3 + parseInt(j / 3)][map[i][j]] = true;
       }
     }
+  }
 
-    function isPossible(x, y, n){
-      for(let i = 0; i < 9; i++){
-        if(board[x][i] === n || board[i][y] === n){
-          return false;
-        }
-      }
+  const print = () => {
+    const result = map.reduce((acc, cur) => {
+      return acc.concat(cur.join(' '));
+    }, []);
 
-      let startX = parseInt((x / 3)) * 3;
-      let startY = parseInt((y / 3)) * 3;
+    console.log(result.join('\n'));
+  };
 
-      for(let i = startX; i < startX + 3; i++){
-        for(let j = startY; j < startY + 3; j++){
-          if(board[i][j] === n) {
-            return false;
-          }
-        }
-      }
+  const dfs = (cnt) => {
+    const x = parseInt(cnt / MAX);
+    const y = cnt % MAX;
 
-      return true;
-    }
-
-    function printSudoku(){
-      let result = '';
-
-      for(let i = 0; i < 9; i++){
-        result += `${board[i].join(' ')}\n`;
-      }
-
-      console.log(result);
-
+    if (cnt === 81) {
+      print();
       process.exit();
     }
 
-    sudoku();
-  })
+    if (map[x][y] === 0) {
+      for (let i = 1; i <= 9; i++) {
+        if (
+          !row[x][i] &&
+          !col[y][i] &&
+          !square[parseInt(x / 3) * 3 + parseInt(y / 3)][i]
+        ) {
+          row[x][i] = true;
+          col[y][i] = true;
+          square[parseInt(x / 3) * 3 + parseInt(y / 3)][i] = true;
+          map[x][y] = i;
+          dfs(cnt + 1);
+          map[x][y] = 0;
+          row[x][i] = false;
+          col[y][i] = false;
+          square[parseInt(x / 3) * 3 + parseInt(y / 3)][i] = false;
+        }
+      }
+    } else {
+      dfs(cnt + 1);
+    }
+  };
+
+  dfs(0);
+}
