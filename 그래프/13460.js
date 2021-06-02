@@ -1,106 +1,136 @@
-const readline = require('readline');
+'use strict';
 
-const rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout,
-});
+const fs = require('fs');
+const stdin = (
+  process.platform === 'linux'
+    ? fs.readFileSync('/dev/stdin').toString()
+    : `7 7
+#######
+#...RB#
+#.#####
+#.....#
+#####.#
+#O....#
+#######`
+).split('\n');
 
-let input = [];
-let board = [];
+const input = (() => {
+  let line = 0;
+  return () => stdin[line++];
+})();
 
-rl.on('line', function (line) {
-  input.push(line);
-}).on('close', function () {
-  let [N, M] = input[0].split(' ');
-  N -= 0;
-  M -= 0;
-  for (let i = 1; i <= N; i++) {
-    board.push(input[i].split(''));
-  }
-  let R, B;
+console.log(Solution());
 
-  for (let y = 0; y < N; y++) {
-    for (let x = 0; x < M; x++) {
-      if (board[y][x] === 'B') {
-        board[y][x] = '.';
-        B = [y, x];
-      } else if (board[y][x] === 'R') {
-        board[y][x] = '.';
-        R = [y, x];
+function Solution() {
+  const [N, M] = input().split(' ').map(Number);
+  const map = [];
+  const visited = Array.from(new Array(10), () =>
+    Array.from(new Array(10), () =>
+      Array.from(new Array(10), () => new Array(10).fill(false))
+    )
+  );
+
+  let rPos = [];
+  let bPos = [];
+  let hPos = [];
+
+  for (let i = 0; i < N; i++) {
+    map[i] = input().split('');
+
+    for (let j = 0; j < M; j++) {
+      if (map[i][j] === 'R') {
+        rPos = [i, j];
+      } else if (map[i][j] === 'B') {
+        bPos = [i, j];
+      } else if (map[i][j] === 'O') {
+        hPos = [i, j];
       }
     }
   }
-  let queue = [[...B, ...R, 0]];
-  let idx = 0;
-  const dy = [1, -1, 0, 0];
-  const dx = [0, 0, -1, 1];
-  while (idx < queue.length) {
-    let [by, bx, ry, rx, level] = queue[idx];
-    idx++;
-    if (level >= 10) {
-      break;
-    }
-    let meetRed = false;
-    for (let i = 0; i < 4; i++) {
-      let nby = by;
-      let nbx = bx;
-      let goalRed = false;
-      while (
-        !(nby < 0 || nby >= N || nbx < 0 || nbx >= M) &&
-        board[nby][nbx] === '.' &&
-        !(nby === ry && nbx === rx)
-      ) {
-        nby += dy[i];
-        nbx += dx[i];
-      }
-      if (board[nby][nbx] === 'O') {
-        continue;
-      } else if (nby === ry && nbx === rx) {
-        meetRed = true;
-      }
-      nby -= dy[i];
-      nbx -= dx[i];
 
-      let nry = ry;
-      let nrx = rx;
-      while (
-        !(nry < 0 || nry >= N || nrx < 0 || nrx >= M) &&
-        board[nry][nrx] === '.' &&
-        !(nby === nry && nbx === nrx)
-      ) {
-        nry += dy[i];
-        nrx += dx[i];
-      }
-      if (board[nry][nrx] === 'O') {
-        goalRed = true;
-      }
-      if (!goalRed) {
-        nry -= dy[i];
-        nrx -= dx[i];
+  let result = -1;
+
+  const bfs = (rPos, bPos, cnt) => {
+    const q = [[...rPos, ...bPos, cnt]];
+    let qIdx = 0;
+
+    visited[rPos[0]][rPos[1]][bPos[0]][bPos[1]] = true;
+
+    const dx = [-1, 1, 0, 0];
+    const dy = [0, 0, -1, 1];
+
+    while (qIdx < q.length) {
+      const [rx, ry, bx, by, cnt] = q[qIdx++];
+
+      if (cnt > 10) break;
+
+      if (rx === hPos[0] && ry === hPos[1]) {
+        result = cnt;
+        break;
       }
 
-      if (meetRed) {
-        while (
-          !(nby < 0 || nby >= N || nbx < 0 || nbx >= M) &&
-          board[nby][nbx] === '.' &&
-          !(nby === nry && nbx === nrx)
-        ) {
-          nby += dy[i];
+      for (let i = 0; i < 4; i++) {
+        let nrx = rx;
+        let nry = ry;
+        let nbx = bx;
+        let nby = by;
+
+        while (1) {
+          nrx += dx[i];
+          nry += dy[i];
+
+          if (map[nrx][nry] === '#') {
+            nrx -= dx[i];
+            nry -= dy[i];
+
+            break;
+          } else if (map[nrx][nry] === 'O') {
+            break;
+          }
+        }
+
+        while (1) {
           nbx += dx[i];
+          nby += dy[i];
+
+          if (map[nbx][nby] === '#') {
+            nbx -= dx[i];
+            nby -= dy[i];
+
+            break;
+          } else if (map[nbx][nby] === 'O') {
+            break;
+          }
         }
-        if (board[nby][nbx] === 'O') {
-          continue;
+
+        if (nbx === hPos[0] && nby === hPos[1]) continue;
+
+        if (nrx === nbx && nry === nby) {
+          switch (i) {
+            case 0:
+              rx < bx ? nbx++ : nrx++;
+              break;
+            case 1:
+              rx < bx ? nrx-- : nbx--;
+              break;
+            case 2:
+              ry < by ? nby++ : nry++;
+              break;
+            case 3:
+              ry < by ? nry-- : nby--;
+              break;
+          }
         }
-        nby -= dy[i];
-        nbx -= dx[i];
+
+        if (!visited[nrx][nry][nbx][nby]) {
+          q.push([nrx, nry, nbx, nby, cnt + 1]);
+          visited[nrx][nry][nbx][nby] = true;
+        }
       }
-      if (goalRed) {
-        console.log(level + 1);
-        return;
-      }
-      if (nby === by && nbx === bx && nrx === rx && nry === ry) continue;
-      queue.push([nby, nbx, nry, nrx, level + 1]);
     }
-  }
-  console.log(-1);
-});
+  };
+
+  bfs(rPos, bPos, 0);
+
+  return result;
+}
