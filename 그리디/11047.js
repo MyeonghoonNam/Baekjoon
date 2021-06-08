@@ -1,40 +1,48 @@
-const readline = require('readline');
+'use strict';
 
-const rl = readline.createInterface({
-  input:process.stdin,
-  output:process.stdout
-});
+const fs = require('fs');
+const stdin = (
+  process.platform === 'linux'
+    ? fs.readFileSync('/dev/stdin').toString()
+    : `10 4790
+1
+5
+10
+50
+100
+500
+1000
+5000
+10000
+50000`
+).split('\n');
 
-const input = [];
-rl.on('line', line => {
-  input.push(line);
-})
-  .on('close', () => {
-    const tmp = input[0].split(' ').map(el => Number(el));
+const input = (() => {
+  let line = 0;
+  return () => stdin[line++];
+})();
 
-    const N = tmp[0];
-    const K = tmp[1];
-    const coins = input.slice(1).map(el => Number(el));
-    
-    coins.sort((a, b) => b - a);
+console.log(Solution());
 
-    solve(N, K, coins);
-    process.exit();
-    
-    function solve(N, K, coins){
-      let count = 0;
-    
-      for(let el of coins){
-        if(K === 0){
-          break;
-        }
-    
-        if(el <= K){
-          count += parseInt(K / el);
-          K = K % el;
-        }
-      }
-    
-      console.log(count);
+function Solution() {
+  let [N, K] = input().split(' ').map(Number);
+  const coins = [];
+
+  for (let i = 0; i < N; i++) {
+    coins[i] = Number(input());
+  }
+
+  coins.sort((a, b) => b - a);
+
+  let cnt = 0;
+  for (let value of coins) {
+    if (K === 0) break;
+
+    if (value <= K) {
+      cnt += parseInt(K / value);
+      K %= value;
     }
-})
+  }
+
+  return cnt;
+}
