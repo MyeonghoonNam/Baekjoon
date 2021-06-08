@@ -1,27 +1,32 @@
-const readline = require('readline');
+'use strict';
 
-const rl = readline.createInterface({
-  input:process.stdin,
-  output:process.stdout
-});
+const fs = require('fs');
+const stdin = (
+  process.platform === 'linux'
+    ? fs.readFileSync('/dev/stdin').toString()
+    : `5
+3 1 4 3 2`
+).split('\n');
 
-const input = [];
-rl.on('line', line => {
-  input.push(line.split(' ').map(el => parseInt(el)));
-})
-  .on('close', () => {
-    const N = input[0][0];
-    const withDrawTime = input[1];
-    
-    withDrawTime.sort((a, b) => a - b);
-    
-    let minTotalWithDrawTime = 0;
-    for(let i = 0; i < N; i++){
-      for(let j = 0; j <= i; j++){
-        minTotalWithDrawTime += withDrawTime[j];
-      }
+const input = (() => {
+  let line = 0;
+  return () => stdin[line++];
+})();
+
+console.log(Solution());
+
+function Solution() {
+  const N = Number(input());
+  const withdrawal = input().split(' ').map(Number);
+
+  withdrawal.sort((a, b) => a - b);
+
+  let sum = 0;
+  for (let i = 0; i < N; i++) {
+    for (let j = 0; j <= i; j++) {
+      sum += withdrawal[j];
     }
-    
-    console.log(minTotalWithDrawTime);
-    process.exit();
-})
+  }
+
+  return sum;
+}
