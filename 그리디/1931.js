@@ -1,16 +1,37 @@
-const readline = require('readline');
+'use strict';
 
-const rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout,
-});
+const fs = require('fs');
+const stdin = (
+  process.platform === 'linux'
+    ? fs.readFileSync('/dev/stdin').toString()
+    : `11
+1 4
+3 5
+0 6
+5 7
+3 8
+5 9
+6 10
+8 11
+8 12
+2 13
+12 14`
+).split('\n');
 
-const input = [];
-rl.on('line', (line) => {
-  input.push(line.split(' ').map((el) => parseInt(el)));
-}).on('close', () => {
-  const N = input[0][0];
-  const times = input.slice(1);
+const input = (() => {
+  let line = 0;
+  return () => stdin[line++];
+})();
+
+console.log(Solution());
+
+function Solution() {
+  const N = Number(input());
+  const times = [];
+
+  for (let i = 0; i < N; i++) {
+    times[i] = input().split(' ').map(Number);
+  }
 
   times.sort((a, b) => {
     return a[1] - b[1] || a[0] - b[0];
@@ -26,6 +47,5 @@ rl.on('line', (line) => {
     }
   }
 
-  console.log(count);
-  process.exit();
-});
+  return count;
+}
