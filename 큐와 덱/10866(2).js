@@ -1,158 +1,186 @@
-const readline = require('readline');
+'use strict';
 
-const rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout,
-});
+const fs = require('fs');
+const stdin = (
+  process.platform === 'linux'
+    ? fs.readFileSync('/dev/stdin').toString()
+    : `22
+front
+back
+pop_front
+pop_back
+push_front 1
+front
+pop_back
+push_back 2
+back
+pop_front
+push_front 10
+push_front 333
+front
+back
+pop_back
+pop_back
+push_back 20
+push_back 1234
+front
+back
+pop_back
+pop_back`
+).split('\n');
 
-const input = [];
-rl.on('line', (line) => {
-  // 입력 관리
-  input.push(line);
-}).on('close', () => {
-  // 구현
-  // 이중 연결 리스트 활용하여 구현
-  class Node {
-    constructor(value) {
-      this.value = value;
-      this.next = null;
-      this.prev = null;
-    }
+const input = (() => {
+  let line = 0;
+  return () => stdin[line++];
+})();
+
+class Node {
+  constructor(value) {
+    this.value = value;
+    this.next = null;
+    this.prev = null;
+  }
+}
+
+// 이중 연결 리스트를 활용한 구현
+class Deque {
+  constructor() {
+    this.head = null;
+    this.tail = null;
+    this.length = 0;
   }
 
-  class Deque {
-    constructor() {
-      this.storage = [];
+  // 덱의 맨 앞에 데이터 삽입
+  push_front(value) {
+    const newNode = new Node(value);
 
+    if (this.empty()) {
+      this.head = newNode;
+      this.tail = newNode;
+    } else {
+      newNode.next = this.head;
+      this.head.prev = newNode;
+
+      this.head = newNode;
+    }
+
+    this.length++;
+  }
+
+  // 덱의 맨 뒤에 데이터 삽입
+  push_back(value) {
+    const newNode = new Node(value);
+
+    if (this.empty()) {
+      this.head = newNode;
+      this.tail = newNode;
+    } else {
+      newNode.prev = this.tail;
+      this.tail.next = newNode;
+
+      this.tail = newNode;
+    }
+
+    this.length++;
+  }
+
+  // 덱의 맨 앞 데이터 삭제
+  pop_front() {
+    if (this.empty()) return -1;
+
+    const popNode = this.head;
+
+    if (this.size() === 1) {
       this.head = null;
       this.tail = null;
-
-      this.length = 0;
+    } else {
+      this.head = this.head.next;
+      this.head.prev = null;
     }
 
-    push_front(value) {
-      const newNode = new Node(value);
+    this.length--;
 
-      if (this.empty()) {
-        this.head = newNode;
-        this.tail = newNode;
+    return popNode.value;
+  }
 
-        this.storage.unshift(value);
-      } else {
-        newNode.next = this.head;
-        this.head.prev = newNode;
-        this.head = newNode;
+  // 덱의 맨 뒤 데이터 삭제
+  pop_back() {
+    if (this.empty()) return -1;
 
-        this.storage.unshift(value);
-      }
+    const popNode = this.tail;
 
-      this.length++;
+    if (this.size() === 1) {
+      this.head = null;
+      this.tail = null;
+    } else {
+      this.tail = this.tail.prev;
+      this.tail.next = null;
     }
 
-    push_back(value) {
-      const newNode = new Node(value);
+    this.length--;
 
-      if (this.empty()) {
-        this.head = newNode;
-        this.tail = newNode;
+    return popNode.value;
+  }
 
-        this.storage.push(value);
-      } else {
-        newNode.prev = this.tail;
-        this.tail.next = newNode;
-        this.tail = newNode;
+  // 덱의 크기
+  size() {
+    return this.length;
+  }
 
-        this.storage.push(value);
-      }
+  // 덱이 비었는지에 대한 여부
+  empty() {
+    return this.length === 0 ? 1 : 0;
+  }
 
-      this.length++;
-    }
+  // 덱의 가장 앞 데이터 조회
+  front() {
+    return this.empty() ? -1 : this.head.value;
+  }
 
-    pop_front() {
-      if (this.empty()) {
-        return -1;
-      } else {
-        const popNode = this.head;
+  // 덱의 가장 뒤 데이터 조회
+  back() {
+    return this.empty() ? -1 : this.tail.value;
+  }
+}
 
-        this.head.prev = null;
-        this.head = popNode.next;
+console.log(Solution());
 
-        this.storage.shift();
-        this.length--;
+function Solution() {
+  const N = Number(input());
 
-        return popNode.value;
-      }
-    }
+  const deque = new Deque();
+  const result = [];
 
-    pop_back() {
-      if (this.empty()) {
-        return -1;
-      } else {
-        const popNode = this.tail;
+  for (let i = 0; i < N; i++) {
+    const mod = input().split(' ');
 
-        this.tail.next = null;
-        this.tail = popNode.prev;
-
-        this.storage.pop();
-        this.length--;
-
-        return popNode.value;
-      }
-    }
-
-    size() {
-      return this.length;
-    }
-
-    empty() {
-      return this.length === 0 ? 1 : 0;
-    }
-
-    front() {
-      return this.head !== null ? this.head.value : -1;
-    }
-
-    back() {
-      return this.tail !== null ? this.tail.value : -1;
+    switch (mod[0]) {
+      case 'push_front':
+        deque.push_front(Number(mod[1]));
+        break;
+      case 'push_back':
+        deque.push_back(Number(mod[1]));
+        break;
+      case 'pop_front':
+        result.push(deque.pop_front());
+        break;
+      case 'pop_back':
+        result.push(deque.pop_back());
+        break;
+      case 'size':
+        result.push(deque.size());
+        break;
+      case 'empty':
+        result.push(deque.empty());
+        break;
+      case 'front':
+        result.push(deque.front());
+        break;
+      case 'back':
+        result.push(deque.back());
+        break;
     }
   }
 
-  const deque = new Deque();
-  let result = '';
-
-  input.forEach((line) => {
-    const method = line.split(' ');
-
-    switch (method[0]) {
-      case 'push_front':
-        deque.push_front(method[1]);
-        break;
-      case 'push_back':
-        deque.push_back(method[1]);
-        break;
-      case 'pop_front':
-        result += deque.pop_front() + '\n';
-        break;
-      case 'pop_back':
-        result += deque.pop_back() + '\n';
-        break;
-      case 'size':
-        result += deque.size() + '\n';
-        break;
-      case 'empty':
-        result += deque.empty() + '\n';
-        break;
-      case 'front':
-        result += deque.front() + '\n';
-        break;
-      case 'back':
-        result += deque.back() + '\n';
-        break;
-      default:
-        break;
-    }
-  });
-
-  console.log(result);
-  process.exit();
-});
+  return result.join('\n');
+}
