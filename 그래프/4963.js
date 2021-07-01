@@ -1,76 +1,95 @@
-const readline = require('readline');
+'use strict';
 
-const rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout,
-});
+const fs = require('fs');
+const stdin = (
+  process.platform === 'linux'
+    ? fs.readFileSync('/dev/stdin').toString()
+    : `1 1
+0
+2 2
+0 1
+1 0
+3 2
+1 1 1
+1 1 1
+5 4
+1 0 1 0 0
+1 0 0 0 0
+1 0 1 0 1
+1 0 0 1 0
+5 4
+1 1 1 0 1
+1 0 1 0 1
+1 0 1 0 1
+1 0 1 1 1
+5 5
+1 0 1 0 1
+0 0 0 0 0
+1 0 1 0 1
+0 0 0 0 0
+1 0 1 0 1
+0 0`
+).split('\n');
 
-const input = [];
-rl.on('line', (line) => {
-  // 입력 관리
-  if (line === '0 0') {
-    rl.close();
-  } else {
-    input.push(line);
-  }
-}).on('close', () => {
-  // 구현
-  let graph = [];
+const input = (() => {
+  let line = 0;
+  return () => stdin[line++];
+})();
 
-  while (input.length !== 0) {
-    const [W, H] = input[0].split(' ').map((el) => parseInt(el));
-    input.shift();
+console.log(Solution());
 
-    for (let i = 0; i < H; i++) {
-      graph[i] = input[0].split(' ').map((el) => parseInt(el));
-      input.shift();
-    }
+function Solution() {
+  const result = [];
 
-    const map = [W, H];
-    Solution(map);
-
-    graph = [];
-  }
-
-  process.exit();
-
-  function Solution(map) {
-    const [W, H] = map;
-
+  while (true) {
+    const [w, h] = input().split(' ').map(Number);
     let count = 0;
 
-    for (let i = 0; i < H; i++) {
-      for (let j = 0; j < W; j++) {
-        if (graph[i][j] === 1) {
-          DFS(i, j, map);
+    if (w === 0 && h === 0) break;
+
+    const map = new Array(h);
+    const visited = Array.from(new Array(h), () => new Array(w).fill(false));
+
+    for (let i = 0; i < h; i++) {
+      map[i] = input().split(' ').map(Number);
+    }
+
+    const dx = [-1, -1, -1, 0, 1, 1, 1, 0];
+    const dy = [-1, 0, 1, 1, 1, 0, -1, -1];
+
+    const dfs = (x, y) => {
+      if (visited[x][y]) return;
+
+      visited[x][y] = true;
+
+      for (let i = 0; i < 8; i++) {
+        const nx = x + dx[i];
+        const ny = y + dy[i];
+
+        if (checkRange(nx, ny) && map[nx][ny] === 1) {
+          if (!visited[nx][ny]) {
+            dfs(nx, ny);
+          }
+        }
+      }
+    };
+
+    const checkRange = (x, y) => {
+      if (x >= 0 && x < h && y >= 0 && y < w) return true;
+      else return false;
+    };
+
+    for (let i = 0; i < h; i++) {
+      for (let j = 0; j < w; j++) {
+        if (!visited[i][j] && map[i][j] === 1) {
+          dfs(i, j);
           count++;
         }
       }
     }
 
-    console.log(count);
+    result.push(count);
   }
 
-  function DFS(i, j, map) {
-    const dx = [-1, 1, 0, 0, -1, -1, 1, 1];
-    const dy = [0, 0, -1, 1, -1, 1, -1, 1];
-
-    if (CheckRange(i, j, map) && graph[i][j] === 1) {
-      graph[i][j] = 0;
-
-      for (let k = 0; k < dx.length; k++) {
-        DFS(i + dx[k], j + dy[k], map);
-      }
-    }
-  }
-
-  function CheckRange(i, j, map) {
-    const [W, H] = map;
-
-    if (i >= 0 && i < H && j >= 0 && j < W) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-});
+  return result.join('\n');
+}
