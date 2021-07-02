@@ -1,126 +1,117 @@
-const readline = require('readline');
+'use strict';
 
-const rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout,
-});
+const fs = require('fs');
+const stdin = (
+  process.platform === 'linux'
+    ? fs.readFileSync('/dev/stdin').toString()
+    : `10
+1 1 1 0 0 0 0 1 1 1
+1 1 1 1 0 0 0 0 1 1
+1 0 1 1 0 0 0 0 1 1
+0 0 1 1 1 0 0 0 0 1
+0 0 0 1 0 0 0 0 0 1
+0 0 0 0 0 0 0 0 0 1
+0 0 0 0 0 0 0 0 0 0
+0 0 0 0 1 1 0 0 0 0
+0 0 0 0 1 1 1 0 0 0
+0 0 0 0 0 0 0 0 0 0`
+).split('\n');
 
-const input = [];
-rl.on('line', (line) => {
-  // 입력 관리
-  input.push(line);
-}).on('close', () => {
-  // 구현
-  const dx = [-1, 1, 0, 0];
-  const dy = [0, 0, -1, 1];
-  let N = 0;
+const input = (() => {
+  let line = 0;
+  return () => stdin[line++];
+})();
 
-  console.log(Solution(input));
-  process.exit();
+const N = Number(input());
+const map = Array.from(new Array(N), () => new Array());
+let visited = Array.from(new Array(N), () => new Array(N).fill(false));
+let result = Number.MAX_SAFE_INTEGER;
 
-  function Solution(input) {
-    N = parseInt(input.shift());
+for (let i = 0; i < N; i++) {
+  map[i] = input().split(' ').map(Number);
+}
 
-    const graph = Array.from(new Array(N), () => new Array());
-    const visited = Array.from(new Array(N), () => new Array(N).fill(false));
-    const dist = Array.from(new Array(N), () => new Array(N).fill(-1));
+const dx = [-1, 1, 0, 0];
+const dy = [0, 0, -1, 1];
 
-    for (let i = 0; i < N; i++) {
-      graph[i] = input
-        .shift()
-        .split(' ')
-        .map((el) => parseInt(el));
-    }
+const cycle = (startX, startY, mark) => {
+  const queue = [[startX, startY]];
 
-    return Bfs(graph, visited, dist);
-  }
+  visited[startX][startY] = true;
+  map[startX][startY] = mark;
 
-  function NominateGroup(graph, visited, i, j, groupNumber) {
-    const queue = [];
-    queue.push([i, j]);
+  while (queue.length) {
+    const [x, y] = queue.shift();
 
-    graph[i][j] = groupNumber;
-    visited[i][j] = true;
+    for (let i = 0; i < 4; i++) {
+      const nx = x + dx[i];
+      const ny = y + dy[i];
 
-    while (queue.length > 0) {
-      const [x, y] = queue.shift();
-
-      for (let i = 0; i < 4; i++) {
-        const nx = x + dx[i];
-        const ny = y + dy[i];
-
-        if (CheckRange(nx, ny) && graph[nx][ny] === 1 && !visited[nx][ny]) {
-          graph[nx][ny] = groupNumber;
+      if (checkRange(nx, ny) && map[nx][ny] === 1) {
+        if (!visited[nx][ny]) {
           visited[nx][ny] = true;
+          map[nx][ny] = mark;
           queue.push([nx, ny]);
         }
       }
     }
   }
+};
 
-  function CheckRange(x, y) {
-    if (x >= 0 && x < N && y >= 0 && y < N) {
-      return true;
-    } else {
-      return false;
+const bfs = (mark) => {
+  const queue = [];
+
+  for (let i = 0; i < N; i++) {
+    for (let j = 0; j < N; j++) {
+      if (map[i][j] === mark) {
+        visited[i][j] = true;
+        queue.push([i, j, 0]);
+      }
     }
   }
 
-  function MeasureDist(graph, dist) {
-    const queue = [];
+  while (queue.length) {
+    const size = queue.length;
 
-    for (let i = 0; i < N; i++) {
-      for (let j = 0; j < N; j++) {
-        if (graph[i][j] !== 0) {
-          dist[i][j] = 0;
-          queue.push([i, j]);
-        }
-      }
-    }
+    for (let i = 0; i < size; i++) {
+      const [x, y, dist] = queue.shift();
 
-    while (queue.length > 0) {
-      const [x, y] = queue.shift();
+      for (let j = 0; j < 4; j++) {
+        const nx = x + dx[j];
+        const ny = y + dy[j];
 
-      for (let i = 0; i < 4; i++) {
-        const nx = x + dx[i];
-        const ny = y + dy[i];
+        if (!checkRange(nx, ny)) continue;
 
-        if (CheckRange(nx, ny) && dist[nx][ny] === -1) {
-          dist[nx][ny] = dist[x][y] + 1;
-          graph[nx][ny] = graph[x][y];
-
-          queue.push([nx, ny]);
-        }
-      }
-    }
-
-    let min = 1000000;
-    for (let x = 0; x < N; x++) {
-      for (let y = 0; y < N; y++) {
-        for (let k = 0; k < 4; k++) {
-          const nx = x + dx[k];
-          const ny = y + dy[k];
-
-          if (CheckRange(nx, ny) && graph[x][y] !== graph[nx][ny]) {
-            min = Math.min(min, dist[x][y] + dist[nx][ny]);
+        if (!visited[nx][ny]) {
+          if (map[nx][ny] !== 0 && map[nx][ny] !== mark) return dist;
+          else if (map[nx][ny] === 0) {
+            visited[nx][ny] = true;
+            queue.push([nx, ny, dist + 1]);
           }
         }
       }
     }
-
-    return min;
   }
+};
 
-  function Bfs(graph, visited, dist) {
-    let groupNumber = 0;
-    for (let i = 0; i < N; i++) {
-      for (let j = 0; j < N; j++) {
-        if (graph[i][j] === 1 && !visited[i][j]) {
-          NominateGroup(graph, visited, i, j, ++groupNumber);
-        }
-      }
+const checkRange = (x, y) => {
+  if (x >= 0 && x < N && y >= 0 && y < N) return true;
+  else return false;
+};
+
+let mark = 1;
+
+for (let i = 0; i < N; i++) {
+  for (let j = 0; j < N; j++) {
+    if (!visited[i][j] && map[i][j] === 1) {
+      cycle(i, j, mark++);
     }
-
-    return MeasureDist(graph, dist);
   }
-});
+}
+
+for (let i = 1; i < mark; i++) {
+  visited = Array.from(new Array(N), () => new Array(N).fill(false));
+  result = Math.min(result, bfs(i));
+}
+
+console.log(result);
