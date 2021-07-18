@@ -1,34 +1,49 @@
-const readline = require('readline');
+'use strict';
 
-const rl = readline.createInterface({
-  input:process.stdin,
-  output:process.stdout
-});
+const fs = require('fs');
+const stdin = (
+  process.platform === 'linux'
+    ? fs.readFileSync('/dev/stdin').toString()
+    : `10 500
+93 181 245 214 315 36 185 138 216 295`
+).split('\n');
 
-const input = [];
-rl.on('line', line => {
-  input.push(line.split(' ').map(el => parseInt(el)));
-})
-  .on('close', () => {
-    const N = input[0][0];
-    const M = input[0][1];
-    const numArray = input[1];
+const input = (() => {
+  let line = 0;
+  return () => stdin[line++];
+})();
 
-    let Max = 0;
-    for(let i = 0; i < N - 2; i++){
-      for(let j = i + 1; j < N - 1; j++){
-        for(let k = j + 1; k < N; k++){
-          let sum = numArray[i] + numArray[j] + numArray[k];
+console.log(Solution());
 
-          if(sum > Max && sum <= M){
-            Max = sum;
-          }
-        }
-      }
-  
+function Solution() {
+  const [N, M] = input().split(' ').map(Number);
+  const numbers = input().split(' ').map(Number);
+  const choiceNumbers = [];
+  const choiced = new Array(numbers.length).fill(false);
+  let result = 0;
+
+  const dfs = (idx, cnt) => {
+    if (cnt === 3) {
+      const sum = choiceNumbers.reduce((acc, cur) => {
+        return acc + cur;
+      });
+
+      if (sum <= M && sum > result) result = sum;
+
+      return;
     }
 
-    console.log(Max);
+    for (let i = idx; i < N; i++) {
+      if (!choiced[i]) {
+        choiced[i] = true;
+        choiceNumbers[cnt] = numbers[i];
+        dfs(i, cnt + 1);
+        choiced[i] = false;
+      }
+    }
+  };
 
-    process.exit();
-  })
+  dfs(0, 0);
+
+  return result;
+}
