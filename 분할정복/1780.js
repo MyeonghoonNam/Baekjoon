@@ -1,67 +1,75 @@
-const readline = require('readline');
+'use strict';
 
-const rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout,
-});
+const fs = require('fs');
+const stdin = (
+  process.platform === 'linux'
+    ? fs.readFileSync('/dev/stdin').toString()
+    : `9
+0 0 0 1 1 1 -1 -1 -1
+0 0 0 1 1 1 -1 -1 -1
+0 0 0 1 1 1 -1 -1 -1
+1 1 1 0 0 0 0 0 0
+1 1 1 0 0 0 0 0 0
+1 1 1 0 0 0 0 0 0
+0 1 -1 0 1 -1 0 1 -1
+0 -1 1 0 1 -1 0 1 -1
+0 1 -1 1 0 -1 0 1 -1`
+).split('\n');
 
-const input = [];
-rl.on('line', (line) => {
-  // 입력 관리
-  input.push(line.split(' ').map((el) => parseInt(el)));
-}).on('close', () => {
-  // 구현
-  const N = input[0][0];
-  const board = input.slice(1);
+const input = (() => {
+  let line = 0;
+  return () => stdin[line++];
+})();
 
+console.log(Solution());
+
+function Solution() {
+  const N = Number(input());
+  const arr = [];
+
+  let minusOneCount = 0;
   let zeroCount = 0;
   let oneCount = 0;
-  let minusOneCount = 0;
 
-  Solution(0, 0, N);
+  for (let i = 0; i < N; i++) {
+    arr[i] = input().split(' ').map(Number);
+  }
 
-  console.log(`${minusOneCount}\n${zeroCount}\n${oneCount}`);
-  process.exit();
+  const divideAndConquer = (row, col, length) => {
+    if (numberCheck(row, col, length)) {
+      const value = arr[row][col];
 
-  function Solution(row, col, size) {
-    if (numberCheck(row, col, size)) {
-      if (board[row][col] === 0) {
+      if (value === 0) {
         zeroCount++;
-      } else if (board[row][col] === 1) {
+      } else if (value === 1) {
         oneCount++;
       } else {
         minusOneCount++;
       }
+    } else {
+      const newSize = length / 3;
 
-      return;
-    }
-
-    const newSize = size / 3;
-
-    Solution(row, col, newSize); // 왼쪽 위
-    Solution(row, col + newSize, newSize); // 중앙 위
-    Solution(row, col + 2 * newSize, newSize); // 오른쪽 위
-
-    Solution(row + newSize, col, newSize); // 왼쪽 중간
-    Solution(row + newSize, col + newSize, newSize); // 중앙 중간
-    Solution(row + newSize, col + 2 * newSize, newSize); // 오른쪽 중간
-
-    Solution(row + 2 * newSize, col, newSize); // 왼쪽 아래
-    Solution(row + 2 * newSize, col + newSize, newSize); // 중앙 아래
-    Solution(row + 2 * newSize, col + 2 * newSize, newSize); // 오른쪽 아래
-  }
-
-  function numberCheck(row, col, size) {
-    const value = board[row][col];
-
-    for (let i = row; i < row + size; i++) {
-      for (let j = col; j < col + size; j++) {
-        if (board[i][j] !== value) {
-          return false;
+      for (let i = 0; i < 3; i++) {
+        for (let j = 0; j < 3; j++) {
+          divideAndConquer(row + newSize * i, col + newSize * j, newSize);
         }
+      }
+    }
+  };
+
+  const numberCheck = (row, col, length) => {
+    const value = arr[row][col];
+
+    for (let i = row; i < row + length; i++) {
+      for (let j = col; j < col + length; j++) {
+        if (value !== arr[i][j]) return false;
       }
     }
 
     return true;
-  }
-});
+  };
+
+  divideAndConquer(0, 0, N);
+
+  return `${minusOneCount}\n${zeroCount}\n${oneCount}`;
+}
