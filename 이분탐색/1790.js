@@ -44,16 +44,30 @@ function Solution() {
 
 function calculate(n) {
   let answer = 0;
+  let len = String(n).length;
 
-  for (let start = 1, len = 1; start <= n; start *= 10, len++) {
-    const end = start * 10 - 1;
-
-    if (end >= n) {
-      answer += (n - start + 1) * len;
-    } else {
-      answer += (end - start + 1) * len;
-    }
+  for (let i = 1; i < len; i++) {
+    answer += 9 * Math.pow(10, i - 1) * i;
   }
+
+  answer += (n - Math.pow(10, len - 1) + 1) * len;
 
   return answer;
 }
+
+// 이 방법이 속도가 더 빠르다.
+// function calculate(n) {
+//   let answer = 0;
+
+//   for (let start = 1, len = 1; start <= n; start *= 10, len++) {
+//     const end = start * 10 - 1;
+
+//     if (end >= n) {
+//       answer += (n - start + 1) * len;
+//     } else {
+//       answer += (end - start + 1) * len;
+//     }
+//   }
+
+//   return answer;
+// }
