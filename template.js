@@ -10,6 +10,6 @@ const input = (() => {
   return () => stdin[line++];
 })();
 
-console.log(Solution());
+const solution = () => {};
 
-function Solution() {}
+console.log(Solution());
