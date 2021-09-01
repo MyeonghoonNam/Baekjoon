@@ -12,4 +12,4 @@ const input = (() => {
 
 const solution = () => {};
 
-console.log(Solution());
+console.log(solution());
