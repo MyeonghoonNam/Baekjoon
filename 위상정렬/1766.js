@@ -58,16 +58,19 @@ class MinHeap {
   moveDown(curIdx = 0) {
     const leftChildIdx = curIdx * 2 + 1;
     const rightChildIdx = curIdx * 2 + 2;
-    const leftChildValue = this.heap[leftChildIdx];
-    const rightChildValue = this.heap[rightChildIdx];
     let minIdx = curIdx;
-    const minValue = this.heap[minIdx];
 
-    if (leftChildIdx < this.heapSize && leftChildValue < minValue) {
+    if (
+      leftChildIdx < this.heapSize &&
+      this.heap[leftChildIdx] < this.heap[minIdx]
+    ) {
       minIdx = leftChildIdx;
     }
 
-    if (rightChildIdx < this.heapSize && rightChildValue < minValue) {
+    if (
+      rightChildIdx < this.heapSize &&
+      this.heap[rightChildIdx] < this.heap[minIdx]
+    ) {
       minIdx = rightChildIdx;
     }
 
