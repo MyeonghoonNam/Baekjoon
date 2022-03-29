@@ -1,62 +1,62 @@
-'use strict';
+"use strict";
 
-const fs = require('fs');
+const fs = require("fs");
 const stdin = (
-  process.platform === 'linux'
-    ? fs.readFileSync('/dev/stdin').toString()
+  process.platform === "linux"
+    ? fs.readFileSync("/dev/stdin").toString()
     : `5 3
 1
 2
 8
 4
 9`
-).split('\n');
+).split("\n");
 
 const input = (() => {
   let line = 0;
   return () => stdin[line++];
 })();
 
-console.log(Solution());
-
-function Solution() {
-  const [N, C] = input().split(' ').map(Number);
-  const arr = [];
-
-  for (let i = 0; i < N; i++) {
-    arr[i] = Number(input());
-  }
-
-  arr.sort((a, b) => a - b);
-
-  let left = 1; // 최소 간격 거리
-  let right = arr[N - 1] - arr[0]; // 최대 간격 거리
-
-  let dist = 0; // 간격
+const binarySearch = (arr, count, length) => {
+  let start = 1;
+  let end = arr[length - 1] - arr[0];
   let result = 0;
 
-  while (left <= right) {
-    const mid = Math.floor((left + right) / 2);
+  while (start <= end) {
+    const mid = Math.floor((start + end) / 2);
+    let value = arr[0];
+    let currentCount = 1;
 
-    let start = arr[0];
-    let count = 1;
-
-    for (let i = 1; i < N; i++) {
-      dist = arr[i] - start;
-
-      if (mid <= dist) {
-        count++;
-        start = arr[i];
+    for (let i = 1; i < length; i++) {
+      if (arr[i] >= value + mid) {
+        value = arr[i];
+        currentCount++;
       }
     }
 
-    if (count >= C) {
+    if (currentCount >= count) {
+      start = mid + 1;
       result = mid;
-      left = mid + 1;
     } else {
-      right = mid - 1;
+      end = mid - 1;
     }
   }
 
   return result;
-}
+};
+
+const solution = () => {
+  const [N, C] = input().split(" ").map(Number);
+  const home = [];
+
+  for (let i = 0; i < N; i++) {
+    home.push(Number(input()));
+  }
+
+  home.sort((a, b) => a - b);
+
+  const reuslt = binarySearch(home, C, N);
+  return reuslt;
+};
+
+console.log(solution());
