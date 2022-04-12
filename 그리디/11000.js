@@ -11,12 +11,15 @@ class PriorityQueue {
   }
 
   pop() {
+    if (this.heap_size === 0) return;
     if (this.heap_size === 1) {
       this.heap_size -= 1;
       return this.heap.pop();
     }
 
     const popValue = this.heap[0];
+
+    this.heap[0] = this.heap.pop();
     this.heap_size -= 1;
     this.moveDown();
 
@@ -39,7 +42,7 @@ class PriorityQueue {
   moveDown(current_idx = 0) {
     const leftChild_idx = current_idx * 2 + 1;
     const rightChild_idx = current_idx * 2 + 2;
-    let min_idx = this.heap[current_idx];
+    let min_idx = current_idx;
 
     if (
       leftChild_idx < this.heap_size &&
@@ -100,10 +103,8 @@ const solution = () => {
     class_info.push({ start_time, end_time });
   }
 
-  class_info.sort((a, b) =>
-    a.start_time === b.start_time
-      ? a.start_time - b.start_time
-      : a.end_time - b.end_time
+  class_info.sort(
+    (a, b) => a.start_time - b.start_time || a.end_time - b.end_time
   );
 
   const room = new PriorityQueue();
@@ -117,8 +118,7 @@ const solution = () => {
     }
   }
 
-  const result = room.size();
-  return result;
+  return room.size();
 };
 
 console.log(solution());
