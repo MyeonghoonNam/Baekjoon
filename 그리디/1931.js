@@ -1,9 +1,7 @@
-'use strict';
-
-const fs = require('fs');
+const fs = require("fs");
 const stdin = (
-  process.platform === 'linux'
-    ? fs.readFileSync('/dev/stdin').toString()
+  process.platform === "linux"
+    ? fs.readFileSync("/dev/stdin").toString()
     : `11
 1 4
 3 5
@@ -16,36 +14,36 @@ const stdin = (
 8 12
 2 13
 12 14`
-).split('\n');
+).split("\n");
 
 const input = (() => {
   let line = 0;
   return () => stdin[line++];
 })();
 
-console.log(Solution());
-
-function Solution() {
+const solution = () => {
   const N = Number(input());
   const times = [];
 
   for (let i = 0; i < N; i++) {
-    times[i] = input().split(' ').map(Number);
+    const [start_time, end_time] = input().split(" ").map(Number);
+    times.push({ start_time, end_time });
   }
 
-  times.sort((a, b) => {
-    return a[1] - b[1] || a[0] - b[0];
-  });
+  // 회의 종료 시간을 기준으로 오름차순 정렬
+  times.sort((a, b) => a.end_time - b.end_time || a.start_time - b.start_time);
 
-  let count = 0;
-  let prevEndTime = 0;
+  let prev_time = 0; // 이전 회의 종료 시간
+  let result = 0;
 
   for (let i = 0; i < N; i++) {
-    if (prevEndTime <= times[i][0]) {
-      prevEndTime = times[i][1];
-      count++;
+    if (prev_time <= times[i].start_time) {
+      prev_time = times[i].end_time;
+      result += 1;
     }
   }
 
-  return count;
-}
+  return result;
+};
+
+console.log(solution());
