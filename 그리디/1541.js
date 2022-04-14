@@ -1,37 +1,35 @@
-const readline = require('readline');
+const fs = require("fs");
+const stdin = (
+  process.platform === "linux"
+    ? fs.readFileSync("/dev/stdin").toString()
+    : `09-5`
+).split("\n");
 
-const rl = readline.createInterface({
-  input:process.stdin,
-  output:process.stdout
-});
+const input = (() => {
+  let line = 0;
+  return () => stdin[line++];
+})();
 
-rl.on('line', line => {
-  let list = line.split('-');
+const solution = () => {
+  const expression = input().split("-");
+  const numbers = [];
 
-  solve(list);
+  for (let i = 0; i < expression.length; i++) {
+    const plus_list = expression[i].split("+");
+    let plus_value = 0;
 
-
-  function solve(list){
-    let tmp = [];
-
-    for(let i of list){
-      let count = 0;
-      let n = i.split('+');
-
-      for(let j of n){
-        count += parseInt(j);
-      }
-
-      tmp.push(count);
+    for (let j = 0; j < plus_list.length; j++) {
+      plus_value += Number(plus_list[j]);
     }
 
-    let result = tmp.reduce((acc, cur) => {
-      return acc - cur;
-    });
-
-    console.log(result);
+    numbers.push(plus_value);
   }
-})
-  .on('close', () => {
-    process.exit();
-})
+
+  const result = numbers.reduce((acc, cur) => {
+    return acc - cur;
+  });
+
+  return result;
+};
+
+console.log(solution());
