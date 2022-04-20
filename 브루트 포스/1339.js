@@ -1,50 +1,56 @@
-'use strict';
-
-const fs = require('fs');
+const fs = require("fs");
 const stdin = (
-  process.platform === 'linux'
-    ? fs.readFileSync('/dev/stdin').toString()
-    : `2
-GCF
-ACDEB`
-).split('\n');
+  process.platform === "linux"
+    ? fs.readFileSync("/dev/stdin").toString()
+    : `10
+A
+B
+C
+D
+E
+F
+G
+H
+I
+J`
+).split("\n");
 
 const input = (() => {
   let line = 0;
   return () => stdin[line++];
 })();
 
-console.log(Solution());
-
-function Solution() {
+const solution = () => {
   const N = Number(input());
-  const arr = new Array(26).fill(0);
-  const countArr = [];
+  const alphabet = new Array(26).fill(0); // 단어가 나오는 횟수 카운팅
+  const alphabet_total = []; // 자리별 알파벳 가중치를 저장
 
   for (let i = 0; i < N; i++) {
     const word = input();
     let cnt = 1;
 
     for (let j = word.length - 1; j >= 0; j--) {
-      arr[word[j].charCodeAt(0) - 'A'.charCodeAt(0)] += cnt;
+      alphabet[word[j].charCodeAt(0) - "A".charCodeAt(0)] += cnt;
       cnt *= 10;
     }
   }
 
-  arr.forEach((cnt) => {
+  alphabet.forEach((cnt) => {
     if (cnt !== 0) {
-      countArr.push(cnt);
+      alphabet_total.push(cnt);
     }
   });
 
-  countArr.sort((a, b) => b - a);
+  alphabet_total.sort((a, b) => b - a);
 
-  let value = 9;
+  let number = 9;
   let result = 0;
-  countArr.forEach((num) => {
-    result += num * value;
-    value--;
+  alphabet_total.forEach((value) => {
+    result += value * number;
+    number -= 1;
   });
 
   return result;
-}
+};
+
+console.log(solution());
