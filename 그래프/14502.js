@@ -1,126 +1,113 @@
-'use strict';
-
-const fs = require('fs');
+const fs = require("fs");
 const stdin = (
-  process.platform === 'linux'
-    ? fs.readFileSync('/dev/stdin').toString()
+  process.platform === "linux"
+    ? fs.readFileSync("/dev/stdin").toString()
     : `4 6
 0 0 0 0 0 0
 1 0 0 0 0 2
 1 1 1 0 0 2
 0 0 0 0 0 2`
-).split('\n');
+).split("\n");
 
 const input = (() => {
   let line = 0;
   return () => stdin[line++];
 })();
 
-console.log(Solution());
+/**
+ * 벽을 반드시 3개를 세워야한다.
+ * 0 빈칸, 1 벽, 2 바이러스
+ * 바이러스 이동가능방향은 상하좌우
+ * 안전영역 = 바이러스가 퍼질 수 없는 곳
+ *
+ * 요구사항 : 안전 영역 크기의 최댓값 출력
+ * 1. 초기 지도에서 빈 칸의 모든 영역을 완전탐색하며 벽을 3개씩 세운다.
+ * 2. 바이러스를 퍼지게한다. 이 때 벽을 세운 map을 복사하여 바이러스를 퍼지게한다.
+ * 3. 안전영역을 구하고 현재까지의 최대 크기와 비교하여 최댓값을 갱신한다.
+ *
+ * 위 과정을 반복하며 벽 3개를 세울 수 있는 모든 경우를 탐색한다.
+ */
 
-function Solution() {
-  const [N, M] = input().split(' ').map(Number);
-  const map = [];
-  let copymap = Array.from(new Array(N), () => new Array(M));
-  let copymapvirus = Array.from(new Array(N), () => new Array(M));
-
+const solution = () => {
+  const [N, M] = input().split(" ").map(Number);
+  const init_map = [];
+  const copy_map = Array.from(new Array(N), () => new Array());
   let result = 0;
 
   for (let i = 0; i < N; i++) {
-    map[i] = input().split(' ').map(Number);
+    const data = input().split(" ").map(Number);
+    init_map.push(data);
   }
 
-  const copyMap = () => {
-    for (let i = 0; i < N; i++) {
-      for (let j = 0; j < M; j++) {
-        copymap[i][j] = map[i][j];
+  const dx = [-1, 1, 0, 0];
+  const dy = [0, 0, -1, 1];
+
+  const virus = (x, y) => {
+    for (let i = 0; i < 4; i++) {
+      const nx = x + dx[i];
+      const ny = y + dy[i];
+
+      if (checkMapRange(nx, ny) && copy_map[nx][ny] === 0) {
+        copy_map[nx][ny] = 2;
+        virus(nx, ny);
       }
     }
   };
 
-  const copyMapVirus = () => {
-    for (let i = 0; i < N; i++) {
-      for (let j = 0; j < M; j++) {
-        copymapvirus[i][j] = copymap[i][j];
-      }
-    }
-  };
-
-  const checkRange = (x, y) => {
-    if (x >= 0 && x < N && y >= 0 && y < M) return true;
+  const checkMapRange = (x, y) => {
+    if (x >= 0 && y >= 0 && x < N && y < M) return true;
     else return false;
   };
 
-  const dfs = (cnt) => {
-    if (cnt === 3) {
-      bfs();
+  const getSafeArea = () => {
+    let size = 0;
+
+    for (let i = 0; i < N; i++) {
+      for (let j = 0; j < M; j++) {
+        if (copy_map[i][j] === 0) {
+          size += 1;
+        }
+      }
+    }
+
+    return size;
+  };
+
+  const buildWall = (wall_count = 0) => {
+    if (wall_count === 3) {
+      for (let i = 0; i < N; i++) {
+        for (let j = 0; j < M; j++) {
+          copy_map[i][j] = init_map[i][j];
+        }
+      }
+
+      for (let i = 0; i < N; i++) {
+        for (let j = 0; j < M; j++) {
+          if (copy_map[i][j] === 2) {
+            virus(i, j);
+          }
+        }
+      }
+
+      result = Math.max(result, getSafeArea());
       return;
     }
 
     for (let i = 0; i < N; i++) {
       for (let j = 0; j < M; j++) {
-        if (copymap[i][j] === 0) {
-          copymap[i][j] = 1;
-          dfs(cnt + 1);
-          copymap[i][j] = 0;
+        if (init_map[i][j] === 0) {
+          init_map[i][j] = 1;
+          wall_count += 1;
+          buildWall(wall_count);
+          init_map[i][j] = 0;
+          wall_count -= 1;
         }
       }
     }
   };
 
-  const bfs = () => {
-    copyMapVirus();
-
-    const q = [];
-    let qIdx = 0;
-
-    for (let i = 0; i < N; i++) {
-      for (let j = 0; j < M; j++) {
-        if (copymap[i][j] === 2) {
-          q.push([i, j]);
-        }
-      }
-    }
-
-    const dx = [-1, 1, 0, 0];
-    const dy = [0, 0, -1, 1];
-
-    while (qIdx < q.length) {
-      // virus position
-      const [x, y] = q[qIdx++];
-
-      for (let i = 0; i < 4; i++) {
-        const nx = x + dx[i];
-        const ny = y + dy[i];
-
-        if (checkRange(nx, ny) && copymapvirus[nx][ny] === 0) {
-          copymapvirus[nx][ny] = 2;
-          q.push([nx, ny]);
-        }
-      }
-    }
-
-    // safety area
-    let count = 0;
-    for (let i = 0; i < N; i++) {
-      for (let j = 0; j < M; j++) {
-        if (copymapvirus[i][j] === 0) count++;
-      }
-    }
-
-    result = Math.max(result, count);
-  };
-
-  for (let i = 0; i < N; i++) {
-    for (let j = 0; j < M; j++) {
-      if (map[i][j] === 0) {
-        copyMap();
-        copymap[i][j] = 1;
-        dfs(1);
-        copymap[i][j] = 0;
-      }
-    }
-  }
-
+  buildWall();
   return result;
-}
+};
+
+console.log(solution());
