@@ -76,7 +76,7 @@ const input = (() => {
 const solution = () => {
   const [N, L, R] = input().split(" ").map(Number);
   const map = [];
-  let visited = Array.from(new Array(N), () => new Array(N).fill(false));
+  let visited = [];
 
   for (let i = 0; i < N; i++) {
     const data = input().split(" ").map(Number);
@@ -124,7 +124,7 @@ const solution = () => {
   };
 
   const checkMapRange = (x, y) => {
-    if (x > 0 && y > 0 && x < N && y < N) return true;
+    if (x >= 0 && y >= 0 && x < N && y < N) return true;
     else return false;
   };
 
