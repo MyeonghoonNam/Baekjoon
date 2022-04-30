@@ -1,5 +1,3 @@
-"use strict";
-
 const fs = require("fs");
 const stdin = (
   process.platform === "linux"
@@ -17,46 +15,55 @@ const input = (() => {
   return () => stdin[line++];
 })();
 
-const binarySearch = (arr, count, length) => {
-  let start = 1;
-  let end = arr[length - 1] - arr[0];
+/**
+ * 요구사항: C개의 공유기를 N개의 집에 설치하여 가장 인접한 두 공유기 사이의 거리 최댓값 도출
+ *
+ * 하나의 집에는 하나의 공유기만 설치 가능
+ *
+ * 1. 입력값이 상당히 크므로 O(logN)의 시간복잡도 안에 해결하려면 이진탐색을 수행한다.
+ * 2. 공유기 사이의 거리를 이진탐색으로 모두 탐색하여 C개의 공유기에서 최댓값을 찾아야 한다.
+ */
+
+const solution = () => {
+  const [N, C] = input().split(" ").map(Number);
+  const homes = [];
+
+  for (let i = 0; i < N; i++) {
+    homes.push(Number(input()));
+  }
+
+  homes.sort((a, b) => a - b);
+
+  const result = binarySearch(homes, C, N);
+  return result;
+};
+
+const binarySearch = (homes, total_count, length) => {
+  let start = 1; // 최소 간격
+  let end = homes[length - 1] - homes[0]; // 최대 간격
   let result = 0;
 
   while (start <= end) {
-    const mid = Math.floor((start + end) / 2);
-    let value = arr[0];
-    let currentCount = 1;
+    const mid = parseInt((start + end) / 2);
+    let value = homes[0];
+    let current_count = 1;
 
     for (let i = 1; i < length; i++) {
-      if (arr[i] >= value + mid) {
-        value = arr[i];
-        currentCount++;
+      if (homes[i] >= value + mid) {
+        value = homes[i];
+        current_count += 1;
       }
     }
 
-    if (currentCount >= count) {
-      start = mid + 1;
+    if (current_count >= total_count) {
       result = mid;
+      start = mid + 1;
     } else {
       end = mid - 1;
     }
   }
 
   return result;
-};
-
-const solution = () => {
-  const [N, C] = input().split(" ").map(Number);
-  const home = [];
-
-  for (let i = 0; i < N; i++) {
-    home.push(Number(input()));
-  }
-
-  home.sort((a, b) => a - b);
-
-  const reuslt = binarySearch(home, C, N);
-  return reuslt;
 };
 
 console.log(solution());
