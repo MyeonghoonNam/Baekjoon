@@ -49,16 +49,16 @@ const solution = () => {
       }
     }
 
-    let operator_reverse = "";
-    for (let i = operator.length - 1; i >= 0; i--) {
+    operator = operator.split("").reverse();
+    for (let i = 0; i < operator.length; i++) {
       const char = operator[i];
 
-      if (char === "[") operator_reverse += "]";
-      else if (char === "]") operator_reverse += "[";
-      else operator_reverse += char;
+      if (char === "]") operator[i] = "[";
+      else if (char === "[") operator[i] = "]";
     }
+    operator = operator.join("");
 
-    result.push(`${common}${operator_reverse} ${name};`);
+    result.push(`${common}${operator} ${name};`);
   });
 
   return result.join("\n");
