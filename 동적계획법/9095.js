@@ -1,33 +1,33 @@
-const readline = require('readline');
+const fs = require("fs");
+const stdin = (
+  process.platform === "linux"
+    ? fs.readFileSync("/dev/stdin").toString()
+    : `3
+4
+7
+10`
+).split("\n");
 
-const rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout,
-});
+const input = (() => {
+  let line = 0;
+  return () => stdin[line++];
+})();
 
-const input = [];
-rl.on('line', (line) => {
-  // 입력 관리
-  input.push(line);
-}).on('close', () => {
-  // 구현
-  console.log(Solution(input));
+const solution = () => {
+  const result = [];
+  let T = Number(input());
+  while (T--) {
+    const N = Number(input());
+    const DP = [0, 1, 2, 4]; // DP[i] = 조건으로 i를 만드는 경우의 수
 
-  function Solution(input) {
-    const T = Number(input.shift());
-    const result = [];
-
-    for (let i = 0; i < T; i++) {
-      const N = Number(input.shift());
-
-      const dp = [0, 1, 2, 4];
-      for (let j = 4; j <= N; j++) {
-        dp[j] = dp[j - 1] + dp[j - 2] + dp[j - 3];
-      }
-
-      result.push(dp[N]);
+    for (let i = 4; i <= N; i++) {
+      DP[i] = DP[i - 1] + DP[i - 2] + DP[i - 3];
     }
 
-    return result.join('\n');
+    result.push(DP[N]);
   }
-});
+
+  return result.join("\n");
+};
+
+console.log(solution());
