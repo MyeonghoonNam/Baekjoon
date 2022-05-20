@@ -1,50 +1,35 @@
-const readline = require('readline');
+const fs = require("fs");
+const stdin = (
+  process.platform === "linux"
+    ? fs.readFileSync("/dev/stdin").toString()
+    : `10
+1 100 2 50 60 3 5 6 7 8`
+).split("\n");
 
-const rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout,
-});
+const input = (() => {
+  let line = 0;
+  return () => stdin[line++];
+})();
 
-const input = [];
-rl.on('line', (line) => {
-  // 입력 관리
-  input.push(line);
-}).on('close', () => {
-  // 구현
-  console.log(Solution(input));
+const solution = () => {
+  const N = Number(input());
+  const numbers = input().split(" ").map(Number);
+  const DP = [];
+  let result = 0;
 
-  function Solution(input) {
-    const N = Number(input[0]);
-    const numbers = input[1].split(' ').map(Number);
+  for (let i = 0; i < N; i++) {
+    DP[i] = numbers[i];
 
-    const LIS_DP = [];
-    const LDS_DP = [];
-
-    for (let i = 0; i < N; i++) {
-      LIS_DP[i] = 1;
-      for (let j = 0; j < i; j++) {
-        if (numbers[i] > numbers[j] && LIS_DP[i] < LIS_DP[j] + 1) {
-          LIS_DP[i] = LIS_DP[j] + 1;
-        }
+    for (let j = 0; j < i; j++) {
+      if (numbers[i] > numbers[j] && DP[i] < DP[j] + numbers[i]) {
+        DP[i] = DP[j] + numbers[i];
       }
     }
 
-    for (let i = N - 1; i >= 0; i--) {
-      LDS_DP[i] = 1;
-      for (let j = N - 1; j > i; j--) {
-        if (numbers[i] > numbers[j] && LDS_DP[i] < LDS_DP[j] + 1) {
-          LDS_DP[i] = LDS_DP[j] + 1;
-        }
-      }
-    }
-
-    let max = 0;
-    for (let i = 0; i < N; i++) {
-      if (max < LIS_DP[i] + LDS_DP[i]) {
-        max = LIS_DP[i] + LDS_DP[i];
-      }
-    }
-
-    return max - 1;
+    result = result < DP[i] ? DP[i] : result;
   }
-});
+
+  return result;
+};
+
+console.log(solution());
