@@ -1,31 +1,32 @@
-const readline = require('readline');
+const fs = require("fs");
+const stdin = (
+  process.platform === "linux"
+    ? fs.readFileSync("/dev/stdin").toString()
+    : `6
+10 30 10 20 20 10`
+).split("\n");
 
-const rl = readline.createInterface({
-  input:process.stdin,
-  output:process.stdout
-});
+const input = (() => {
+  let line = 0;
+  return () => stdin[line++];
+})();
 
-const input = [];
-rl.on('line', line => {
-  input.push(line.split(' ').map(el => parseInt(el)));
-})
-  .on('close', () => {
-    const N = input[0][0];
-    const numbers = input[1];
+const solution = () => {
+  const N = Number(input());
+  const numbers = input().split(" ").map(Number);
+  const DP = [];
 
-    const dp = [];
+  for (let i = 0; i < N; i++) {
+    DP[i] = 1;
 
-    for(let i = 0; i < N; i++){
-      dp[i] = 1;
-
-      for(let j = 0; j < i; j++){
-
-        if(numbers[i] < numbers[j] && dp[i] < dp[j] + 1){
-          dp[i] = dp[j] + 1;
-        }
+    for (let j = 0; j < i; j++) {
+      if (numbers[i] < numbers[j] && DP[i] < DP[j] + 1) {
+        DP[i] = DP[j] + 1;
       }
     }
+  }
 
-    console.log(Math.max(...dp));
-    process.exit();
-  })
+  return Math.max(...DP);
+};
+
+console.log(solution());
