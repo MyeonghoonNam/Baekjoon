@@ -1,52 +1,47 @@
-// 'use strict';
-
-const { log } = require('console');
-const fs = require('fs');
+const fs = require("fs");
 const stdin = (
-  process.platform === 'linux'
-    ? fs.readFileSync('/dev/stdin').toString()
+  process.platform === "linux"
+    ? fs.readFileSync("/dev/stdin").toString()
     : `6
 10 20 10 30 20 50`
-).split('\n');
+).split("\n");
 
 const input = (() => {
   let line = 0;
   return () => stdin[line++];
 })();
 
-console.log(Solution());
-
-function Solution() {
+const solution = () => {
   const N = Number(input());
-  const numbers = input().split(' ').map(Number);
-  const list = [numbers[0]];
-
-  const binarySearch = (target) => {
-    let low = 0;
-    let high = list.length;
-
-    while (low < high) {
-      let mid = Math.floor((low + high) / 2);
-
-      if (list[mid] < target) {
-        low = mid + 1;
-      } else {
-        high = mid;
-      }
-    }
-
-    if (list[high] >= target) return high;
-  };
+  const numbers = input().split(" ").map(Number);
+  const arr = [numbers[0]];
 
   for (let i = 1; i < N; i++) {
-    const num = numbers[i];
-    if (list[list.length - 1] < num) {
-      list.push(num);
+    if (arr[arr.length - 1] < numbers[i]) {
+      arr.push(numbers[i]);
     } else {
-      const idx = binarySearch(num);
-      list[idx] = num;
+      const index = lowerBound(numbers[i], arr);
+      arr[index] = numbers[i];
     }
   }
 
-  return list.length;
-}
+  return arr.length;
+};
+
+const lowerBound = (target, numbers) => {
+  let low = 0;
+  let high = numbers.length - 1;
+
+  while (low < high) {
+    const mid = parseInt((low + high) / 2);
+    if (numbers[mid] >= target) {
+      high = mid;
+    } else {
+      low = mid + 1;
+    }
+  }
+
+  return high;
+};
+
+console.log(solution());
