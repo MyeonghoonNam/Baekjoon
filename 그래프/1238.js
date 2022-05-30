@@ -103,18 +103,21 @@ const input = (() => {
 const solution = () => {
   const [N, M, X] = input().split(" ").map(Number);
   const map = Array.from(new Array(N + 1), () => new Array());
-  let distance = new Array(N + 1).fill(Infinity);
-  const total_distance = new Array(N + 1).fill(0);
+  const reverse_map = Array.from(new Array(N + 1), () => new Array());
+  // const total_distance = new Array(N + 1).fill(0);
 
   for (let i = 0; i < M; i++) {
     const [start, end, time] = input().split(" ").map(Number);
     map[start].push({ node: end, time });
+    reverse_map[end].push({ node: start, time }); // 단방향 간선 정보를 반대로 지정하여 파티를 참석하는 경우의 최소비용을 구하는 시간복잡도를 개선
   }
 
-  const dijkstra = (start_node) => {
+  const dijkstra = (map) => {
     const queue = new PriorityQueue();
-    queue.insert({ node: start_node, time: 0 });
-    distance[start_node] = 0;
+    queue.insert({ node: X, time: 0 });
+
+    const times = new Array(N + 1).fill(Infinity);
+    times[X] = 0;
 
     while (!queue.isEmpty()) {
       const { node, time } = queue.pop();
@@ -122,27 +125,28 @@ const solution = () => {
       map[node].forEach((destination) => {
         const total_time = time + destination.time;
 
-        if (total_time < distance[destination.node]) {
+        if (total_time < times[destination.node]) {
           queue.insert({ node: destination.node, time: total_time });
-          distance[destination.node] = total_time;
+          times[destination.node] = total_time;
         }
       });
     }
+
+    return times;
   };
 
   const process = () => {
-    for (let i = 1; i <= N; i++) {
-      dijkstra(i);
-      total_distance[i] = distance[X];
+    const go_times = dijkstra(map);
+    const come_times = dijkstra(reverse_map);
+    let total_time = 0;
 
-      distance = new Array(N + 1).fill(Infinity);
+    for (let i = 1; i <= N; i++) {
+      if (i === X) continue;
+
+      total_time = Math.max(total_time, go_times[i] + come_times[i]);
     }
 
-    dijkstra(X);
-
-    for (let i = 1; i <= N; i++) total_distance[i] += distance[i];
-
-    return Math.max(...total_distance);
+    return total_time;
   };
 
   const result = process();
