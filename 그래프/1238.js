@@ -104,7 +104,6 @@ const solution = () => {
   const [N, M, X] = input().split(" ").map(Number);
   const map = Array.from(new Array(N + 1), () => new Array());
   const reverse_map = Array.from(new Array(N + 1), () => new Array());
-  // const total_distance = new Array(N + 1).fill(0);
 
   for (let i = 0; i < M; i++) {
     const [start, end, time] = input().split(" ").map(Number);
