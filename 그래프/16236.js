@@ -1,136 +1,187 @@
-'use strict';
+class Node {
+  constructor(value) {
+    this.value = value;
+    this.next = null;
+  }
+}
 
-const fs = require('fs');
+class Queue {
+  constructor() {
+    this.head = this.tail = null;
+    this.size = 0;
+  }
+
+  enqueue(value) {
+    const new_node = new Node(value);
+
+    if (this.size === 0) {
+      this.head = this.tail = new_node;
+    } else {
+      this.tail.next = new_node;
+      this.tail = new_node;
+    }
+
+    this.size++;
+  }
+
+  dequeue() {
+    if (this.size === 0) return;
+
+    const pop_node = this.head;
+    this.head = pop_node.next;
+
+    if (this.size === 1) {
+      this.tail = this.head;
+    }
+
+    this.size--;
+    return pop_node.value;
+  }
+
+  isEmpty() {
+    return this.size === 0 ? true : false;
+  }
+}
+
+const fs = require("fs");
 const stdin = (
-  process.platform === 'linux'
-    ? fs.readFileSync('/dev/stdin').toString()
+  process.platform === "linux"
+    ? fs.readFileSync("/dev/stdin").toString()
     : `6
-5 4 3 2 3 4
-4 3 2 3 4 5
-3 2 9 5 6 6
-2 1 2 3 4 5
-3 2 1 6 5 4
-6 6 6 6 6 6`
-).split('\n');
+1 1 1 1 1 1
+2 2 6 2 2 3
+2 2 5 2 2 3
+2 2 2 4 6 3
+0 0 0 0 0 6
+0 0 0 0 0 9`
+).split("\n");
 
 const input = (() => {
   let line = 0;
   return () => stdin[line++];
 })();
 
-console.log(Solution());
-
-function Solution() {
+/**
+ * 가로, 세로의 크기 N, 물고기 M마리, 아기 상어 1마리, 한 칸에는 물고기 최대 1마리
+ * 가장 처음 아기 상어의 크기는 2, 1초에 상하좌우 인접한 한 칸씩 이동가능
+ * 아기 상어는 자신의 크기보다 큰 물고기가 있는 칸은 지나갈 수 없다.
+ * 아기 상어는 자신의 크기보다 작은 물고기만 먹을 수 있고, 같은 크기의 물고기는 먹을 수 없지만 칸은 이동가능
+ *
+ * 0: 빈칸
+ * 1 ~ 6: 물고기의 크기
+ * 9: 아기 상어
+ *
+ * 요구사항: 아기 상어가 몇 초 동안 엄마 상어에게 도움을 요청하지 않고 물고기를 잡아먹을 수 있는지 도출
+ *
+ * 가장 가까운 물고기 찾기 (bfs로 거리 테이블 반환)
+ */
+const solution = () => {
   const N = Number(input());
   const map = [];
-
-  let sharkPos = [];
-  let eatCnt = 0;
-  let sharkSize = 2;
-
-  let minDist = 400;
-  let minX = 20;
-  let minY = 20;
-
-  const checked = Array.from(new Array(N), () => new Array(N).fill(-1));
-
-  let result = 0;
+  const shark = { x_pos: 0, y_pos: 0, size: 0 };
 
   for (let i = 0; i < N; i++) {
-    map[i] = input().split(' ').map(Number);
+    const row = input().split(" ").map(Number);
+    map.push(row);
 
     for (let j = 0; j < N; j++) {
       if (map[i][j] === 9) {
-        sharkPos = [i, j];
+        shark.x_pos = i;
+        shark.y_pos = j;
+        shark.size = 2;
         map[i][j] = 0;
       }
     }
   }
 
-  const dx = [-1, 1, 0, 0];
-  const dy = [0, 0, -1, 1];
+  const bfs = () => {
+    const distance = Array.from(new Array(N), () => new Array(N).fill(-1));
+    const queue = new Queue();
 
-  const checkRange = (x, y) => {
-    if (x >= 0 && x < N && y >= 0 && y < N) return true;
-    else return false;
-  };
+    queue.enqueue([shark.x_pos, shark.y_pos]);
+    distance[shark.x_pos][shark.y_pos] = 0;
 
-  const initChecked = () => {
-    minDist = 400;
-    minX = 20;
-    minY = 20;
+    const dx = [-1, 1, 0, 0];
+    const dy = [0, 0, -1, 1];
 
-    for (let i = 0; i < N; i++) {
-      for (let j = 0; j < N; j++) {
-        checked[i][j] = -1;
-      }
-    }
-  };
-
-  const bfs = (pos) => {
-    const q = [pos];
-    let qIdx = 0;
-
-    checked[pos[0]][pos[1]] = 0;
-
-    while (qIdx < q.length) {
-      const [x, y] = q[qIdx++];
+    while (!queue.isEmpty()) {
+      const [x, y] = queue.dequeue();
 
       for (let i = 0; i < 4; i++) {
         const nx = x + dx[i];
         const ny = y + dy[i];
 
-        if (!checkRange(nx, ny)) continue;
+        if (!checkMapRange(nx, ny)) continue;
 
-        if (checked[nx][ny] !== -1 || map[nx][ny] > sharkSize) continue;
+        if (distance[nx][ny] === -1 && map[nx][ny] <= shark.size) {
+          distance[nx][ny] = distance[x][y] + 1;
+          queue.enqueue([nx, ny]);
+        }
+      }
+    }
 
-        checked[nx][ny] = checked[x][y] + 1;
+    return distance;
+  };
 
-        if (map[nx][ny] !== 0 && map[nx][ny] < sharkSize) {
-          if (minDist > checked[nx][ny]) {
-            minX = nx;
-            minY = ny;
-            minDist = checked[nx][ny];
-          } else if (minDist === checked[nx][ny]) {
-            if (minX === nx) {
-              if (minY > ny) {
-                minX = nx;
-                minY = ny;
-              }
-            } else if (minX > nx) {
-              minX = nx;
-              minY = ny;
-            }
+  const checkMapRange = (x, y) => {
+    if (x >= 0 && y >= 0 && x < N && y < N) return true;
+    else return false;
+  };
+
+  const find = (distance) => {
+    let fish_xPos = 0;
+    let fish_yPos = 0;
+    let min_distance = Infinity;
+
+    for (let i = 0; i < N; i++) {
+      for (let j = 0; j < N; j++) {
+        if (distance[i][j] !== -1 && 1 <= map[i][j] && map[i][j] < shark.size) {
+          if (distance[i][j] < min_distance) {
+            fish_xPos = i;
+            fish_yPos = j;
+            min_distance = distance[i][j];
           }
         }
-
-        q.push([nx, ny]);
       }
+    }
+
+    if (min_distance === Infinity) {
+      return false;
+    } else {
+      return [fish_xPos, fish_yPos, min_distance];
     }
   };
 
-  while (1) {
-    initChecked();
+  const process = () => {
+    let result = 0;
+    let eat = 0;
 
-    bfs(sharkPos);
+    while (true) {
+      const distance = bfs();
+      const fish_values = find(distance);
 
-    if (minX !== 20 && minY !== 20) {
-      result += checked[minX][minY];
+      if (fish_values === false) break;
 
-      eatCnt++;
+      const [x, y, dist] = fish_values;
 
-      if (eatCnt === sharkSize) {
-        sharkSize++;
-        eatCnt = 0;
+      shark.x_pos = x;
+      shark.y_pos = y;
+      result += dist;
+
+      map[x][y] = 0;
+      eat += 1;
+
+      if (eat >= shark.size) {
+        shark.size += 1;
+        eat = 0;
       }
-
-      map[minX][minY] = 0;
-
-      sharkPos = [minX, minY];
-    } else {
-      break;
     }
-  }
 
+    return result;
+  };
+
+  const result = process();
   return result;
-}
+};
+
+console.log(solution());
