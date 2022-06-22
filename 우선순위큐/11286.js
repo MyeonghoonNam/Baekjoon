@@ -49,18 +49,18 @@ class PriorityQueue {
 
     if (
       leftChild_idx < this.size &&
-      (this.heap[leftChild_idx][0] < this.heap[current_idx][0] ||
-        (this.heap[leftChild_idx][0] === this.heap[current_idx][0]) &&
-          this.heap[leftChild_idx][1] < this.heap[current_idx][1])
+      (this.heap[leftChild_idx][0] < this.heap[min_idx][0] ||
+        (this.heap[leftChild_idx][0] === this.heap[min_idx][0] &&
+          this.heap[leftChild_idx][1] < this.heap[min_idx][1]))
     ) {
       min_idx = leftChild_idx;
     }
 
     if (
       rightChild_idx < this.size &&
-      (this.heap[rightChild_idx][0] < this.heap[current_idx][0] ||
-        (this.heap[rightChild_idx][0] === this.heap[current_idx][0]) &&
-          this.heap[rightChild_idx][1] < this.heap[current_idx][1])
+      (this.heap[rightChild_idx][0] < this.heap[min_idx][0] ||
+        (this.heap[rightChild_idx][0] === this.heap[min_idx][0] &&
+          this.heap[rightChild_idx][1] < this.heap[min_idx][1]))
     ) {
       min_idx = rightChild_idx;
     }
