@@ -1,39 +1,29 @@
-'use strict';
-
-const fs = require('fs');
+const fs = require("fs");
 const stdin = (
-  process.platform === 'linux'
-    ? fs.readFileSync('/dev/stdin').toString()
-    : `22
+  process.platform === "linux"
+    ? fs.readFileSync("/dev/stdin").toString()
+    : `15
+push_back 1
+push_front 2
 front
 back
+size
+empty
 pop_front
 pop_back
-push_front 1
-front
-pop_back
-push_back 2
-back
 pop_front
-push_front 10
-push_front 333
-front
-back
+size
+empty
 pop_back
-pop_back
-push_back 20
-push_back 1234
-front
-back
-pop_back
-pop_back`
-).split('\n');
+push_front 3
+empty
+front`
+).split("\n");
 
 const input = (() => {
   let line = 0;
   return () => stdin[line++];
 })();
-
 class Node {
   constructor(value) {
     this.value = value;
@@ -42,7 +32,6 @@ class Node {
   }
 }
 
-// 이중 연결 리스트를 활용한 구현
 class Deque {
   constructor() {
     this.head = null;
@@ -50,137 +39,132 @@ class Deque {
     this.length = 0;
   }
 
-  // 덱의 맨 앞에 데이터 삽입
   push_front(value) {
-    const newNode = new Node(value);
+    const new_node = new Node(value);
 
     if (this.empty()) {
-      this.head = newNode;
-      this.tail = newNode;
+      this.head = this.tail = new_node;
     } else {
-      newNode.next = this.head;
-      this.head.prev = newNode;
-
-      this.head = newNode;
+      new_node.next = this.head;
+      this.head.prev = new_node;
+      this.head = new_node;
     }
 
     this.length++;
   }
 
-  // 덱의 맨 뒤에 데이터 삽입
   push_back(value) {
-    const newNode = new Node(value);
+    const new_node = new Node(value);
 
     if (this.empty()) {
-      this.head = newNode;
-      this.tail = newNode;
+      this.head = this.tail = new_node;
     } else {
-      newNode.prev = this.tail;
-      this.tail.next = newNode;
-
-      this.tail = newNode;
+      new_node.prev = this.tail;
+      this.tail.next = new_node;
+      this.tail = new_node;
     }
 
     this.length++;
   }
 
-  // 덱의 맨 앞 데이터 삭제
   pop_front() {
     if (this.empty()) return -1;
 
-    const popNode = this.head;
+    const pop_node = this.head;
 
     if (this.size() === 1) {
-      this.head = null;
-      this.tail = null;
+      this.head = this.tail = null;
     } else {
-      this.head = this.head.next;
+      this.head = pop_node.next;
       this.head.prev = null;
     }
 
     this.length--;
-
-    return popNode.value;
+    return pop_node.value;
   }
 
-  // 덱의 맨 뒤 데이터 삭제
   pop_back() {
     if (this.empty()) return -1;
 
-    const popNode = this.tail;
+    const pop_node = this.tail;
 
     if (this.size() === 1) {
-      this.head = null;
-      this.tail = null;
+      this.head = this.tail = null;
     } else {
-      this.tail = this.tail.prev;
+      this.tail = pop_node.prev;
       this.tail.next = null;
     }
 
     this.length--;
-
-    return popNode.value;
+    return pop_node.value;
   }
 
-  // 덱의 크기
   size() {
     return this.length;
   }
 
-  // 덱이 비었는지에 대한 여부
   empty() {
-    return this.length === 0 ? 1 : 0;
+    return this.size() === 0 ? true : false;
   }
 
-  // 덱의 가장 앞 데이터 조회
   front() {
     return this.empty() ? -1 : this.head.value;
   }
 
-  // 덱의 가장 뒤 데이터 조회
   back() {
     return this.empty() ? -1 : this.tail.value;
   }
 }
 
-console.log(Solution());
-
-function Solution() {
-  const N = Number(input());
-
+const solution = () => {
+  let N = Number(input());
   const deque = new Deque();
   const result = [];
 
-  for (let i = 0; i < N; i++) {
-    const mod = input().split(' ');
+  while (N--) {
+    const [mod, value] = input().split(" ");
 
-    switch (mod[0]) {
-      case 'push_front':
-        deque.push_front(Number(mod[1]));
+    switch (mod) {
+      case "push_front":
+        deque.push_front(Number(value));
         break;
-      case 'push_back':
-        deque.push_back(Number(mod[1]));
+      case "push_back":
+        deque.push_back(Number(value));
         break;
-      case 'pop_front':
-        result.push(deque.pop_front());
+      case "pop_front":
+        const front_pop_value = deque.pop_front();
+        result.push(front_pop_value);
         break;
-      case 'pop_back':
-        result.push(deque.pop_back());
+      case "pop_back":
+        const back_pop_value = deque.pop_back();
+        result.push(back_pop_value);
         break;
-      case 'size':
-        result.push(deque.size());
+      case "size":
+        const size = deque.size();
+        result.push(size);
         break;
-      case 'empty':
-        result.push(deque.empty());
+      case "empty":
+        const flag = deque.empty();
+
+        if (flag) {
+          result.push(1);
+        } else {
+          result.push(0);
+        }
+
         break;
-      case 'front':
-        result.push(deque.front());
+      case "front":
+        const front_value = deque.front();
+        result.push(front_value);
         break;
-      case 'back':
-        result.push(deque.back());
+      case "back":
+        const back_value = deque.back();
+        result.push(back_value);
         break;
     }
   }
 
-  return result.join('\n');
-}
+  return result.join("\n");
+};
+
+console.log(solution());
