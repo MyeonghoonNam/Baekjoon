@@ -1,69 +1,71 @@
-const readline = require('readline');
+const fs = require("fs");
+const stdin = (
+  process.platform === "linux"
+    ? fs.readFileSync("/dev/stdin").toString()
+    : `7
+0110100
+0110101
+1110101
+0000111
+0100000
+0111110
+0111000`
+).split("\n");
 
-const rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout,
-});
+const input = (() => {
+  let line = 0;
+  return () => stdin[line++];
+})();
 
-const input = [];
-
-rl.on('line', (line) => {
-  // 입력 관리
-  input.push(line);
-}).on('close', () => {
-  // 구현
-  const N = input.shift();
-  const graph = Array.from(new Array(N), () => new Array(N));
-
+const solution = () => {
+  const N = Number(input());
+  const map = [];
+  let group_count = [];
+  let home_count = 0;
   const dx = [-1, 1, 0, 0];
   const dy = [0, 0, -1, 1];
 
-  const count = []; // 단지별 아파트 개수를 담는 배열
-  let home = 0; // 단지별 아파트 개수
-
   for (let i = 0; i < N; i++) {
-    graph[i] = input[i].split('').map((el) => parseInt(el));
+    const row = input().split("").map(Number);
+    map.push(row);
   }
 
-  Solution();
-  process.exit();
+  const dfs = (x, y) => {
+    map[x][y] = 0;
+    home_count++;
 
-  function Solution() {
+    for (let i = 0; i < 4; i++) {
+      const nx = x + dx[i];
+      const ny = y + dy[i];
+
+      if (checkMapRange(nx, ny) && map[nx][ny] === 1) {
+        dfs(nx, ny);
+      }
+    }
+  };
+
+  const checkMapRange = (x, y) => {
+    if (x >= 0 && y >= 0 && x < N && y < N) return true;
+    else return false;
+  };
+
+  const process = () => {
     for (let i = 0; i < N; i++) {
       for (let j = 0; j < N; j++) {
-        if (graph[i][j] === 1) {
-          DFS(i, j);
-          count.push(home);
-          home = 0;
+        if (map[i][j] === 1) {
+          dfs(i, j);
+          group_count.push(home_count);
+          home_count = 0;
         }
       }
     }
+  };
 
-    let result = '';
-    result += count.length + '\n';
+  process();
+  group_count.sort((a, b) => a - b);
 
-    count.sort((a, b) => a - b);
-    result += count.join('\n');
+  const result = [group_count.length].concat(group_count).join("\n");
+  return result;
+};
 
-    console.log(result);
-  }
-
-  function DFS(i, j) {
-    if (RangeCheck(i, j) && graph[i][j] === 1) {
-      graph[i][j] = 0;
-      home += 1;
-
-      for (let k = 0; k < dx.length; k++) {
-        DFS(i + dx[k], j + dy[k]);
-      }
-    }
-  }
-
-  function RangeCheck(i, j) {
-    if (i >= 0 && i < N && j >= 0 && j < N) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-});
+console.log(solution());
