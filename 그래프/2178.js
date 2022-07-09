@@ -1,56 +1,114 @@
-const readline = require('readline');
+class Node {
+  constructor(value) {
+    this.value = value;
+    this.next = null;
+  }
+}
 
-const rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout,
-});
-
-const input = [];
-rl.on('line', (line) => {
-  // 입력 관리
-  input.push(line);
-}).on('close', () => {
-  // 구현
-  // 그래프의 최단거리와 같은 문제는 BFS로 해결한다.
-  const [N, M] = input[0].split(' ').map((el) => parseInt(el));
-  input.shift();
-
-  const maze = new Array(N);
-
-  for (let i = 0; i < N; i++) {
-    maze[i] = input[i].split('').map((el) => parseInt(el));
+class Queue {
+  constructor() {
+    this.head = this.tail = null;
+    this.size = 0;
   }
 
-  console.log(BFS(N, M));
-  process.exit();
+  enqueue(value) {
+    const new_node = new Node(value);
 
-  function BFS(N, M) {
-    const q = [[0, 0]];
-    const visited = Array.from(new Array(N), () => new Array(M).fill(false));
+    if (this.isEmpty()) {
+      this.head = this.tail = new_node;
+    } else {
+      this.tail.next = new_node;
+      this.tail = new_node;
+    }
 
-    const dx = [-1, 1, 0, 0];
-    const dy = [0, 0, -1, 1];
+    this.size++;
+  }
 
-    while (q.length !== 0) {
-      const current = q.shift();
-      const x = current[0];
-      const y = current[1];
+  dequeue() {
+    if (this.isEmpty()) return;
 
-      for (i = 0; i < 4; i++) {
-        const next_X = x + dx[i];
-        const next_Y = y + dy[i];
+    const pop_node = this.head;
+    this.head = pop_node.next;
 
-        if (next_X >= 0 && next_X < N && next_Y >= 0 && next_Y < M) {
-          if (maze[next_X][next_Y] === 1 && !visited[next_X][next_Y]) {
-            visited[next_X][next_Y] = true;
-            maze[next_X][next_Y] = maze[x][y] + 1;
+    if (this.size === 1) {
+      this.tail = this.head;
+    }
 
-            q.push([next_X, next_Y]);
-          }
+    this.size--;
+    return pop_node.value;
+  }
+
+  isEmpty() {
+    return this.size === 0 ? true : false;
+  }
+}
+
+const fs = require("fs");
+const stdin = (
+  process.platform === "linux"
+    ? fs.readFileSync("/dev/stdin").toString()
+    : `7 7
+1011111
+1110001
+1000001
+1000001
+1000001
+1000001
+1111111`
+).split("\n");
+
+const input = (() => {
+  let line = 0;
+  return () => stdin[line++];
+})();
+
+const solution = () => {
+  const [N, M] = input().split(" ").map(Number);
+  const maze = [];
+  const visited = Array.from(new Array(N), () => new Array(M).fill(false));
+
+  for (let i = 0; i < N; i++) {
+    const row = input().split("").map(Number);
+    maze.push(row);
+  }
+
+  const dx = [-1, 1, 0, 0];
+  const dy = [0, 0, -1, 1];
+
+  const bfs = () => {
+    const queue = new Queue();
+
+    queue.enqueue({ x: 0, y: 0, move_count: 1 });
+    visited[0][0] = true;
+
+    while (!queue.isEmpty()) {
+      const { x, y, move_count: value } = queue.dequeue();
+
+      if (x === N - 1 && y === M - 1) {
+        return value;
+      }
+
+      for (let i = 0; i < 4; i++) {
+        const nx = x + dx[i];
+        const ny = y + dy[i];
+
+        if (!checkMapRange(nx, ny)) continue;
+
+        if (maze[nx][ny] === 1 && !visited[nx][ny]) {
+          queue.enqueue({ x: nx, y: ny, move_count: value + 1 });
+          visited[nx][ny] = true;
         }
       }
     }
+  };
 
-    return maze[N - 1][M - 1];
-  }
-});
+  const checkMapRange = (x, y) => {
+    if (x >= 0 && y >= 0 && x < N && y < M) return true;
+    else return false;
+  };
+
+  const result = bfs();
+  return result;
+};
+
+console.log(solution());
