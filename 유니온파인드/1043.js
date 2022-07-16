@@ -51,6 +51,11 @@ const solution = () => {
         unionParent(parent_table, start, end);
       }
 
+      /**
+       * 분기 지점
+       * 완전한 유니온 작업을 마친후에 파인드 과정을 진행해야 정확한 결과 도출이 가능하다고 1차 판단
+       */
+
       let flag = true;
       for (let j = 0; j < particient_count; j++) {
         if (!flag) break;
