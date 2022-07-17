@@ -2,13 +2,17 @@ const fs = require("fs");
 const stdin = (
   process.platform === "linux"
     ? fs.readFileSync("/dev/stdin").toString()
-    : `4 5
-1 1
-1 1
-1 2
-1 3
-1 4
-2 4 1`
+    : `10 9
+4 1 2 3 4
+2 1 5
+2 2 6
+1 7
+1 8
+2 7 8
+1 9
+1 10
+2 3 10
+1 4`
 ).split("\n");
 
 const input = (() => {
@@ -17,6 +21,12 @@ const input = (() => {
 })();
 
 const solution = () => {
+  const [N, M] = input().split(" ").map(Number);
+  const parent_table = new Array(N + 1).fill(0).map((_, i) => i);
+  const truth = [];
+  const party = [];
+  let result = M;
+
   const findParent = (parent, vertex) => {
     if (parent[vertex] !== vertex) {
       parent[vertex] = findParent(parent, parent[vertex]);
@@ -36,33 +46,35 @@ const solution = () => {
     }
   };
 
-  const process = () => {
-    const [N, M] = input().split(" ").map(Number);
-    const parent_table = new Array(N + 1).fill(0).map((_, i) => i);
-    const [truth_count, ...truth_person] = input().split(" ").map(Number);
-    let result = M;
+  const fetchInput = () => {
+    const [_, ...truth_person] = input().split(" ").map(Number);
+    truth.push(...truth_person);
 
     for (let i = 0; i < M; i++) {
-      const [particient_count, ...particient] = input().split(" ").map(Number);
+      const [_, ...particient] = input().split(" ").map(Number);
+      party.push(particient);
+    }
+  };
 
-      const start = particient[0];
-      for (let j = 1; j < particient_count; j++) {
-        const end = particient[j];
+  const process = () => {
+    fetchInput();
+
+    for (let i = 0; i < M; i++) {
+      const start = party[i][0];
+      for (let j = 1; j < party[i].length; j++) {
+        const end = party[i][j];
         unionParent(parent_table, start, end);
       }
+    }
 
-      /**
-       * 분기 지점
-       * 완전한 유니온 작업을 마친후에 파인드 과정을 진행해야 정확한 결과 도출이 가능하다고 1차 판단
-       */
-
+    for (let i = 0; i < M; i++) {
       let flag = true;
-      for (let j = 0; j < particient_count; j++) {
+      for (let j = 0; j < party[i].length; j++) {
         if (!flag) break;
 
-        const start = particient[j];
-        for (let k = 0; k < truth_count; k++) {
-          const end = truth_person[k];
+        const start = party[i][j];
+        for (let k = 0; k < truth.length; k++) {
+          const end = truth[k];
           if (
             findParent(parent_table, start) === findParent(parent_table, end)
           ) {
@@ -74,7 +86,7 @@ const solution = () => {
 
       if (!flag) result--;
     }
-    console.log(parent_table);
+
     return result;
   };
 
