@@ -1,70 +1,84 @@
-const readline = require('readline');
+const fs = require("fs");
+const stdin = (
+  process.platform === "linux"
+    ? fs.readFileSync("/dev/stdin").toString()
+    : `3
+0
+0
+-1`
+).split("\n");
 
-const rl = readline.createInterface({
-  input:process.stdin,
-  output:process.stdout
-});
+const input = (() => {
+  let line = 0;
+  return () => stdin[line++];
+})();
 
-const input = [];
-rl.on('line', line => {
-  input.push(parseInt(line));
-})
-  .on('close', () => {
-    const T = input[0];
-    const numbers = input.slice(1);
+const solution = () => {
+  const N = Number(input());
+  const numbers = [];
 
-    numbers.sort((a, b) => a - b);
+  for (let i = 0; i < N; i++) {
+    numbers.push(Number(input()));
+  }
 
-    const average = (numbers.reduce((acc, cur) =>{
+  numbers.sort((a, b) => a - b);
+
+  const getAverage = () => {
+    const result = numbers.reduce((acc, cur) => {
       return acc + cur;
-    }) / numbers.length).toFixed(0);
+    }, 0);
 
-    let median = 0;
-    if(numbers.length === 1){
-      median = numbers[0];
-    } else {
-      median = numbers[(Math.floor(numbers.length / 2))];
-    }
+    return Math.round(result / N);
+  };
 
-    const countNums = new Array(8002).fill(0);
+  const getMedian = () => {
+    const result = numbers[parseInt(N / 2)];
+    return result;
+  };
 
-    numbers.forEach(num => {
-      if(num < 0) {
-        countNums[Math.abs(num)]++;
+  const getMode = () => {
+    let maxCount = 1;
+
+    const numberMap = numbers.reduce((acc, cur) => {
+      if (acc.get(cur)) {
+        acc.set(cur, acc.get(cur) + 1);
+        maxCount = Math.max(maxCount, acc.get(cur));
       } else {
-        countNums[Math.ceil(countNums.length / 2) + num]++;
+        acc.set(cur, 1);
       }
-    })
 
-    const max = Math.max(...countNums);
+      return acc;
+    }, new Map());
 
-    let mode = [];
-    for(let i = 1; i < countNums.length; i++){
-      if(max === countNums[i]){
-        if(i < Math.ceil(countNums.length / 2)){
-          mode.push(-i);
-        } else {
-          mode.push(i % Math.ceil(countNums.length / 2));
-        }
+    const modeArr = [];
+    for (let [key, value] of numberMap) {
+      if (value === maxCount) {
+        modeArr.push(key);
       }
     }
-    
-    mode.sort((a, b) => a - b);
-    
-    if(mode.length > 1){
-      mode = mode.slice(1)[0];
+
+    let result = 0;
+    if (modeArr.length === 1) {
+      result = modeArr[0];
     } else {
-      mode = mode[0];
+      result = modeArr[1];
     }
 
-    const range = numbers[numbers.length - 1] - numbers[0];
+    return result;
+  };
 
-    console.log(average);
-    console.log(median);
-    console.log(mode);
-    console.log(range);
+  const getRange = () => {
+    const result = numbers[N - 1] - numbers[0];
+    return result;
+  };
 
-    process.exit();
-  })
+  const average = getAverage();
+  const median = getMedian();
+  const mode = getMode();
+  const range = getRange();
 
-  
+  const result = `${average}\n${median}\n${mode}\n${range}`;
+  return result;
+};
+
+console.log(solution());
