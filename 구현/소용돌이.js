@@ -1,5 +1,4 @@
 // 구현 해보고 싶은 여러 갈래의 소용돌이 알고리즘
-
 const print = (arr) => {
   let result = [];
 
@@ -29,12 +28,22 @@ const changeDirection = (dir, clockwise) => {
 };
 
 const solution = (n, clockwise) => {
-  const position = [
-    [0, 0],
-    [0, n - 1],
-    [n - 1, n - 1],
-    [n - 1, 0],
-  ];
+  if (n === 1) {
+    return 1;
+  }
+  const position = clockwise
+    ? [
+        [0, -1],
+        [-1, n - 1],
+        [n - 1, n],
+        [n, 0],
+      ]
+    : [
+        [-1, 0],
+        [0, n],
+        [n, n - 1],
+        [n - 1, -1],
+      ];
 
   const direction = clockwise
     ? [
@@ -54,13 +63,10 @@ const solution = (n, clockwise) => {
 
   for (let i = 0; i < 4; i++) {
     let changeDirMaxCount = Math.round(n / 2);
-    let repeatCount = n - 2;
-    let init = true;
+    let repeatCount = n - 1;
     let value = 1;
 
     let [x, y] = position[i];
-    map[x][y] = value;
-    value += 1;
 
     let dir = i;
 
@@ -78,9 +84,8 @@ const solution = (n, clockwise) => {
         y = ny;
       }
 
-      if (init || repeatCount === 2) {
+      if (repeatCount === 2) {
         repeatCount -= 1;
-        init = false;
       } else {
         repeatCount -= 2;
       }
@@ -92,7 +97,7 @@ const solution = (n, clockwise) => {
   return print(map);
 };
 
-const n = 6; // 행과 열의 크기
-const clockwise = true; // false로 변환하여 방향 반대로 테스트 가능
+const n = 1; // 행과 열의 크기
+const clockwise = false; // false로 변환하여 방향 반대로 테스트 가능
 
 console.log(solution(n, clockwise));
