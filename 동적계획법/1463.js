@@ -13,6 +13,30 @@ const input = (() => {
  *
  * 같은 연산에 대한 접근이 무수히 많이 이루어지는 구조이므로 DP를 활용
  */
+// const solution = () => {
+//   const N = Number(input());
+//   const DP = [0, 0];
+
+//   for (let i = 2; i <= N; i++) {
+//     DP[i] = DP[i - 1] + 1;
+
+//     if (i % 2 === 0) {
+//       DP[i] = Math.min(DP[i], DP[i / 2] + 1);
+//     }
+
+//     if (i % 3 === 0) {
+//       DP[i] = Math.min(DP[i], DP[i / 3] + 1);
+//     }
+//   }
+
+//   return DP[N];
+// };
+
+// 문제 2차 해결
+/**
+ * 시간제한 0.15초
+ * 입력값 10^6 = 1,000,000
+ */
 const solution = () => {
   const N = Number(input());
   const DP = [0, 0];
@@ -20,12 +44,12 @@ const solution = () => {
   for (let i = 2; i <= N; i++) {
     DP[i] = DP[i - 1] + 1;
 
-    if (i % 2 === 0) {
-      DP[i] = Math.min(DP[i], DP[i / 2] + 1);
-    }
-
     if (i % 3 === 0) {
       DP[i] = Math.min(DP[i], DP[i / 3] + 1);
+    }
+
+    if (i % 2 === 0) {
+      DP[i] = Math.min(DP[i], DP[i / 2] + 1);
     }
   }
 
