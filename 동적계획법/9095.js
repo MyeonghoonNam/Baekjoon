@@ -13,12 +13,14 @@ const input = (() => {
   return () => stdin[line++];
 })();
 
+// 2차 해결
 const solution = () => {
   const result = [];
   let T = Number(input());
+
   while (T--) {
     const N = Number(input());
-    const DP = [0, 1, 2, 4]; // DP[i] = 조건으로 i를 만드는 경우의 수
+    const DP = [0, 1, 2, 4];
 
     for (let i = 4; i <= N; i++) {
       DP[i] = DP[i - 1] + DP[i - 2] + DP[i - 3];
@@ -31,3 +33,22 @@ const solution = () => {
 };
 
 console.log(solution());
+
+// const solution = () => {
+//   const result = [];
+//   let T = Number(input());
+//   while (T--) {
+//     const N = Number(input());
+//     const DP = [0, 1, 2, 4]; // DP[i] = 조건으로 i를 만드는 경우의 수
+
+//     for (let i = 4; i <= N; i++) {
+//       DP[i] = DP[i - 1] + DP[i - 2] + DP[i - 3];
+//     }
+
+//     result.push(DP[N]);
+//   }
+
+//   return result.join("\n");
+// };
+
+// console.log(solution());
