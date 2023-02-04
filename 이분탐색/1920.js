@@ -15,22 +15,26 @@ const input = (() => {
 
 const solution = () => {
   const N = Number(input());
-  const numbers = input().split(" ").map(Number);
+  const numbers = input()
+    .split(" ")
+    .map(Number)
+    .sort((a, b) => a - b);
+
   const M = Number(input());
-  const find_numbers = input().split(" ").map(Number);
+  const findNumbers = input().split(" ").map(Number);
   const result = [];
 
   const binarySearch = (arr, number) => {
-    let low = 0;
-    let high = arr.length - 1;
+    let start = 0;
+    let end = arr.length - 1;
 
-    while (low <= high) {
-      const mid = parseInt((low + high) / 2);
+    while (start <= end) {
+      const mid = parseInt((start + end) / 2);
 
-      if (arr[mid] < number) {
-        low = mid + 1;
-      } else if (arr[mid] > number) {
-        high = mid - 1;
+      if (arr[mid] > number) {
+        end = mid - 1;
+      } else if (arr[mid] < number) {
+        start = mid + 1;
       } else {
         return 1;
       }
@@ -39,17 +43,68 @@ const solution = () => {
     return 0;
   };
 
-  numbers.sort((a, b) => a - b);
-
   for (let i = 0; i < M; i++) {
-    const flag = binarySearch(numbers, find_numbers[i]);
-    result.push(flag);
+    const number = findNumbers[i];
+    result.push(binarySearch(numbers, number));
   }
 
   return result.join("\n");
 };
 
 console.log(solution());
+
+// const fs = require("fs");
+// const stdin = (
+//   process.platform === "linux"
+//     ? fs.readFileSync("/dev/stdin").toString()
+//     : `5
+// 4 1 5 2 3
+// 5
+// 1 3 7 9 5`
+// ).split("\n");
+
+// const input = (() => {
+//   let line = 0;
+//   return () => stdin[line++];
+// })();
+
+// const solution = () => {
+//   const N = Number(input());
+//   const numbers = input().split(" ").map(Number);
+//   const M = Number(input());
+//   const find_numbers = input().split(" ").map(Number);
+//   const result = [];
+
+//   const binarySearch = (arr, number) => {
+//     let low = 0;
+//     let high = arr.length - 1;
+
+//     while (low <= high) {
+//       const mid = parseInt((low + high) / 2);
+
+//       if (arr[mid] < number) {
+//         low = mid + 1;
+//       } else if (arr[mid] > number) {
+//         high = mid - 1;
+//       } else {
+//         return 1;
+//       }
+//     }
+
+//     return 0;
+//   };
+
+//   numbers.sort((a, b) => a - b);
+
+//   for (let i = 0; i < M; i++) {
+//     const flag = binarySearch(numbers, find_numbers[i]);
+//     result.push(flag);
+//   }
+
+//   return result.join("\n");
+// };
+
+// console.log(solution());
 
 // 퀵 정렬으로도 해결 가능 참고
 // const quickSort = (arr, left = 0, right = arr.length - 1) => {
