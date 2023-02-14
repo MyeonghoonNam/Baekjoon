@@ -1,258 +1,152 @@
-'use strict';
+let fs = require("fs");
+let input = fs.readFileSync("/dev/stdin").toString().split("\n");
 
-const fs = require('fs');
-const stdin = (
-  process.platform === 'linux'
-    ? fs.readFileSync('/dev/stdin').toString()
-    : `4 3 2
-1 1 1 1
-1 1 1 1
-1 1 1 1
-1 1 1 1
--1 -1 -1 -1
-1 1 1 -1`
-).split('\n');
+const ds = [
+  [-1, 0, 0],
+  [1, 0, 0],
+  [0, 1, 0],
+  [0, -1, 0],
+  [0, 0, 1],
+  [0, 0, -1],
+];
+const [M, N, H] = input.shift().split(" ").map(Number);
+let queue = [];
+let visit = [...Array(H)].map((h) =>
+  [...Array(N)].map((n) => Array(M).fill(0))
+);
+let count = M * N * H;
+let z = 0;
+let answer;
 
-const input = (() => {
-  let line = 0;
-  return () => stdin[line++];
-})();
-
-console.log(Solution());
-
-function Solution() {
-  const [M, N, H] = input().split(' ').map(Number);
-  const map = Array.from(new Array(H), () =>
-    Array.from(new Array(N), () => new Array(M))
-  );
-
-  let result = 0;
-
-  const queue = [];
-  let qIdx = 0;
-
-  let tomatoState = true; // true : 토마토 O, false : 토마토 X
-
-  const dx = [0, 0, -1, 1, 0, 0];
-  const dy = [-1, 1, 0, 0, 0, 0];
-  const dh = [0, 0, 0, 0, 1, -1];
-
-  for (let h = 0; h < H; h++) {
-    for (let n = 0; n < N; n++) {
-      map[h][n] = input().split(' ').map(Number);
-
-      for (let m = 0; m < M; m++) {
-        if (map[h][n][m] === 0) tomatoState = false;
-        if (map[h][n][m] === 1) queue.push([m, n, h, 0]);
-      }
+for (let i = 0; i < input.length; i++) {
+  let box = input[i].split(" ").map(Number);
+  box.forEach((tomato, pos) => {
+    if (tomato === 1) {
+      queue.push([i % N, pos, z, 0]);
+      visit[z][i % N][pos] = 1;
+      count--;
+    } else if (tomato === -1) {
+      visit[z][i % N][pos] = 1;
+      count--;
     }
-  }
-
-  const bfs = () => {
-    while (qIdx < queue.length) {
-      const [x, y, h, day] = queue[qIdx++];
-
-      result = day;
-
-      for (let i = 0; i < 6; i++) {
-        const nx = x + dx[i];
-        const ny = y + dy[i];
-        const nh = h + dh[i];
-
-        if (!checkRange(nx, ny, nh)) continue;
-
-        if (map[nh][ny][nx] === 0) {
-          map[nh][ny][nx] = 1;
-          queue.push([nx, ny, nh, day + 1]);
-        }
-      }
-    }
-  };
-
-  const checkRange = (x, y, h) => {
-    if (x >= 0 && x < M && y >= 0 && y < N && h >= 0 && h < H) return true;
-    else return false;
-  };
-
-  const checkTomatoState = () => {
-    for (let h = 0; h < H; h++) {
-      for (let n = 0; n < N; n++) {
-        for (let m = 0; m < M; m++) {
-          if (map[h][n][m] === 0) return false;
-        }
-      }
-    }
-
-    return true;
-  };
-
-  // 메인 실행
-  if (tomatoState === true) {
-    return 0;
-  }
-
-  bfs();
-
-  if (checkTomatoState()) {
-    return result;
-  } else {
-    return -1;
-  }
+  });
+  if ((i + 1) % N === 0) ++z;
 }
 
-// var fs = require('fs');
-// var input = fs.readFileSync('/dev/stdin').toString().trim().split('\n');
-// // var input = fs.readFileSync(__dirname + '/stdin.txt').toString().replace(/\r/g, "").trim().split('\n');
-// var info = input[0].split(' ')
-// var m = info[0] / 1
-// var n = info[1] / 1
-// var h = info[2] / 1
-// var tomatoRack = []
-// var temp = []
-// var tomatoes = []
-// for (var i = 1; i < input.length; i++) {
-//     tomatoes = input[i].split(' ').map((element) => element/1)
-//     temp.push(tomatoes)
-//     if (temp.length === n) {
-//         tomatoRack.push(temp)
-//         temp = []
-//     }
-// }
+let idx = 0;
+while (queue.length != idx) {
+  const [x, y, z, pos] = queue[idx];
+  for (let i = 0; i < ds.length; i++) {
+    const xPos = x + ds[i][0];
+    const yPos = y + ds[i][1];
+    const zPos = z + ds[i][2];
 
-// // linkedlist 큐를 만들어 주기 위한 Node 클래스와 LinkedList 클래스
+    if (xPos < 0 || yPos < 0 || zPos < 0 || xPos >= N || yPos >= M || zPos >= H)
+      continue;
+    if (!visit[zPos][xPos][yPos]) {
+      visit[zPos][xPos][yPos] = 1;
+      queue.push([xPos, yPos, zPos, pos + 1]);
+      count--;
+    }
+  }
+
+  idx++;
+  answer = pos;
+}
+
+console.log(count ? -1 : answer);
+// const fs = require("fs");
+// const stdin = (
+//   process.platform === "linux"
+//     ? fs.readFileSync("/dev/stdin").toString()
+//     : `5 3 1
+// 0 -1 0 0 0
+// -1 -1 0 1 1
+// 0 0 0 1 1`
+// ).split("\n");
+
+// const input = (() => {
+//   let line = 0;
+//   return () => stdin[line++];
+// })();
+
 // class Node {
-//     constructor(data, next = null) {
-//         this.data = data
-//         this.next = next
-//     }
+//   constructor(value) {
+//     this.value = value;
+//     this.next = null;
+//   }
 // }
 
-// class LinkedList {
-//     constructor() {
-//         this.head = null
-//         this.tail = null
-//         this.size = 0
+// class Queue {
+//   constructor() {
+//     this.head = this.tail = null;
+//     this.size = 0;
+//   }
+
+//   enqueue(value) {
+//     const newNode = new Node(value);
+
+//     if (this.size === 0) {
+//       this.head = this.tail = newNode;
+//     } else {
+//       this.tail.next = newNode;
+//       this.tail = newNode;
 //     }
 
-//     push(data) {
-//         let newNode = new Node(data)
-//         if (!this.head) {
-//             this.head = newNode
-//             this.tail = newNode
-//             this.size++
-//         } else {
-//             let node = new Node(data)
-//             this.tail.next = node
-//             this.tail = node
-//             this.size++
-//         }
+//     this.size++;
+//   }
+
+//   dequeue() {
+//     if (this.size === 0) return;
+
+//     const popNode = this.head;
+//     this.head = popNode.next;
+
+//     if (this.size === 1) {
+//       this.tail = null;
 //     }
 
-//     shift(){
-//         if(!this.head){
-//             return
-//         }
-//         if(!this.head.next){
-//             this.size--
-//             return this.head.data
-//         } else {
-//             this.head = this.head.next
-//             this.size--
-//             return this.head.data
-//         }
-//     }
+//     this.size--;
 
-//     getSize(){
-//         return this.size;
-//     }
-// }
-// // linkedlist 클래스 끝
+//     return popNode.value;
+//   }
 
-// // 익은 토마토, 안익은 토마토, 빈칸을 알아내기 위한 함수
-// function findTomatoes() {
-//     var ripeOnes = []
-//     var unRipeCount = 0
-//     var emptyCount = 0
-//     for (var i = 0; i < tomatoRack.length; i++) {
-//         var tmts = tomatoRack[i]
-//         for (var j = 0; j < tmts.length; j++) {
-//             var tmt = tmts[j]
-//             for (var k = 0; k < tmt.length; k++) {
-//                 if (tmt[k] === 1) { // 익은 토마토라면 배열에 저장
-//                     ripeOnes.push({
-//                         h: i, // 몇 층
-//                         n: j, // 몇 행
-//                         m: k, // 몇 열
-//                         count: 0 // 익은 날의 수
-//                     })
-//                 } else if(tmt[k]=== 0){ // 안익은 토마토라면 갯수 세어주기
-//                     unRipeCount++
-//                 } else if(tmt[k] === -1){ // 빈칸이라면 갯수 세어주기
-//                     emptyCount++
-//                 }
-//             }
-//         }
-//     }
-//     return {ripes: ripeOnes, unRipes: unRipeCount, empty:emptyCount}
+//   isEmpty() {
+//     return this.size === 0 ? true : false;
+//   }
 // }
 
-// var varietyTomatoes = findTomatoes()
-// var ripes = varietyTomatoes.ripes // 익은 토마토 배열
-// var empties = varietyTomatoes.empty // 안익은 토마토 갯수
-// var unRipes = varietyTomatoes.unRipes // 빈칸 갯수
+// const solution = () => {
+//   const [M, N, H] = input().split(" ").map(Number);
+//   const boxes = [];
+//   const visited = [];
 
-// // 앞, 뒤, 좌, 우, 위, 아래로 탐색하기 위한 배열
-// var dn = [0, 0, 1, -1, 0, 0] // 앞, 뒤
-// var dm = [0, 0, 0, 0, 1, -1] // 좌, 우
-// var dh = [1, -1, 0, 0, 0, 0] // 위, 아래
+//   const box = [];
+//   for (let i = 0; i < N; i++) {
+//     const row = input().split(" ").map(Number);
+//     box.push(row);
+//   }
 
-// var nextM = 0
-// var nextN = 0
-// var nextH = 0
-// var countDays = 0
+//   for (let i = 0; i < H; i++) {
+//     boxes.push(box);
+//   }
 
-// var full = m * n * h
+//   const bfs = () => {
+//     const queue = new Queue();
+//     queue.enqueue([]);
 
-// if (ripes.length === full - empties) {
-//   // 만약 토마토가 (빈칸 빼고) 모두 다 익었으면
-//     console.log(0)
-// } else if (empties === full || ripes.length === 0 || unRipes === full || unRipes === full-empties) {
-//   // 만약 토마토가 다 비었거나 || 익은게 없거나 || 다 안익은 것들로 꽉차있거나 || (빈칸 빼고) 다 안익은 것들이면
-//     console.log(-1)
-// } else {
-//   // 그게 아니면
-
-//     var q = new LinkedList() // 링크드리스트 큐 생성
-//     for(var i=0; i<ripes.length; i++){
-//         q.push(ripes[i]) // 큐 안에 익은 토마토들을 넣음
+//     while (queue.isEmpty() === false) {
+//       //
 //     }
+//   };
 
-//     while (q.getSize() !== 0) { // 큐가 빌때까지 bfs 반복
-//         var current = q.shift()
-
-//         for (var idx = 0; idx < 6; idx++) {
-//             nextH = dh[idx] + current.h
-//             nextN = dn[idx] + current.n
-//             nextM = dm[idx] + current.m
-//             if ((nextM >= 0 && nextM < m) && (nextN >= 0 && nextN < n) && (nextH >= 0 && nextH < h)) {
-//                 if (tomatoRack[nextH][nextN][nextM] === 1 || tomatoRack[nextH][nextN][nextM] === -1) continue
-//                 if (tomatoRack[nextH][nextN][nextM] === 0) {
-//                     tomatoRack[nextH][nextN][nextM] = 1
-//                     unRipes--
-//                     countDays = current.count + 1
-//                     q.push({
-//                         h: nextH,
-//                         n: nextN,
-//                         m: nextM,
-//                         count: countDays
-//                     })
-//                 }
-//             }
-//         }
+//   for(let i = 0; i < N; i++) {
+//     for(let j = 0; j < M ;j ++) {
+//       if(boxes[0][i][j] === 1 && visited[0][i][j] === false) {
+//         bfs(i, j);
+//       }
 //     }
-//    if(unRipes === 0){ // 안익은 토마토가 없으면
-//        console.log(current.count)
-//    } else { // 안익은 토마토가 있으면
-//        console.log(-1)
-//    }
-// }
+//   }
+// };
+
+// console.log(solution());
