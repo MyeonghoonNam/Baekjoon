@@ -1,56 +1,47 @@
-const readline = require('readline');
+const fs = require("fs");
+const stdin = (
+  process.platform === "linux"
+    ? fs.readFileSync("/dev/stdin").toString()
+    : `1
+0`
+).split("\n");
 
-const rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout,
-});
+const input = (() => {
+  let line = 0;
+  return () => stdin[line++];
+})();
 
-const input = [];
-rl.on('line', (line) => {
-  // 입력 관리
-  input.push(line.split('').map((el) => Number(el)));
-}).on('close', () => {
-  // 구현
-  const N = input[0][0];
-  input.shift();
+const solution = () => {
+  const N = Number(input());
+  const video = [];
+  let result = "";
 
-  const board = input;
-  let result = '';
-
-  Solution(0, 0, N);
-
-  console.log(result);
-  process.exit();
-
-  function Solution(row, col, size) {
-    if (isPossible(row, col, size)) {
-      result += `${board[row][col]}`;
-      return;
-    }
-
-    const newSize = size / 2;
-
-    result += '(';
-
-    Solution(row, col, newSize); // 2사분면
-    Solution(row, col + newSize, newSize); // 1사분면
-    Solution(row + newSize, col, newSize); // 3사분면
-    Solution(row + newSize, col + newSize, newSize); // 4사분면
-
-    result += ')';
+  for (let i = 0; i < N; i++) {
+    video.push(input());
   }
 
-  function isPossible(row, col, size) {
-    const value = board[row][col];
+  const divideConquer = (x, y, n) => {
+    for (let i = x; i < x + n; i++) {
+      for (let j = y; j < y + n; j++) {
+        if (video[x][y] !== video[i][j]) {
+          result += "(";
+          divideConquer(x, y, n / 2);
+          divideConquer(x, y + n / 2, n / 2);
+          divideConquer(x + n / 2, y, n / 2);
+          divideConquer(x + n / 2, y + n / 2, n / 2);
+          result += ")";
 
-    for (let i = row; i < row + size; i++) {
-      for (let j = col; j < col + size; j++) {
-        if (board[i][j] !== value) {
-          return false;
+          return;
         }
       }
     }
 
-    return true;
-  }
-});
+    result += video[x][y] === "1" ? 1 : 0;
+  };
+
+  divideConquer(0, 0, N);
+
+  return result;
+};
+
+console.log(solution());
