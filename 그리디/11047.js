@@ -1,9 +1,7 @@
-'use strict';
-
-const fs = require('fs');
+const fs = require("fs");
 const stdin = (
-  process.platform === 'linux'
-    ? fs.readFileSync('/dev/stdin').toString()
+  process.platform === "linux"
+    ? fs.readFileSync("/dev/stdin").toString()
     : `10 4790
 1
 5
@@ -15,34 +13,30 @@ const stdin = (
 5000
 10000
 50000`
-).split('\n');
+).split("\n");
 
 const input = (() => {
   let line = 0;
   return () => stdin[line++];
 })();
 
-console.log(Solution());
-
-function Solution() {
-  let [N, K] = input().split(' ').map(Number);
+const solution = () => {
+  let [N, K] = input().split(" ").map(Number);
   const coins = [];
+  let result = 0;
 
   for (let i = 0; i < N; i++) {
-    coins[i] = Number(input());
+    coins.push(Number(input()));
   }
 
-  coins.sort((a, b) => b - a);
+  for (let i = N - 1; i >= 0; i--) {
+    const coin = coins[i];
 
-  let cnt = 0;
-  for (let value of coins) {
-    if (K === 0) break;
-
-    if (value <= K) {
-      cnt += parseInt(K / value);
-      K %= value;
-    }
+    result += parseInt(K / coin);
+    K %= coins[i];
   }
 
-  return cnt;
-}
+  return result;
+};
+
+console.log(solution());
