@@ -1,27 +1,38 @@
-const readline = require('readline');
+const fs = require("fs");
+const stdin = (
+  process.platform === "linux"
+    ? fs.readFileSync("/dev/stdin").toString()
+    : `5
+3 4
+1 1
+1 -1
+2 2
+3 3`
+).split("\n");
 
-const rl = readline.createInterface({
-  input:process.stdin,
-  output:process.stdout
-});
+const input = (() => {
+  let line = 0;
+  return () => stdin[line++];
+})();
 
-const input = [];
-rl.on('line', line => {
-  input.push(line.split(' ').map(el => parseInt(el)));
-})
-  .on('close', () => {
-    const T = input[0];
-    const locationArray = input.slice(1);
-    
-    locationArray.sort((a, b) => {
-      return a[0] - b[0] || a[1] - b[1];
-    })
+const solution = () => {
+  const N = Number(input());
+  const coordinate = [];
 
-    let result = '';
-    for(let i = 0; i < T; i++){
-      result += `${locationArray[i][0]} ${locationArray[i][1]}\n`
-    }
+  for (let i = 0; i < N; i++) {
+    const [x, y] = input().split(" ").map(Number);
+    coordinate.push({ x, y });
+  }
 
-    console.log(result);
-    process.exit();
-  })
+  coordinate.sort((a, b) => a.x - b.x || a.y - b.y);
+
+  let result = "";
+
+  for (let { x, y } of coordinate) {
+    result += `${x} ${y}\n`;
+  }
+
+  return result;
+};
+
+console.log(solution());
