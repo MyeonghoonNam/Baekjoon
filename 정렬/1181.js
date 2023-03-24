@@ -1,28 +1,41 @@
-const readline = require('readline');
+const fs = require("fs");
+const stdin = (
+  process.platform === "linux"
+    ? fs.readFileSync("/dev/stdin").toString()
+    : `13
+but
+i
+wont
+hesitate
+no
+more
+no
+more
+it
+cannot
+wait
+im
+yours`
+).split("\n");
 
-const rl = readline.createInterface({
-  input:process.stdin,
-  output:process.stdout
-});
+const input = (() => {
+  let line = 0;
+  return () => stdin[line++];
+})();
 
-const input = [];
-rl.on('line', line => {
-  input.push(line);
-})
-  .on('close', () => {
-    const T = input[0];
-    let str = input.slice(1);
-    str.sort((a, b) =>{
-      return a.length - b.length || a.localeCompare(b);
-    })
+const solution = () => {
+  const N = Number(input());
+  const set = new Set();
 
-    str = [...new Set(str)];
-    
-    let result = '';
-    for(let i = 0; i < str.length; i++){
-      result += `${str[i]}\n`;
-    }
+  for (let i = 0; i < N; i++) {
+    set.add(input());
+  }
 
-    console.log(result);
-    process.exit();
-  })
+  const words = [...set];
+  words.sort((a, b) => a.length - b.length || a.localeCompare(b));
+
+  const result = words.join("\n");
+  return result;
+};
+
+console.log(solution());
