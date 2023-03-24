@@ -1,14 +1,20 @@
-const readline = require('readline');
+const fs = require("fs");
+const stdin = (
+  process.platform === "linux"
+    ? fs.readFileSync("/dev/stdin").toString()
+    : `500613009`
+).split("\n");
 
-const rl = readline.createInterface({
-  input:process.stdin,
-  output:process.stdout
-});
+const input = (() => {
+  let line = 0;
+  return () => stdin[line++];
+})();
 
-rl.on('line', line => {
-  const str = line.split('').sort((a, b) => b - a).join('');
-  console.log(str);
-})
-  .on('close', () => {
-    process.exit();
-  })
+const solution = () => {
+  const number = input().split("").map(Number);
+  const result = number.sort((a, b) => b - a);
+
+  return result.join("");
+};
+
+console.log(solution());
