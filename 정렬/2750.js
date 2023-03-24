@@ -1,22 +1,31 @@
-const readline = require('readline');
+const fs = require("fs");
+const stdin = (
+  process.platform === "linux"
+    ? fs.readFileSync("/dev/stdin").toString()
+    : `5
+5
+2
+3
+4
+1`
+).split("\n");
 
-const rl = readline.createInterface({
-  input:process.stdin,
-  output:process.stdout
-});
+const input = (() => {
+  let line = 0;
+  return () => stdin[line++];
+})();
 
-const input = [];
-rl.on('line', line => {
-  input.push(parseInt(line));
-})
-  .on('close', () => {
-    const T = input[0];
-    const numbers = input.slice(1);
+const solution = () => {
+  const N = Number(input());
+  const numbers = [];
 
-    numbers.sort((a, b) => a - b);
-    for(let i = 0; i < T; i++){
-      console.log(numbers[i]);
-    }
-    
-    process.exit();
-  })
+  for (let i = 0; i < N; i++) {
+    numbers.push(Number(input()));
+  }
+
+  const result = numbers.sort((a, b) => a - b).join("\n");
+
+  return result;
+};
+
+console.log(solution());
