@@ -2,7 +2,7 @@ const fs = require("fs");
 const stdin = (
   process.platform === "linux"
     ? fs.readFileSync("/dev/stdin").toString()
-    : `09-5`
+    : `55-50+40`
 ).split("\n");
 
 const input = (() => {
@@ -11,23 +11,17 @@ const input = (() => {
 })();
 
 const solution = () => {
-  const expression = input().split("-");
-  const numbers = [];
+  const groups = input().split("-");
+  let result = 0;
 
-  for (let i = 0; i < expression.length; i++) {
-    const plus_list = expression[i].split("+");
-    let plus_value = 0;
+  for (let i = 0; i < groups.length; i++) {
+    const sum = groups[i]
+      .split("+")
+      .map(Number)
+      .reduce((acc, cur) => acc + cur);
 
-    for (let j = 0; j < plus_list.length; j++) {
-      plus_value += Number(plus_list[j]);
-    }
-
-    numbers.push(plus_value);
+    i === 0 ? (result += sum) : (result -= sum);
   }
-
-  const result = numbers.reduce((acc, cur) => {
-    return acc - cur;
-  });
 
   return result;
 };
