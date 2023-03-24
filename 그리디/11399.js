@@ -13,17 +13,19 @@ const input = (() => {
 
 const solution = () => {
   const N = Number(input());
-  const times = input().split(" ").map(Number);
-
-  times.sort((a, b) => a - b);
+  const times = input()
+    .split(" ")
+    .map(Number)
+    .sort((a, b) => a - b);
 
   let result = 0;
 
-  for (let i = 0; i < N; i++) {
-    for (let j = 0; j <= i; j++) {
-      result += times[j];
-    }
-  }
+  times.reduce((acc, cur) => {
+    acc += cur;
+    result += acc;
+
+    return acc;
+  }, 0);
 
   return result;
 };
