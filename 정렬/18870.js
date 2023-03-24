@@ -1,26 +1,34 @@
-const readline = require('readline');
+const fs = require("fs");
+const stdin = (
+  process.platform === "linux"
+    ? fs.readFileSync("/dev/stdin").toString()
+    : `5
+2 4 -10 4 -9`
+).split("\n");
 
-const rl = readline.createInterface({
-  input:process.stdin,
-  output:process.stdout
-});
+const input = (() => {
+  let line = 0;
+  return () => stdin[line++];
+})();
 
-const input = [];
-rl.on('line', line => {
-  input.push(line.split(' ').map(el => Number(el)));
-})
-  .on('close', () => {
-    const N = input[0][0];
-    const numbers = input.slice(1)[0];
-    let sortNumbers = Array.from(new Set(numbers));
+const solution = () => {
+  const result = [];
+  const N = Number(input());
+  const numbers = input().split(" ").map(Number);
+  const uniqueNumbers = [...new Set(numbers)].sort((a, b) => a - b);
+  const uniqueNumbersMap = new Map();
 
-    sortNumbers.sort((a, b) => a - b);
-    
-    let result = '';
-    for(let i = 0; i < N; i++){
-      result += `${sortNumbers.indexOf(numbers[i])} `;
-    }
+  for (let i = 0; i < uniqueNumbers.length; i++) {
+    const number = uniqueNumbers[i];
+    uniqueNumbersMap.set(number, i);
+  }
 
-    console.log(result);
-    process.exit();
-  })
+  for (let i = 0; i < N; i++) {
+    const number = numbers[i];
+    result.push(uniqueNumbersMap.get(number));
+  }
+
+  return result.join(" ");
+};
+
+console.log(solution());
