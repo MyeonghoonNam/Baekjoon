@@ -10,30 +10,24 @@ const input = (() => {
 
 const solution = () => {
   let N = Number(input());
-
-  let five_bag = 0;
-  let three_bag = 0;
   let result = 0;
+  let fiveBag = 0;
+  let threeBag = 0;
 
   while (true) {
     if (N < 0) {
-      result = -1;
-      break;
+      return -1;
     }
 
     if (N % 5 === 0) {
-      // 5kg
-      five_bag = N / 5;
-      result = five_bag + three_bag;
-      break;
-    } else {
-      // 3kg
-      N -= 3;
-      three_bag += 1;
+      fiveBag += N / 5;
+      result += fiveBag + threeBag;
+      return result;
     }
-  }
 
-  return result;
+    N -= 3;
+    threeBag += 1;
+  }
 };
 
 console.log(solution());
