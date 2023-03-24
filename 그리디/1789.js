@@ -1,9 +1,9 @@
-const fs = require('fs');
+const fs = require("fs");
 const stdin = (
-  process.platform === 'linux'
-    ? fs.readFileSync('/dev/stdin').toString()
-    : `10`
-).split('\n');
+  process.platform === "linux"
+    ? fs.readFileSync("/dev/stdin").toString()
+    : `200`
+).split("\n");
 
 const input = (() => {
   let line = 0;
@@ -12,21 +12,18 @@ const input = (() => {
 
 const solution = () => {
   const S = Number(input());
+
   let sum = 0;
-  let result = 0;
+  let currentNumber = 0;
 
-  let num = 1;
-  while(true) {
-    sum += num;
-    result++;
-
-    if(sum > S) {
-      result--;
-      return result;
-    }
-
-    num++;
+  while (sum <= S) {
+    currentNumber += 1;
+    sum += currentNumber;
   }
+
+  const result = currentNumber - 1;
+
+  return result;
 };
 
 console.log(solution());
