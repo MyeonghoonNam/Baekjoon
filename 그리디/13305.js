@@ -1,31 +1,34 @@
-const readline = require('readline');
+const fs = require("fs");
+const stdin = (
+  process.platform === "linux"
+    ? fs.readFileSync("/dev/stdin").toString()
+    : `4
+2 3 1
+5 2 4 1`
+).split("\n");
 
-const rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout,
-});
+const input = (() => {
+  let line = 0;
+  return () => stdin[line++];
+})();
 
-const input = [];
-
-rl.on('line', (line) => {
-  input.push(line.split(' ').map((el) => BigInt(el)));
-}).on('close', () => {
-  const N = Number(input[0][0]);
-  const dist = input[1];
-  const cost = input[2];
-
-  let sum = 0n;
+const solution = () => {
+  const N = Number(input());
+  const dist = input().split(" ").map(Number);
+  const cost = input().split(" ").map(Number);
   let minCost = cost[0];
 
-  for (let i = 0; i < N - 1; i++) {
-    if (cost[i] < minCost) {
-      minCost = cost[i];
-    }
-
-    sum += minCost * dist[i];
+  for (let i = 0; i < N; i++) {
+    minCost = Math.min(minCost, cost[i]);
+    cost[i] = minCost;
   }
 
-  console.log(sum.toString());
+  let result = 0n;
+  for (let i = 0; i < N - 1; i++) {
+    result += BigInt(dist[i]) * BigInt(cost[i]);
+  }
 
-  process.exit();
-});
+  return String(result);
+};
+
+console.log(solution());
