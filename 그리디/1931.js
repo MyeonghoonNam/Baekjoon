@@ -24,22 +24,20 @@ const input = (() => {
 const solution = () => {
   const N = Number(input());
   const times = [];
+  let result = 1;
 
   for (let i = 0; i < N; i++) {
-    const [start_time, end_time] = input().split(" ").map(Number);
-    times.push({ start_time, end_time });
+    const [startTime, endTime] = input().split(" ").map(Number);
+    times.push({ startTime, endTime });
   }
 
-  // 회의 종료 시간을 기준으로 오름차순 정렬
-  times.sort((a, b) => a.end_time - b.end_time || a.start_time - b.start_time);
+  times.sort((a, b) => a.endTime - b.endTime || a.startTime - b.startTime);
 
-  let prev_time = 0; // 이전 회의 종료 시간
-  let result = 0;
-
-  for (let i = 0; i < N; i++) {
-    if (prev_time <= times[i].start_time) {
-      prev_time = times[i].end_time;
+  let currentIndex = 0;
+  for (let i = 1; i < N; i++) {
+    if (times[currentIndex].endTime <= times[i].startTime) {
       result += 1;
+      currentIndex = i;
     }
   }
 
