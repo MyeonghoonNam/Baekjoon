@@ -23,30 +23,60 @@ const input = (() => {
  * 3. 이분탐색을 진행할 때 min(i번째 예산 요청, 상한)을 모두 더한 값이 국가예산(M) 이하이면 상한을 갱싢하며 최댓값을 도출한다.
  */
 
+//  1차 풀이
+// const solution = () => {
+//   const N = Number(input());
+//   const request = input().split(" ").map(Number);
+//   const M = Number(input());
+//   let result = 0;
+
+//   request.sort((a, b) => a - b);
+
+//   let low = 0;
+//   let high = request[N - 1];
+
+//   while (low <= high) {
+//     const mid = parseInt((low + high) / 2);
+//     let sum = 0;
+
+//     for (let i = 0; i < N; i++) {
+//       sum += Math.min(request[i], mid);
+//     }
+
+//     if (sum > M) {
+//       high = mid - 1;
+//     } else {
+//       result = mid;
+//       low = mid + 1;
+//     }
+//   }
+
+//   return result;
+// };
+
+// 2차 풀이
 const solution = () => {
   const N = Number(input());
   const request = input().split(" ").map(Number);
   const M = Number(input());
   let result = 0;
 
-  request.sort((a, b) => a - b);
+  let start = 1;
+  let end = request.reduce((a, b) => Math.max(a, b));
 
-  let low = 0;
-  let high = request[N - 1];
-
-  while (low <= high) {
-    const mid = parseInt((low + high) / 2);
-    let sum = 0;
+  while (start <= end) {
+    let mid = parseInt((start + end) / 2);
+    let total = 0;
 
     for (let i = 0; i < N; i++) {
-      sum += Math.min(request[i], mid);
+      total += Math.min(mid, request[i]);
     }
 
-    if (sum > M) {
-      high = mid - 1;
-    } else {
+    if (total <= M) {
       result = mid;
-      low = mid + 1;
+      start = mid + 1;
+    } else {
+      end = mid - 1;
     }
   }
 
