@@ -2,9 +2,9 @@ const fs = require("fs");
 const stdin = (
   process.platform === "linux"
     ? fs.readFileSync("/dev/stdin").toString()
-    : `5
-70 80 30 40 100
-450`
+    : `4
+120 110 140 150
+485`
 ).split("\n");
 
 const input = (() => {
@@ -22,6 +22,71 @@ const input = (() => {
  * 2. 총액 이하에서 가능한 한 최대의 총 예산을 구하기 위해 입력 받는 예산 요청 중 최대금액을 구하고 최소금액은 0으로 정한다.
  * 3. 이분탐색을 진행할 때 min(i번째 예산 요청, 상한)을 모두 더한 값이 국가예산(M) 이하이면 상한을 갱싢하며 최댓값을 도출한다.
  */
+
+// 3차 풀이
+const solution = () => {
+  let result = 0;
+  const N = Number(input());
+  const budget = input().split(" ").map(Number);
+  const M = Number(input());
+  const maxBudget = Math.max(...budget);
+
+  const totalBudget = budget.reduce((acc, cur) => acc + cur, 0);
+
+  if (totalBudget <= M) {
+    return maxBudget;
+  }
+
+  let start = 0;
+  let end = maxBudget;
+
+  while (start <= end) {
+    const mid = parseInt((start + end) / 2);
+    let totalBudget = 0;
+
+    for (let i = 0; i < N; i++) {
+      totalBudget += Math.min(mid, budget[i]);
+    }
+
+    if (totalBudget <= M) {
+      start = mid + 1;
+      result = mid;
+    } else {
+      end = mid - 1;
+    }
+  }
+
+  return result;
+};
+
+// 2차 풀이
+// const solution = () => {
+//   const N = Number(input());
+//   const request = input().split(" ").map(Number);
+//   const M = Number(input());
+//   let result = 0;
+
+//   let start = 1;
+//   let end = request.reduce((a, b) => Math.max(a, b));
+
+//   while (start <= end) {
+//     let mid = parseInt((start + end) / 2);
+//     let total = 0;
+
+//     for (let i = 0; i < N; i++) {
+//       total += Math.min(mid, request[i]);
+//     }
+
+//     if (total <= M) {
+//       result = mid;
+//       start = mid + 1;
+//     } else {
+//       end = mid - 1;
+//     }
+//   }
+
+//   return result;
+// };
 
 //  1차 풀이
 // const solution = () => {
@@ -53,34 +118,5 @@ const input = (() => {
 
 //   return result;
 // };
-
-// 2차 풀이
-const solution = () => {
-  const N = Number(input());
-  const request = input().split(" ").map(Number);
-  const M = Number(input());
-  let result = 0;
-
-  let start = 1;
-  let end = request.reduce((a, b) => Math.max(a, b));
-
-  while (start <= end) {
-    let mid = parseInt((start + end) / 2);
-    let total = 0;
-
-    for (let i = 0; i < N; i++) {
-      total += Math.min(mid, request[i]);
-    }
-
-    if (total <= M) {
-      result = mid;
-      start = mid + 1;
-    } else {
-      end = mid - 1;
-    }
-  }
-
-  return result;
-};
 
 console.log(solution());
