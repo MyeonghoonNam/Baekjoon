@@ -13,7 +13,10 @@ const input = (() => {
   return () => stdin[line++];
 })();
 
+// 2차 해결
 const solution = () => {
+  const result = [];
+
   const N = Number(input());
   const numbers = input()
     .split(" ")
@@ -23,51 +26,110 @@ const solution = () => {
   const M = Number(input());
   const findNumbers = input().split(" ").map(Number);
 
-  const result = [];
+  const lowerBound = (arr, target) => {
+    let start = 0;
+    let end = N;
 
-  const lowerBound = (findNumber) => {
-    let low = 0;
-    let high = N;
+    while (start < end) {
+      const mid = parseInt((start + end) / 2);
 
-    while (low <= high) {
-      const mid = parseInt((low + high) / 2);
-
-      if (numbers[mid] < findNumber) {
-        low = mid + 1;
+      if (arr[mid] >= target) {
+        end = mid;
       } else {
-        high = mid - 1;
+        start = mid + 1;
       }
     }
 
-    return low;
+    return end;
   };
 
-  const upperBound = (findNumber) => {
-    let low = 0;
-    let high = N;
+  const upperBound = (arr, target) => {
+    let start = 0;
+    let end = N;
 
-    while (low <= high) {
-      const mid = parseInt((low + high) / 2);
+    while (start < end) {
+      const mid = parseInt((start + end) / 2);
 
-      if (numbers[mid] <= findNumber) {
-        low = mid + 1;
+      if (arr[mid] > target) {
+        end = mid;
       } else {
-        high = mid - 1;
+        start = mid + 1;
       }
     }
 
-    return low;
+    return end;
   };
 
   for (let i = 0; i < M; i++) {
-    const findNumber = findNumbers[i];
-    const firstIndex = lowerBound(findNumber);
-    const lastIndex = upperBound(findNumber);
+    const target = findNumbers[i];
 
-    result.push(lastIndex - firstIndex);
+    const firstIndex = lowerBound(numbers, target);
+    const lastIndex = upperBound(numbers, target);
+
+    const count = lastIndex - firstIndex;
+
+    result.push(count);
   }
 
   return result.join(" ");
 };
+
+// 1차 해결
+// const solution = () => {
+//   const N = Number(input());
+//   const numbers = input()
+//     .split(" ")
+//     .map(Number)
+//     .sort((a, b) => a - b);
+
+//   const M = Number(input());
+//   const findNumbers = input().split(" ").map(Number);
+
+//   const result = [];
+
+//   const lowerBound = (findNumber) => {
+//     let low = 0;
+//     let high = N;
+
+//     while (low <= high) {
+//       const mid = parseInt((low + high) / 2);
+
+//       if (numbers[mid] < findNumber) {
+//         low = mid + 1;
+//       } else {
+//         high = mid - 1;
+//       }
+//     }
+
+//     return low;
+//   };
+
+//   const upperBound = (findNumber) => {
+//     let low = 0;
+//     let high = N;
+
+//     while (low <= high) {
+//       const mid = parseInt((low + high) / 2);
+
+//       if (numbers[mid] <= findNumber) {
+//         low = mid + 1;
+//       } else {
+//         high = mid - 1;
+//       }
+//     }
+
+//     return low;
+//   };
+
+//   for (let i = 0; i < M; i++) {
+//     const findNumber = findNumbers[i];
+//     const firstIndex = lowerBound(findNumber);
+//     const lastIndex = upperBound(findNumber);
+
+//     result.push(lastIndex - firstIndex);
+//   }
+
+//   return result.join(" ");
+// };
 
 console.log(solution());
