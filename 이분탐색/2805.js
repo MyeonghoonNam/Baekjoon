@@ -2,8 +2,8 @@ const fs = require("fs");
 const stdin = (
   process.platform === "linux"
     ? fs.readFileSync("/dev/stdin").toString()
-    : `4 7
-20 15 10 17`
+    : `5 20
+4 42 40 26 46`
 ).split("\n");
 
 const input = (() => {
@@ -11,37 +11,68 @@ const input = (() => {
   return () => stdin[line++];
 })();
 
+// 3차 해결
 const solution = () => {
   const [N, M] = input().split(" ").map(Number);
   const trees = input().split(" ").map(Number);
 
-  let low = 0;
-  let high = Math.max(...trees);
+  let start = 0;
+  let end = Math.max(...trees);
+  let result = 0;
 
-  while (low <= high) {
-    const height = parseInt((low + high) / 2);
-    let lumberHeightSum = 0;
+  while (start <= end) {
+    const mid = parseInt((start + end) / 2);
+    let cutTreeHeightSum = 0;
 
     for (let i = 0; i < N; i++) {
-      const diff = trees[i] - height;
-
-      if (diff > 0) {
-        lumberHeightSum += diff;
-      }
+      const diff = trees[i] - mid;
+      cutTreeHeightSum += diff > 0 ? diff : 0;
     }
 
-    if (lumberHeightSum >= M) {
-      low = height + 1;
+    if (cutTreeHeightSum >= M) {
+      result = mid;
+      start = mid + 1;
     } else {
-      high = height - 1;
+      end = mid - 1;
     }
   }
 
-  return high;
+  return result;
 };
+
+// 2차 해결
+// const solution = () => {
+//   const [N, M] = input().split(" ").map(Number);
+//   const trees = input().split(" ").map(Number);
+
+//   let low = 0;
+//   let high = Math.max(...trees);
+
+//   while (low <= high) {
+//     const height = parseInt((low + high) / 2);
+//     let lumberHeightSum = 0;
+
+//     for (let i = 0; i < N; i++) {
+//       const diff = trees[i] - height;
+
+//       if (diff > 0) {
+//         lumberHeightSum += diff;
+//       }
+//     }
+
+//     if (lumberHeightSum >= M) {
+//       low = height + 1;
+//     } else {
+//       high = height - 1;
+//     }
+//   }
+
+//   return high;
+// };
 
 console.log(solution());
 
+// 1차 해결
 // const fs = require('fs');
 // const stdin = (
 //   process.platform === 'linux'
