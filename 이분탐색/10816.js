@@ -13,59 +13,49 @@ const input = (() => {
   return () => stdin[line++];
 })();
 
-// 2차 해결
+// 3차 해결
 const solution = () => {
   const result = [];
-
   const N = Number(input());
   const numbers = input()
     .split(" ")
     .map(Number)
     .sort((a, b) => a - b);
-
   const M = Number(input());
   const findNumbers = input().split(" ").map(Number);
 
   const lowerBound = (arr, target) => {
     let start = 0;
     let end = N;
-
     while (start < end) {
       const mid = parseInt((start + end) / 2);
-
       if (arr[mid] >= target) {
         end = mid;
       } else {
         start = mid + 1;
       }
     }
-
     return end;
   };
 
   const upperBound = (arr, target) => {
     let start = 0;
     let end = N;
-
     while (start < end) {
       const mid = parseInt((start + end) / 2);
-
       if (arr[mid] > target) {
         end = mid;
       } else {
         start = mid + 1;
       }
     }
-
     return end;
   };
 
   for (let i = 0; i < M; i++) {
     const target = findNumbers[i];
-
     const firstIndex = lowerBound(numbers, target);
     const lastIndex = upperBound(numbers, target);
-
     const count = lastIndex - firstIndex;
 
     result.push(count);
@@ -73,6 +63,67 @@ const solution = () => {
 
   return result.join(" ");
 };
+
+// 2차 해결
+// const solution = () => {
+//   const result = [];
+
+//   const N = Number(input());
+//   const numbers = input()
+//     .split(" ")
+//     .map(Number)
+//     .sort((a, b) => a - b);
+
+//   const M = Number(input());
+//   const findNumbers = input().split(" ").map(Number);
+
+//   const lowerBound = (arr, target) => {
+//     let start = 0;
+//     let end = N;
+
+//     while (start < end) {
+//       const mid = parseInt((start + end) / 2);
+
+//       if (arr[mid] >= target) {
+//         end = mid;
+//       } else {
+//         start = mid + 1;
+//       }
+//     }
+
+//     return end;
+//   };
+
+//   const upperBound = (arr, target) => {
+//     let start = 0;
+//     let end = N;
+
+//     while (start < end) {
+//       const mid = parseInt((start + end) / 2);
+
+//       if (arr[mid] > target) {
+//         end = mid;
+//       } else {
+//         start = mid + 1;
+//       }
+//     }
+
+//     return end;
+//   };
+
+//   for (let i = 0; i < M; i++) {
+//     const target = findNumbers[i];
+
+//     const firstIndex = lowerBound(numbers, target);
+//     const lastIndex = upperBound(numbers, target);
+
+//     const count = lastIndex - firstIndex;
+
+//     result.push(count);
+//   }
+
+//   return result.join(" ");
+// };
 
 // 1차 해결
 // const solution = () => {
