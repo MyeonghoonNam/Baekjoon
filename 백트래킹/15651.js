@@ -1,32 +1,36 @@
-const readline = require('readline');
+const fs = require("fs");
+const stdin = (
+  process.platform === "linux"
+    ? fs.readFileSync("/dev/stdin").toString()
+    : `4 2`
+).split("\n");
 
-const rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout,
-});
+const input = (() => {
+  let line = 0;
+  return () => stdin[line++];
+})();
 
-const input = [];
-rl.on('line', (line) => {
-  // 입력 관리
-  input.push(line);
-}).on('close', () => {
-  // 구현
-  const [N, M] = input[0].split(' ').map(Number);
-  const arr = [];
-  let result = '';
+const solution = () => {
+  const [N, M] = input().split(" ").map(Number);
+  const numbers = new Array(N).fill(0).map((_, i) => i + 1);
+  const selected = [];
+  const result = [];
 
-  Dfs(0);
-  console.log(result);
-
-  function Dfs(cnt) {
+  const dfs = (cnt) => {
     if (cnt === M) {
-      result += arr.join(' ') + '\n';
+      result.push(selected.join(" "));
       return;
     }
 
-    for (let i = 1; i <= N; i++) {
-      arr[cnt] = i;
-      Dfs(cnt + 1);
+    for (let i = 0; i < N; i++) {
+      selected[cnt] = numbers[i];
+      dfs(cnt + 1);
     }
-  }
-});
+  };
+
+  dfs(0);
+
+  return result.join("\n");
+};
+
+console.log(solution());
