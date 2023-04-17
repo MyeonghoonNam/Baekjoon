@@ -8,7 +8,7 @@ const input = (() => {
   return () => stdin[line++];
 })();
 
-// 2차 해결
+// 3차 해결
 const solution = () => {
   const N = Number(input());
   const queens = [];
@@ -16,18 +16,19 @@ const solution = () => {
 
   const isPossible = (x, y) => {
     for (let i = 0; i < queens.length; i++) {
-      const [a, b] = queens[i];
+      const [qx, qy] = queens[i];
 
-      if (a === x || b === y) return false;
-      if (Math.abs(a - x) === Math.abs(b - y)) return false;
+      if (qx === x || qy === y) return false;
+      if (Math.abs(qx - x) === Math.abs(qy - y)) return false;
     }
 
     return true;
   };
 
-  const dfs = (row) => {
+  const dfs = (row, i) => {
     if (row === N) {
       result += 1;
+      return;
     }
 
     for (let i = 0; i < N; i++) {
@@ -43,6 +44,42 @@ const solution = () => {
 
   return result;
 };
+
+// 2차 해결
+// const solution = () => {
+//   const N = Number(input());
+//   const queens = [];
+//   let result = 0;
+
+//   const isPossible = (x, y) => {
+//     for (let i = 0; i < queens.length; i++) {
+//       const [a, b] = queens[i];
+
+//       if (a === x || b === y) return false;
+//       if (Math.abs(a - x) === Math.abs(b - y)) return false;
+//     }
+
+//     return true;
+//   };
+
+//   const dfs = (row) => {
+//     if (row === N) {
+//       result += 1;
+//     }
+
+//     for (let i = 0; i < N; i++) {
+//       if (!isPossible(row, i)) continue;
+
+//       queens.push([row, i]);
+//       dfs(row + 1);
+//       queens.pop();
+//     }
+//   };
+
+//   dfs(0);
+
+//   return result;
+// };
 
 // 1차 해결
 // function solution() {
