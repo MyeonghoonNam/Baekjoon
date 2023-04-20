@@ -1,132 +1,58 @@
-// 'use strict';
-
-// const fs = require('fs');
-// const stdin = (
-//   process.platform === 'linux'
-//     ? fs.readFileSync('/dev/stdin').toString()
-//     : `2 4
-// CAAB
-// ADCB`
-// ).split('\n');
-
-// const input = (() => {
-//   let line = 0;
-//   return () => stdin[line++];
-// })();
-
-// console.log(Solution());
-
-// function Solution() {
-//   const [R, C] = input().split(' ').map(Number);
-
-//   const map = new Array(R);
-//   const visited = new Array(26).fill(false);
-//   let result = 1;
-
-//   for (let i = 0; i < R; i++) {
-//     map[i] = input().split('');
-//   }
-
-//   const dx = [-1, 1, 0, 0];
-//   const dy = [0, 0, -1, 1];
-
-//   const checkRange = (x, y) => {
-//     if (x >= 0 && x < R && y >= 0 && y < C) {
-//       return true;
-//     } else {
-//       return false;
-//     }
-//   };
-
-//   const dfs = (pos, cnt) => {
-//     const [x, y] = pos;
-
-//     for (let i = 0; i < 4; i++) {
-//       const nx = x + dx[i];
-//       const ny = y + dy[i];
-
-//       if (
-//         checkRange(nx, ny) &&
-//         !visited[map[nx][ny].charCodeAt(0) - 'A'.charCodeAt(0)]
-//       ) {
-//         visited[map[nx][ny].charCodeAt(0) - 'A'.charCodeAt(0)] = true;
-//         dfs([nx, ny], cnt + 1);
-//         visited[map[nx][ny].charCodeAt(0) - 'A'.charCodeAt(0)] = false;
-//       } else {
-//         result = Math.max(result, cnt);
-//       }
-//     }
-//   };
-
-//   const pos = [0, 0];
-//   visited[map[0][0].charCodeAt(0) - 'A'.charCodeAt(0)] = true;
-//   dfs(pos, 1);
-
-//   return result;
-// }
-'use strict';
-
-const fs = require('fs');
+const fs = require("fs");
 const stdin = (
-  process.platform === 'linux'
-    ? fs.readFileSync('/dev/stdin').toString()
-    : `2 4
-CAAB
-ADCB`
-).split('\n');
+  process.platform === "linux"
+    ? fs.readFileSync("/dev/stdin").toString()
+    : `5 5
+IEFCJ
+FHFKC
+FFALF
+HFGCF
+HMCHH`
+).split("\n");
 
 const input = (() => {
   let line = 0;
   return () => stdin[line++];
 })();
 
-console.log(Solution());
-
-function Solution() {
-  const [R, C] = input().split(' ').map(Number);
-
-  const map = new Array(R);
-  const visited = new Array(26).fill(false);
-  let result = 1;
+const solution = () => {
+  const [R, C] = input().split(" ").map(Number);
+  const map = [];
 
   for (let i = 0; i < R; i++) {
-    map[i] = input().split('');
+    map.push(input().split(""));
   }
 
+  const visited = new Set();
   const dx = [-1, 1, 0, 0];
   const dy = [0, 0, -1, 1];
+  let result = 0;
 
-  const checkRange = (x, y) => {
-    if (x >= 0 && x < R && y >= 0 && y < C) {
-      return true;
-    } else {
-      return false;
-    }
-  };
-
-  const dfs = (pos, cnt) => {
-    const [x, y] = pos;
-
-    result = Math.max(result, cnt);
+  const dfs = (count, x, y) => {
+    result = Math.max(result, count);
 
     for (let i = 0; i < 4; i++) {
       const nx = x + dx[i];
       const ny = y + dy[i];
 
-      if (
-        checkRange(nx, ny) &&
-        !visited[map[nx][ny].charCodeAt(0) - 'A'.charCodeAt(0)]
-      ) {
-        visited[map[nx][ny].charCodeAt(0) - 'A'.charCodeAt(0)] = true;
-        dfs([nx, ny], cnt + 1);
-        visited[map[nx][ny].charCodeAt(0) - 'A'.charCodeAt(0)] = false;
-      }
+      if (!isPossibleMapRange(nx, ny)) continue;
+      if (visited.has(map[nx][ny])) continue;
+
+      visited.add(map[nx][ny]);
+      dfs(count + 1, nx, ny);
+      visited.delete(map[nx][ny]);
     }
   };
 
-  const pos = [0, 0];
-  visited[map[0][0].charCodeAt(0) - 'A'.charCodeAt(0)] = true;
-  dfs(pos, 1);
+  const isPossibleMapRange = (x, y) => {
+    if (x >= 0 && y >= 0 && x < R && y < C) return true;
+    else return false;
+  };
+
+  visited.add(map[0][0]);
+  dfs(1, 0, 0);
 
   return result;
-}
+};
+
+console.log(solution());
