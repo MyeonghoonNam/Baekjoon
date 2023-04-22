@@ -1,56 +1,37 @@
-'use strict';
-
-const fs = require('fs');
+const fs = require("fs");
 const stdin = (
-  process.platform === 'linux'
-    ? fs.readFileSync('/dev/stdin').toString()
-    : `2
-< >`
-).split('\n');
+  process.platform === "linux"
+    ? fs.readFileSync("/dev/stdin").toString()
+    : `9
+> < < < > > > < <`
+).split("\n");
 
 const input = (() => {
   let line = 0;
   return () => stdin[line++];
 })();
 
-console.log(Solution());
-
-function Solution() {
+const solution = () => {
   const K = Number(input());
-  const operator = input().split(' ');
-
-  const permutation = [];
+  const sign = input().split(" ");
+  const numbers = [];
   const visited = new Array(10).fill(false);
   const result = [];
 
-  const check = (idx, c) => {
-    if (c === '<') {
-      if (permutation[idx] < permutation[idx + 1]) {
-        return true;
-      }
-
-      return false;
-    } else if (c === '>') {
-      if (permutation[idx] > permutation[idx + 1]) {
-        return true;
-      }
-
-      return false;
-    }
-  };
-
-  const calculate = () => {
-    for (let i = 0; i < K; i++) {
-      if (!check(i, operator[i])) return false;
-    }
-
-    return true;
-  };
-
   const dfs = (cnt) => {
     if (cnt === K + 1) {
-      if (calculate()) {
-        result.push(permutation.join(''));
+      let isPossible = true;
+
+      for (let i = 0; i < K; i++) {
+        if (sign[i] === "<") {
+          if (numbers[i] > numbers[i + 1]) isPossible = false;
+        } else if (sign[i] === ">") {
+          if (numbers[i] < numbers[i + 1]) isPossible = false;
+        }
+      }
+
+      if (isPossible) {
+        result.push(numbers.join(""));
       }
 
       return;
@@ -59,8 +40,9 @@ function Solution() {
     for (let i = 0; i < 10; i++) {
       if (!visited[i]) {
         visited[i] = true;
-        permutation[cnt] = i;
+        numbers.push(i);
         dfs(cnt + 1);
+        numbers.pop();
         visited[i] = false;
       }
     }
@@ -71,4 +53,6 @@ function Solution() {
   result.sort((a, b) => a - b);
 
   return `${result[result.length - 1]}\n${result[0]}`;
-}
+};
+
+console.log(solution());
