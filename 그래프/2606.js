@@ -1,9 +1,7 @@
-'use strict';
-
-const fs = require('fs');
+const fs = require("fs");
 const stdin = (
-  process.platform === 'linux'
-    ? fs.readFileSync('/dev/stdin').toString()
+  process.platform === "linux"
+    ? fs.readFileSync("/dev/stdin").toString()
     : `7
 6
 1 2
@@ -12,43 +10,43 @@ const stdin = (
 5 2
 5 6
 4 7`
-).split('\n');
+).split("\n");
 
 const input = (() => {
   let line = 0;
   return () => stdin[line++];
 })();
 
-console.log(Solution());
-
-function Solution() {
+const solution = () => {
   const N = Number(input());
-  const edgeCount = Number(input());
-  const network = Array.from(new Array(N + 1), () => new Array());
+  const K = Number(input());
+  const graph = Array.from(new Array(N + 1), () => new Array());
   const visited = new Array(N + 1).fill(false);
-
   let result = 0;
 
-  for (let i = 0; i < edgeCount; i++) {
-    const [x1, x2] = input().split(' ').map(Number);
-    network[x1].push(x2);
-    network[x2].push(x1);
+  for (let i = 0; i < K; i++) {
+    const [start, end] = input().split(" ").map(Number);
+
+    graph[start].push(end);
+    graph[end].push(start);
   }
 
-  const dfs = (idx) => {
-    if (visited[idx]) return;
+  const dfs = (node) => {
+    visited[node] = true;
+    result += 1;
 
-    visited[idx] = true;
+    for (let i = 0; i < graph[node].length; i++) {
+      const next = graph[node][i];
 
-    network[idx].forEach((v) => {
-      if (!visited[v]) {
-        dfs(v);
-        result++;
+      if (!visited[next]) {
+        dfs(next);
       }
-    });
+    }
   };
 
   dfs(1);
 
-  return result;
-}
+  return result - 1;
+};
+
+console.log(solution());
