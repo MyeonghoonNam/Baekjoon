@@ -2,12 +2,12 @@ const fs = require("fs");
 const stdin = (
   process.platform === "linux"
     ? fs.readFileSync("/dev/stdin").toString()
-    : `5 1
-1 2 0 2 1
-1 2 0 2 1
-1 2 0 2 1
-1 2 0 2 1
-1 2 0 2 1`
+    : `5 3
+0 0 1 0 0
+0 0 2 0 1
+0 1 2 0 0
+0 0 1 0 0
+0 0 0 0 2`
 ).split("\n");
 
 const input = (() => {
@@ -32,80 +32,143 @@ const input = (() => {
 //  2-2. 도출한 치킨거리를 모두 더해 도시의 치킨거리 도출
 //  2-3. 도출한 도시의 치킨거리를 기존 도시의 치킨거리와 비교하여 최솟값 갱신
 
-const combination = (arr, max_count) => {
-  const selected = new Array(arr.length).fill(false);
-  const result = [];
-  const dfs = (idx, count) => {
-    if (count === max_count) {
-      const candidate = [];
-
-      for (let i = 0; i < arr.length; i++) {
-        if (selected[i]) {
-          candidate.push(arr[i]);
-        }
-      }
-
-      result.push(candidate);
-      return;
-    }
-
-    for (let i = idx; i < arr.length; i++) {
-      if (selected[i] === true) continue;
-
-      selected[i] = true;
-      dfs(i + 1, count + 1);
-      selected[i] = false;
-    }
-  };
-
-  dfs(0, 0);
-  return result;
-};
-
-const getDistance = (candidate, house_position) => {
-  let result = 0;
-
-  house_position.forEach(({ x: hx, y: hy }) => {
-    let distance = Number.MAX_SAFE_INTEGER;
-
-    candidate.forEach(({ x: cx, y: cy }) => {
-      const dist = Math.abs(hx - cx) + Math.abs(hy - cy);
-      distance = Math.min(distance, dist);
-    });
-
-    result += distance;
-  });
-
-  return result;
-};
-
+// 2차 해결
 const solution = () => {
   const [N, M] = input().split(" ").map(Number);
-  const house_position = [];
-  const chicken_position = [];
+  const house = [];
+  const chicken = [];
+  let result = Number.MAX_SAFE_INTEGER;
 
   for (let i = 0; i < N; i++) {
-    const data = input().split(" ").map(Number);
+    const row = input().split(" ").map(Number);
 
     for (let j = 0; j < N; j++) {
-      if (data[j] === 2) {
-        // 치킨집 좌표 저장
-        chicken_position.push({ x: i, y: j });
-      } else if (data[j] === 1) {
-        // 집 좌표 저장
-        house_position.push({ x: i, y: j });
+      const value = row[j];
+
+      if (value === 1) {
+        house.push([i, j]);
+      } else if (value === 2) {
+        chicken.push([i, j]);
       }
     }
   }
 
-  const candidates = combination(chicken_position, M);
-  let result = Number.MAX_SAFE_INTEGER;
+  const selected = [];
+  const visited = new Array(chicken.length).fill(false);
 
-  candidates.forEach((candidate) => {
-    result = Math.min(result, getDistance(candidate, house_position));
-  });
+  const dfs = (idx, cnt) => {
+    if (cnt === M) {
+      let chickenDist = 0;
+
+      for (let i = 0; i < house.length; i++) {
+        const [hx, hy] = house[i];
+        let dist = Number.MAX_SAFE_INTEGER;
+
+        for (let j = 0; j < selected.length; j++) {
+          const [cx, cy] = selected[j];
+
+          dist = Math.min(dist, Math.abs(hx - cx) + Math.abs(hy - cy));
+        }
+
+        chickenDist += dist;
+      }
+
+      result = Math.min(result, chickenDist);
+
+      return;
+    }
+
+    for (let i = idx; i < chicken.length; i++) {
+      if (!visited[i]) {
+        visited[i] = true;
+        selected.push(chicken[i]);
+        dfs(i + 1, cnt + 1);
+        selected.pop();
+        visited[i] = false;
+      }
+    }
+  };
+
+  dfs(0, 0);
 
   return result;
 };
+
+// 1차 해결
+// const combination = (arr, max_count) => {
+//   const selected = new Array(arr.length).fill(false);
+//   const result = [];
+//   const dfs = (idx, count) => {
+//     if (count === max_count) {
+//       const candidate = [];
+
+//       for (let i = 0; i < arr.length; i++) {
+//         if (selected[i]) {
+//           candidate.push(arr[i]);
+//         }
+//       }
+
+//       result.push(candidate);
+//       return;
+//     }
+
+//     for (let i = idx; i < arr.length; i++) {
+//       if (selected[i] === true) continue;
+
+//       selected[i] = true;
+//       dfs(i + 1, count + 1);
+//       selected[i] = false;
+//     }
+//   };
+
+//   dfs(0, 0);
+//   return result;
+// };
+
+// const getDistance = (candidate, house_position) => {
+//   let result = 0;
+
+//   house_position.forEach(({ x: hx, y: hy }) => {
+//     let distance = Number.MAX_SAFE_INTEGER;
+
+//     candidate.forEach(({ x: cx, y: cy }) => {
+//       const dist = Math.abs(hx - cx) + Math.abs(hy - cy);
+//       distance = Math.min(distance, dist);
+//     });
+
+//     result += distance;
+//   });
+
+//   return result;
+// };
+
+// const solution = () => {
+//   const [N, M] = input().split(" ").map(Number);
+//   const house_position = [];
+//   const chicken_position = [];
+
+//   for (let i = 0; i < N; i++) {
+//     const data = input().split(" ").map(Number);
+
+//     for (let j = 0; j < N; j++) {
+//       if (data[j] === 2) {
+//         // 치킨집 좌표 저장
+//         chicken_position.push({ x: i, y: j });
+//       } else if (data[j] === 1) {
+//         // 집 좌표 저장
+//         house_position.push({ x: i, y: j });
+//       }
+//     }
+//   }
+
+//   const candidates = combination(chicken_position, M);
+//   let result = Number.MAX_SAFE_INTEGER;
+
+//   candidates.forEach((candidate) => {
+//     result = Math.min(result, getDistance(candidate, house_position));
+//   });
+
+//   return result;
+// };
 
 console.log(solution());
