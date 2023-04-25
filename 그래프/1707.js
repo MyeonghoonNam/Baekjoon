@@ -1,89 +1,125 @@
-const readline = require('readline');
+const fs = require("fs");
+const stdin = (
+  process.platform === "linux"
+    ? fs.readFileSync("/dev/stdin").toString()
+    : `2
+3 2
+1 3
+2 3
+4 4
+1 2
+2 3
+3 4
+4 2`
+).split("\n");
 
-const rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout,
-});
+const input = (() => {
+  let line = 0;
+  return () => stdin[line++];
+})();
 
-const input = [];
-rl.on('line', (line) => {
-  // 입력 관리
-  input.push(line.split(' ').map((el) => parseInt(el)));
-}).on('close', () => {
-  // 구현
-  let K = input[0][0];
+class Node {
+  constructor(value) {
+    this.value = value;
+    this.next = null;
+  }
+}
 
-  let graph = [];
-  let colors = [];
-  let checkBipartite = true;
+class Queue {
+  constructor() {
+    this.head = this.tail = null;
+    this.size = 0;
+  }
 
-  let idx = 1;
-  while (K-- > 0) {
-    const [V, E] = input[idx];
+  enqueue(value) {
+    const newNode = new Node(value);
 
-    graph = Array.from(new Array(V + 1), () => new Array());
-    colors = new Array(V + 1).fill(0);
-
-    const start = idx + 1;
-    const end = start + E;
-    for (let i = start; i < end; i++) {
-      const [v1, v2] = input[i];
-
-      insertEdge(v1, v2);
-      insertEdge(v2, v1);
+    if (this.isEmpty()) {
+      this.head = this.tail = newNode;
+    } else {
+      this.tail.next = newNode;
+      this.tail = newNode;
     }
 
-    for (let i = 1; i <= V; i++) {
-      if (!checkBipartite) break;
+    this.size += 1;
+  }
 
-      if (colors[i] === 0) {
-        bfs(i, 1); // 초기설정 RED
+  dequeue() {
+    if (this.isEmpty()) return;
+
+    const popNode = this.head;
+    this.head = popNode.next;
+
+    if (this.size === 1) {
+      this.tail = this.head;
+    }
+
+    this.size -= 1;
+
+    return popNode.value;
+  }
+
+  isEmpty() {
+    return this.size === 0 ? true : false;
+  }
+}
+
+const solution = () => {
+  const result = [];
+  let K = Number(input());
+
+  while (K--) {
+    const [V, E] = input().split(" ").map(Number);
+    const graph = Array.from(new Array(V + 1), () => []);
+    const visited = new Array(V + 1).fill(false);
+    const colors = new Array(V + 1).fill(-1);
+    let isBipartite = true;
+
+    for (let i = 0; i < E; i++) {
+      const [start, end] = input().split(" ").map(Number);
+
+      graph[start].push(end);
+      graph[end].push(start);
+    }
+
+    const bfs = (node, color) => {
+      const queue = new Queue();
+
+      queue.enqueue([node, color]);
+      colors[node] = color;
+
+      while (!queue.isEmpty()) {
+        const [current, color] = queue.dequeue();
+
+        for (let i = 0; i < graph[current].length; i++) {
+          const next = graph[current][i];
+
+          if (!visited[next]) {
+            queue.enqueue([next, !color]);
+            visited[next] = true;
+            colors[next] = !color;
+          } else if (colors[current] === colors[next]) {
+            isBipartite = false;
+            return;
+          }
+        }
+      }
+    };
+
+    for (let i = 1; i <= V; i++) {
+      if (!visited[i] && isBipartite) {
+        bfs(i, true);
       }
     }
 
-    console.log(checkBipartite ? 'YES' : 'NO');
-
-    idx += E + 1; // 입력값 인덱스 관리
-  }
-
-  process.exit();
-
-  function insertEdge(vFront, vBack) {
-    graph[vFront].push(vBack);
-  }
-
-  // function dfs(v, color) {
-  //   colors[v] = color;
-
-  //   graph[v].forEach((vertex) => {
-  //     if (colors[vertex] === color) {
-  //       checkBipartite = false;
-  //       return;
-  //     }
-
-  //     if (colors[vertex] === 0) {
-  //       dfs(vertex, -color);
-  //     }
-  //   });
-  // }
-  function bfs(v, color) {
-    const q = [];
-
-    q.push(v);
-    colors[v] = color;
-
-    while (q.length !== 0 && checkBipartite) {
-      const v = q.shift();
-
-      graph[v].forEach((vertex) => {
-        if (colors[vertex] === 0) {
-          q.push(vertex);
-          colors[vertex] = -colors[v];
-        } else if (colors[v] === colors[vertex]) {
-          checkBipartite = false;
-          return;
-        }
-      });
+    if (isBipartite) {
+      result.push("YES");
+    } else {
+      result.push("NO");
     }
   }
-});
+
+  return result.join("\n");
+};
+
+console.log(solution());
