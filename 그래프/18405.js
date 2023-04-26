@@ -1,48 +1,3 @@
-class Node {
-  constructor(value) {
-    this.value = value;
-    this.next = null;
-  }
-}
-
-class Queue {
-  constructor() {
-    this.head = null;
-    this.tail = null;
-    this.size = 0;
-  }
-
-  enqueue(value) {
-    const new_node = new Node(value);
-
-    if (this.size === 0) {
-      this.head = this.tail = new_node;
-    } else {
-      this.tail.next = new_node;
-      this.tail = new_node;
-    }
-
-    this.size += 1;
-  }
-
-  dequeue() {
-    if (this.size === 0) return;
-
-    const pop_node = this.head;
-    this.head = pop_node.next;
-
-    if (this.size === 1) {
-      this.tail = null;
-    }
-
-    this.size -= 1;
-    return pop_node.value;
-  }
-
-  isEmpty() {
-    return this.size === 0 ? true : false;
-  }
-}
 const fs = require("fs");
 const stdin = (
   process.platform === "linux"
@@ -73,57 +28,175 @@ const input = (() => {
  * 2. bfs구현 (큐 구현)
  * 3. 시간 만료시 특정 좌표값 도출
  */
-const solution = () => {
-  const checkMapRange = (x, y) => {
-    if (x >= 0 && x < N && y >= 0 && y < N) return true;
-    else return false;
-  };
 
+// 2차 해결
+
+class Node {
+  constructor(value) {
+    this.value = value;
+    this.next = null;
+  }
+}
+
+class Queue {
+  constructor() {
+    this.head = this.tail = null;
+    this.size = 0;
+  }
+
+  enqueue(value) {
+    const newNode = new Node(value);
+
+    if (this.isEmpty()) {
+      this.head = this.tail = newNode;
+    } else {
+      this.tail.next = newNode;
+      this.tail = newNode;
+    }
+
+    this.size += 1;
+  }
+
+  dequeue() {
+    if (this.isEmpty()) return;
+
+    const popNode = this.head;
+    this.head = popNode.next;
+
+    if (this.size === 1) {
+      this.tail = this.head;
+    }
+
+    this.size -= 1;
+
+    return popNode.value;
+  }
+
+  isEmpty() {
+    return this.size === 0 ? true : false;
+  }
+}
+
+const solution = () => {
   const [N, K] = input().split(" ").map(Number);
-  const map = [];
+  const graph = [];
+  const visited = Array.from(new Array(N), () => new Array(N).fill(false));
   const virus = [];
 
-  for (let i = 0; i < N; i++) {
-    const data = input().split(" ").map(Number);
-    map.push(data);
+  const dx = [-1, 1, 0, 0];
+  const dy = [0, 0, -1, 1];
 
-    for (let j = 0; j < N; j++) {
-      if (data[j] !== 0) {
-        virus.push({ virus: data[j], time: 0, x: i, y: j });
+  for (let i = 0; i < N; i++) {
+    const row = input().split(" ").map(Number);
+    graph.push(row);
+
+    for (let j = 0; j < row.length; j++) {
+      if (row[j] !== 0) {
+        virus.push({ x: i, y: j, number: row[j], time: 0 });
       }
     }
   }
 
   const [S, X, Y] = input().split(" ").map(Number);
-  virus.sort((a, b) => a.virus - b.virus);
 
-  const queue = new Queue();
+  const bfs = () => {
+    const queue = new Queue();
 
-  for (let i = 0; i < virus.length; i++) {
-    queue.enqueue(virus[i]);
-  }
+    virus.sort((a, b) => a.number - b.number);
 
-  const dx = [-1, 1, 0, 0];
-  const dy = [0, 0, -1, 1];
+    for (let i = 0; i < virus.length; i++) {
+      const value = virus[i];
 
-  while (!queue.isEmpty()) {
-    const { virus, time, x, y } = queue.dequeue();
+      queue.enqueue(value);
+      visited[value.x][value.y] = true;
+    }
 
-    if (time === S) break;
+    while (!queue.isEmpty()) {
+      const { number, x, y, time } = queue.dequeue();
 
-    for (let i = 0; i < 4; i++) {
-      const nx = x + dx[i];
-      const ny = y + dy[i];
+      if (time === S) {
+        return;
+      }
 
-      if (checkMapRange(nx, ny) && map[nx][ny] === 0) {
-        map[nx][ny] = virus;
-        queue.enqueue({ virus, time: time + 1, x: nx, y: ny });
+      for (let i = 0; i < 4; i++) {
+        const nx = x + dx[i];
+        const ny = y + dy[i];
+
+        if (!checkMapRange(nx, ny)) continue;
+
+        if (!visited[nx][ny] && graph[nx][ny] === 0) {
+          queue.enqueue({ number, x: nx, y: ny, time: time + 1 });
+          graph[nx][ny] = number;
+          visited[nx][ny] = true;
+        }
       }
     }
-  }
+  };
 
-  const result = map[X - 1][Y - 1];
+  const checkMapRange = (x, y) => {
+    if (x >= 0 && y >= 0 && x < N && y < N) return true;
+    else return false;
+  };
+
+  bfs();
+
+  const result = graph[X - 1][Y - 1];
+
   return result;
 };
+
+// 1차 해결
+// const solution = () => {
+//   const checkMapRange = (x, y) => {
+//     if (x >= 0 && x < N && y >= 0 && y < N) return true;
+//     else return false;
+//   };
+
+//   const [N, K] = input().split(" ").map(Number);
+//   const map = [];
+//   const virus = [];
+
+//   for (let i = 0; i < N; i++) {
+//     const data = input().split(" ").map(Number);
+//     map.push(data);
+
+//     for (let j = 0; j < N; j++) {
+//       if (data[j] !== 0) {
+//         virus.push({ virus: data[j], time: 0, x: i, y: j });
+//       }
+//     }
+//   }
+
+//   const [S, X, Y] = input().split(" ").map(Number);
+//   virus.sort((a, b) => a.virus - b.virus);
+
+//   const queue = new Queue();
+
+//   for (let i = 0; i < virus.length; i++) {
+//     queue.enqueue(virus[i]);
+//   }
+
+//   const dx = [-1, 1, 0, 0];
+//   const dy = [0, 0, -1, 1];
+
+//   while (!queue.isEmpty()) {
+//     const { virus, time, x, y } = queue.dequeue();
+
+//     if (time === S) break;
+
+//     for (let i = 0; i < 4; i++) {
+//       const nx = x + dx[i];
+//       const ny = y + dy[i];
+
+//       if (checkMapRange(nx, ny) && map[nx][ny] === 0) {
+//         map[nx][ny] = virus;
+//         queue.enqueue({ virus, time: time + 1, x: nx, y: ny });
+//       }
+//     }
+//   }
+
+//   const result = map[X - 1][Y - 1];
+//   return result;
+// };
 
 console.log(solution());
