@@ -1,58 +1,12 @@
-class Node {
-  constructor(value) {
-    this.value = value;
-    this.next = null;
-  }
-}
-
-class Queue {
-  constructor() {
-    this.head = null;
-    this.tail = null;
-    this.size = 0;
-  }
-
-  enqueue(value) {
-    const newNode = new Node(value);
-
-    if (this.size === 0) {
-      this.head = this.tail = newNode;
-    } else {
-      this.tail.next = newNode;
-      this.tail = newNode;
-    }
-
-    this.size += 1;
-  }
-
-  dequeue() {
-    if (this.size === 0) return;
-
-    const popNode = this.head;
-    this.head = popNode.next;
-
-    if (this.size === 1) {
-      this.tail = null;
-    }
-
-    this.size -= 1;
-
-    return popNode.value;
-  }
-
-  isEmpty() {
-    return this.size === 0 ? true : false;
-  }
-}
-
 const fs = require("fs");
 const stdin = (
   process.platform === "linux"
     ? fs.readFileSync("/dev/stdin").toString()
-    : `4 3 2 1
+    : `4 4 1 1
 1 2
 1 3
-1 4`
+2 3
+2 4`
 ).split("\n");
 
 const input = (() => {
@@ -75,42 +29,137 @@ const input = (() => {
  *  3-1. 도달가능한 다음 노드의 최단거리 = 현재 노드의 최단거리 + 1
  */
 
+class Node {
+  constructor(value) {
+    this.value = value;
+    this.next = null;
+  }
+}
+
+class Queue {
+  constructor() {
+    this.head = this.tail = null;
+    this.size = 0;
+  }
+
+  enqeueu(value) {
+    const newNode = new Node(value);
+
+    if (this.isEmpty()) {
+      this.head = this.tail = newNode;
+    } else {
+      this.tail.next = newNode;
+      this.tail = newNode;
+    }
+
+    this.size += 1;
+  }
+
+  dequeue() {
+    if (this.isEmpty()) return;
+
+    const popNode = this.head;
+    this.head = popNode.next;
+
+    if (this.size === 1) {
+      this.tail = this.head;
+    }
+
+    this.size -= 1;
+
+    return popNode.value;
+  }
+
+  isEmpty() {
+    return this.size === 0 ? true : false;
+  }
+}
+
+// 2차 해결
 const solution = () => {
   const [N, M, K, X] = input().split(" ").map(Number);
-  const graph = Array.from(new Array(N + 1), () => new Array());
-  const distance = new Array(N + 1).fill(-1);
-  distance[X] = 0;
+  const graph = Array.from(new Array(N + 1), () => []);
+  const visited = new Array(N + 1).fill(false);
+  const distance = new Array(N + 1).fill(Infinity);
+  const result = [];
+  let isFound = false;
 
   for (let i = 0; i < M; i++) {
     const [start, end] = input().split(" ").map(Number);
     graph[start].push(end);
   }
 
-  const queue = new Queue();
-  queue.enqueue(X);
+  const bfs = () => {
+    const queue = new Queue();
 
-  while (!queue.isEmpty()) {
-    const current_vertex = queue.dequeue();
+    queue.enqeueu(X);
+    visited[X] = true;
+    distance[X] = 0;
 
-    graph[current_vertex].forEach((next_vertex) => {
-      if (distance[next_vertex] === -1) {
-        queue.enqueue(next_vertex);
-        distance[next_vertex] = distance[current_vertex] + 1;
+    while (!queue.isEmpty()) {
+      const node = queue.dequeue();
+
+      if (distance[node] === K) {
+        result.push(node);
+        isFound = true;
       }
-    });
-  }
 
-  const result = [];
-  let flag = false;
+      for (let i = 0; i < graph[node].length; i++) {
+        const next = graph[node][i];
 
-  for (let i = 1; i <= N; i++) {
-    if (distance[i] === K) {
-      result.push(i);
-      flag = true;
+        if (!visited[next]) {
+          queue.enqeueu(next);
+          visited[next] = true;
+          distance[next] = distance[node] + 1;
+        }
+      }
     }
-  }
+  };
 
-  return flag ? result.join("\n") : -1;
+  bfs();
+
+  if (!isFound) return -1;
+
+  return result.sort((a, b) => a - b).join("\n");
 };
+
+// 1차 해결
+// const solution = () => {
+//   const [N, M, K, X] = input().split(" ").map(Number);
+//   const graph = Array.from(new Array(N + 1), () => new Array());
+//   const distance = new Array(N + 1).fill(-1);
+//   distance[X] = 0;
+
+//   for (let i = 0; i < M; i++) {
+//     const [start, end] = input().split(" ").map(Number);
+//     graph[start].push(end);
+//   }
+
+//   const queue = new Queue();
+//   queue.enqueue(X);
+
+//   while (!queue.isEmpty()) {
+//     const current_vertex = queue.dequeue();
+
+//     graph[current_vertex].forEach((next_vertex) => {
+//       if (distance[next_vertex] === -1) {
+//         queue.enqueue(next_vertex);
+//         distance[next_vertex] = distance[current_vertex] + 1;
+//       }
+//     });
+//   }
+
+//   const result = [];
+//   let flag = false;
+
+//   for (let i = 1; i <= N; i++) {
+//     if (distance[i] === K) {
+//       result.push(i);
+//       flag = true;
+//     }
+//   }
+
+//   return flag ? result.join("\n") : -1;
+// };
 
 console.log(solution());
