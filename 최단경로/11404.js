@@ -25,15 +25,14 @@ const input = (() => {
   return () => stdin[line++];
 })();
 
+// 2차 해결
 const solution = () => {
   const N = Number(input());
   const M = Number(input());
-  const result = [];
   const graph = Array.from(new Array(N + 1), () =>
     new Array(N + 1).fill(Infinity)
   );
 
-  // 자기 자신에 대한 경로 값 초기화
   for (let i = 1; i <= N; i++) {
     for (let j = 1; j <= N; j++) {
       if (i === j) {
@@ -42,16 +41,14 @@ const solution = () => {
     }
   }
 
-  // 간선 정보에 의한 경로 값 갱신
   for (let i = 0; i < M; i++) {
-    const [start, end, dist] = input().split(" ").map(Number);
+    const [start, end, cost] = input().split(" ").map(Number);
 
-    if (graph[start][end] > dist) {
-      graph[start][end] = dist;
+    if (graph[start][end] > cost) {
+      graph[start][end] = cost;
     }
   }
 
-  // 플로이드 워셜 알고리즘을 통한 경로 값 갱신
   for (let k = 1; k <= N; k++) {
     for (let i = 1; i <= N; i++) {
       for (let j = 1; j <= N; j++) {
@@ -60,10 +57,13 @@ const solution = () => {
     }
   }
 
-  // Infinity 값을 0으로 갱신
+  const result = [];
+
   for (let i = 1; i <= N; i++) {
     for (let j = 1; j <= N; j++) {
-      if (graph[i][j] === Infinity) graph[i][j] = 0;
+      if (graph[i][j] === Infinity) {
+        graph[i][j] = 0;
+      }
     }
 
     result.push(graph[i].slice(1).join(" "));
@@ -71,5 +71,53 @@ const solution = () => {
 
   return result.join("\n");
 };
+
+// 1차 해결
+// const solution = () => {
+//   const N = Number(input());
+//   const M = Number(input());
+//   const result = [];
+//   const graph = Array.from(new Array(N + 1), () =>
+//     new Array(N + 1).fill(Infinity)
+//   );
+
+//   // 자기 자신에 대한 경로 값 초기화
+//   for (let i = 1; i <= N; i++) {
+//     for (let j = 1; j <= N; j++) {
+//       if (i === j) {
+//         graph[i][j] = 0;
+//       }
+//     }
+//   }
+
+//   // 간선 정보에 의한 경로 값 갱신
+//   for (let i = 0; i < M; i++) {
+//     const [start, end, dist] = input().split(" ").map(Number);
+
+//     if (graph[start][end] > dist) {
+//       graph[start][end] = dist;
+//     }
+//   }
+
+//   // 플로이드 워셜 알고리즘을 통한 경로 값 갱신
+//   for (let k = 1; k <= N; k++) {
+//     for (let i = 1; i <= N; i++) {
+//       for (let j = 1; j <= N; j++) {
+//         graph[i][j] = Math.min(graph[i][j], graph[i][k] + graph[k][j]);
+//       }
+//     }
+//   }
+
+//   // Infinity 값을 0으로 갱신
+//   for (let i = 1; i <= N; i++) {
+//     for (let j = 1; j <= N; j++) {
+//       if (graph[i][j] === Infinity) graph[i][j] = 0;
+//     }
+
+//     result.push(graph[i].slice(1).join(" "));
+//   }
+
+//   return result.join("\n");
+// };
 
 console.log(solution());
