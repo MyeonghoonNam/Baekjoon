@@ -11,6 +11,39 @@ const input = (() => {
   return () => stdin[line++];
 })();
 
+// 2차해결
+// 슬라이딩 윈도우
+const solution = () => {
+  const [N, X] = input().split(" ").map(Number);
+  const day = input().split(" ").map(Number);
+  let max = 0;
+  let sum = 0;
+  let count = 1;
+
+  for (let i = 0; i < X; i++) {
+    sum += day[i];
+  }
+
+  max = sum;
+
+  for (let i = X; i < N; i++) {
+    sum += day[i] - day[i - X];
+
+    if (sum > max) {
+      max = sum;
+      count = 1;
+    } else if (sum === max) {
+      count += 1;
+    }
+  }
+
+  if (max === 0) {
+    return "SAD";
+  }
+
+  return `${max}\n${count}`;
+};
+
 // 슬라이딩 윈도우
 // const solution = () => {
 //   const [N, X] = input().split(" ").map(Number);
@@ -45,37 +78,37 @@ const input = (() => {
 // };
 
 // 누적합
-const solution = () => {
-  const [N, X] = input().split(" ").map(Number);
-  const arr = input().split(" ").map(Number);
-  const prefix_sum = [0];
+// const solution = () => {
+//   const [N, X] = input().split(" ").map(Number);
+//   const arr = input().split(" ").map(Number);
+//   const prefix_sum = [0];
 
-  let sum = 0;
-  for (let i = 0; i < N; i++) {
-    sum += arr[i];
-    prefix_sum.push(sum);
-  }
+//   let sum = 0;
+//   for (let i = 0; i < N; i++) {
+//     sum += arr[i];
+//     prefix_sum.push(sum);
+//   }
 
-  let result = 0;
-  let count = 1;
-  for (let i = X; i <= N; i++) {
-    let value = prefix_sum[i] - prefix_sum[i - X];
+//   let result = 0;
+//   let count = 1;
+//   for (let i = X; i <= N; i++) {
+//     let value = prefix_sum[i] - prefix_sum[i - X];
 
-    if (value >= result) {
-      if (value === result) {
-        count++;
-      } else {
-        result = value;
-        count = 1;
-      }
-    }
-  }
+//     if (value >= result) {
+//       if (value === result) {
+//         count++;
+//       } else {
+//         result = value;
+//         count = 1;
+//       }
+//     }
+//   }
 
-  if (result === 0) {
-    return "SAD";
-  } else {
-    return `${result}\n${count}`;
-  }
-};
+//   if (result === 0) {
+//     return "SAD";
+//   } else {
+//     return `${result}\n${count}`;
+//   }
+// };
 
 console.log(solution());
