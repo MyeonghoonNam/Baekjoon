@@ -1,36 +1,41 @@
-const readline = require('readline');
+const fs = require("fs");
+const stdin = (
+  process.platform === "linux"
+    ? fs.readFileSync("/dev/stdin").toString()
+    : `2
+6
+22`
+).split("\n");
 
-const rl = readline.createInterface({
-  input:process.stdin,
-  output:process.stdout
-});
+const input = (() => {
+  let line = 0;
+  return () => stdin[line++];
+})();
 
-const input = [];
+const solution = () => {
+  const result = [];
+  let T = Number(input());
 
-rl.on('line', line => {
-  input.push(Number(line));
-})
-  .on('close', () => {
-    const T = input[0];
-    const numbers = input.slice(1);
-    
-    const dp = [[1, 0], [0, 1]]; 
-    
-    let result = '';
-    for(let i = 0; i < T; i++){
-      fibonaci(numbers[i]);
-      result += `${dp[numbers[i]][0]} ${dp[numbers[i]][1]}\n`;
-    }
+  while (T--) {
+    const N = Number(input());
+    const MAX_NUMBER = 41;
+    const DP = Array.from(new Array(MAX_NUMBER), () => new Array(2));
 
-    function fibonaci(num){
-      if(dp[num] == null || dp[num] == null){
-        dp[num] = [fibonaci(num-1)[0] + fibonaci(num-2)[0]];
-        dp[num][1] = fibonaci(num-1)[1] + fibonaci(num-2)[1];
+    DP[0][0] = 1;
+    DP[0][1] = 0;
+    DP[1][0] = 0;
+    DP[1][1] = 1;
+
+    for (let i = 2; i <= N; i++) {
+      for (let j = 0; j < 2; j++) {
+        DP[i][j] = DP[i - 2][j] + DP[i - 1][j];
       }
-
-      return dp[num];
     }
 
-    console.log(result);
-    process.exit();
-  })
+    result.push(`${DP[N][0]} ${DP[N][1]}`);
+  }
+
+  return result.join("\n");
+};
+
+console.log(solution());
