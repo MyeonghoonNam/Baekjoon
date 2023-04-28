@@ -14,20 +14,12 @@ const solution = () => {
   const [N, M] = input().split(" ").map(Number);
   const numbers = new Array(N).fill(0).map((_, i) => i + 1);
   const visited = new Array(N).fill(false);
+  const selected = [];
   const result = [];
 
   const dfs = (idx, cnt) => {
     if (cnt === M) {
-      const selected = [];
-
-      for (let i = 0; i < N; i++) {
-        if (visited[i]) {
-          selected.push(numbers[i]);
-        }
-      }
-
       result.push(selected.join(" "));
-
       return;
     }
 
@@ -35,7 +27,9 @@ const solution = () => {
       if (visited[i]) continue;
 
       visited[i] = true;
+      selected.push(numbers[i]);
       dfs(i, cnt + 1);
+      selected.pop();
       visited[i] = false;
     }
   };
