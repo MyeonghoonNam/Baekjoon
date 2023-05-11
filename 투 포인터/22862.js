@@ -20,6 +20,7 @@ const solution = () => {
   for (let start = 0, end = 0; start < N; start++) {
     while (end < N) {
       if (S[end] % 2 !== 0) {
+        if (eraseCount === K) break;
         eraseCount += 1;
       }
 
