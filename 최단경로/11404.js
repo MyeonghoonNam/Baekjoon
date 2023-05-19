@@ -25,7 +25,7 @@ const input = (() => {
   return () => stdin[line++];
 })();
 
-// 2차 해결
+// 3차 해결
 const solution = () => {
   const N = Number(input());
   const M = Number(input());
@@ -43,10 +43,7 @@ const solution = () => {
 
   for (let i = 0; i < M; i++) {
     const [start, end, cost] = input().split(" ").map(Number);
-
-    if (graph[start][end] > cost) {
-      graph[start][end] = cost;
-    }
+    graph[start][end] = Math.min(graph[start][end], cost);
   }
 
   for (let k = 1; k <= N; k++) {
@@ -60,17 +57,65 @@ const solution = () => {
   const result = [];
 
   for (let i = 1; i <= N; i++) {
+    const row = [];
+
     for (let j = 1; j <= N; j++) {
-      if (graph[i][j] === Infinity) {
-        graph[i][j] = 0;
-      }
+      const value = graph[i][j] === Infinity ? 0 : graph[i][j];
+      row.push(value);
     }
 
-    result.push(graph[i].slice(1).join(" "));
+    result.push(row.join(" "));
   }
 
   return result.join("\n");
 };
+
+// 2차 해결
+// const solution = () => {
+//   const N = Number(input());
+//   const M = Number(input());
+//   const graph = Array.from(new Array(N + 1), () =>
+//     new Array(N + 1).fill(Infinity)
+//   );
+
+//   for (let i = 1; i <= N; i++) {
+//     for (let j = 1; j <= N; j++) {
+//       if (i === j) {
+//         graph[i][j] = 0;
+//       }
+//     }
+//   }
+
+//   for (let i = 0; i < M; i++) {
+//     const [start, end, cost] = input().split(" ").map(Number);
+
+//     if (graph[start][end] > cost) {
+//       graph[start][end] = cost;
+//     }
+//   }
+
+//   for (let k = 1; k <= N; k++) {
+//     for (let i = 1; i <= N; i++) {
+//       for (let j = 1; j <= N; j++) {
+//         graph[i][j] = Math.min(graph[i][j], graph[i][k] + graph[k][j]);
+//       }
+//     }
+//   }
+
+//   const result = [];
+
+//   for (let i = 1; i <= N; i++) {
+//     for (let j = 1; j <= N; j++) {
+//       if (graph[i][j] === Infinity) {
+//         graph[i][j] = 0;
+//       }
+//     }
+
+//     result.push(graph[i].slice(1).join(" "));
+//   }
+
+//   return result.join("\n");
+// };
 
 // 1차 해결
 // const solution = () => {
