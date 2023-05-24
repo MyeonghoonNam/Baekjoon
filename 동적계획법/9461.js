@@ -1,29 +1,37 @@
-const readline = require('readline');
+const fs = require("fs");
+const stdin = (
+  process.platform === "linux"
+    ? fs.readFileSync("/dev/stdin").toString()
+    : `2
+6
+12`
+).split("\n");
 
-const rl = readline.createInterface({
-  input:process.stdin,
-  output:process.stdout
-});
+const input = (() => {
+  let line = 0;
+  return () => stdin[line++];
+})();
 
-const input = [];
-rl.on('line', line => {
-  input.push(Number(line));
-})
-  .on('close', () => {
-    const T = input[0];
-    const numbers = input.slice(1);
-    
-    let result = '';
-    for(let i = 0; i < T; i++){
-      const dp = [0, 1, 1];
+const solution = () => {
+  const DP = new Array(101);
+  const result = [];
 
-      for(let j = 3; j <= numbers[i]; j++){
-        dp[j] = dp[j-2] + dp[j-3];
-      }
-      
-      result += `${dp[numbers[i]]}\n`;
-    }
+  DP[0] = 0;
+  DP[1] = 1;
+  DP[2] = 1;
 
-    console.log(result);
-    process.exit();
-  })
+  for (let i = 3; i < 101; i++) {
+    DP[i] = DP[i - 2] + DP[i - 3];
+  }
+
+  let T = Number(input());
+  while (T--) {
+    const N = Number(input());
+
+    result.push(DP[N]);
+  }
+
+  return result.join("\n");
+};
+
+console.log(solution());
