@@ -18,7 +18,7 @@ const solution = () => {
   const M = Number(input());
   const DP = [];
 
-  DP[0] = 0;
+  DP[0] = 1;
   DP[1] = 1;
   DP[2] = 2;
 
