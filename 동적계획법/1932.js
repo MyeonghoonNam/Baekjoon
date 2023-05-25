@@ -1,46 +1,46 @@
-const readline = require('readline');
+const fs = require("fs");
+const stdin = (
+  process.platform === "linux"
+    ? fs.readFileSync("/dev/stdin").toString()
+    : `5
+7
+3 8
+8 1 0
+2 7 4 4
+4 5 2 6 5`
+).split("\n");
 
-const rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout,
-});
+const input = (() => {
+  let line = 0;
+  return () => stdin[line++];
+})();
 
-const input = [];
-rl.on('line', (line) => {
-  // 입력 관리
-  input.push(line);
-}).on('close', () => {
-  // 구현
-  console.log(Solution(input));
+const solution = () => {
+  const N = Number(input());
+  const DP = Array.from(new Array(N + 1), () => new Array());
+  const triangle = [[]];
 
-  function Solution(input) {
-    const N = Number(input.shift());
+  for (let i = 0; i < N; i++) {
+    triangle.push(input().split(" ").map(Number));
+  }
 
-    const arr = new Array(N + 1).fill(0);
-    for (let i = 1; i <= N; i++) {
-      arr[i] = input.shift().split(' ').map(Number);
-    }
+  DP[1][0] = triangle[1][0];
 
-    const dp = Array.from(new Array(N + 1), () => new Array());
-    dp[1][0] = arr[1][0];
-
-    for (let i = 2; i <= N; i++) {
-      for (let j = 0; j < i; j++) {
-        // 층의 첫 번째 수
-        if (j === 0) {
-          dp[i][j] = dp[i - 1][j] + arr[i][j];
-        } else if (j === i - 1) {
-          // 층의 마지막 번째 수
-          dp[i][j] = dp[i - 1][j - 1] + arr[i][j];
-        } else {
-          // 처음과 마지막 사이의 수
-          dp[i][j] = Math.max(dp[i - 1][j - 1], dp[i - 1][j]) + arr[i][j];
-        }
+  for (let i = 2; i <= N; i++) {
+    for (let j = 0; j < i; j++) {
+      if (j === 0) {
+        DP[i][j] = DP[i - 1][j] + triangle[i][j];
+      } else if (j === i - 1) {
+        DP[i][j] = DP[i - 1][j - 1] + triangle[i][j];
+      } else {
+        DP[i][j] = Math.max(DP[i - 1][j - 1], DP[i - 1][j]) + triangle[i][j];
       }
     }
-
-    const result = Math.max(...dp[N]);
-
-    return result;
   }
-});
+
+  const result = Math.max(...DP[N]);
+
+  return result;
+};
+
+console.log(solution());
