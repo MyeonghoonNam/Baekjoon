@@ -2,9 +2,9 @@ const fs = require("fs");
 const stdin = (
   process.platform === "linux"
     ? fs.readFileSync("/dev/stdin").toString()
-    : `4
-120 110 140 150
-485`
+    : `5
+70 80 30 40 100
+450`
 ).split("\n");
 
 const input = (() => {
@@ -13,7 +13,7 @@ const input = (() => {
 })();
 
 /**
- * 요구샇항: 여러 지방의 예산요청과 국가예산의 총액을 토대로 아래 조건에 맞추어 가능한 최대의 총 예산 구하기
+ * 요구사항: 여러 지방의 예산요청과 국가예산의 총액을 토대로 아래 조건에 맞추어 가능한 최대의 총 예산 구하기
  *
  * 1. 모든 요청이 배정될 수 있는 경우에는 요청한 금액을 그대로 배정한다.
  * 2. 모든 요청이 배정될 수 없는 경우에는 특정한 정수 상한액을 계산하여 그 이상인 예산요청에는 모두 상한액을 배정한다. 상한액 이하의 예산요청에 대해서는 요청한 금액을 그대로 배정한다.
@@ -23,22 +23,15 @@ const input = (() => {
  * 3. 이분탐색을 진행할 때 min(i번째 예산 요청, 상한)을 모두 더한 값이 국가예산(M) 이하이면 상한을 갱싢하며 최댓값을 도출한다.
  */
 
-// 3차 풀이
+// 4차 풀이
 const solution = () => {
-  let result = 0;
   const N = Number(input());
   const budget = input().split(" ").map(Number);
   const M = Number(input());
-  const maxBudget = Math.max(...budget);
-
-  const totalBudget = budget.reduce((acc, cur) => acc + cur, 0);
-
-  if (totalBudget <= M) {
-    return maxBudget;
-  }
+  let result = 0;
 
   let start = 0;
-  let end = maxBudget;
+  let end = Math.max(...budget);
 
   while (start <= end) {
     const mid = parseInt((start + end) / 2);
@@ -49,8 +42,8 @@ const solution = () => {
     }
 
     if (totalBudget <= M) {
-      start = mid + 1;
       result = mid;
+      start = mid + 1;
     } else {
       end = mid - 1;
     }
@@ -58,6 +51,44 @@ const solution = () => {
 
   return result;
 };
+
+console.log(solution());
+
+// 3차 풀이
+// const solution = () => {
+//   let result = 0;
+//   const N = Number(input());
+//   const budget = input().split(" ").map(Number);
+//   const M = Number(input());
+//   const maxBudget = Math.max(...budget);
+
+//   const totalBudget = budget.reduce((acc, cur) => acc + cur, 0);
+
+//   if (totalBudget <= M) {
+//     return maxBudget;
+//   }
+
+//   let start = 0;
+//   let end = maxBudget;
+
+//   while (start <= end) {
+//     const mid = parseInt((start + end) / 2);
+//     let totalBudget = 0;
+
+//     for (let i = 0; i < N; i++) {
+//       totalBudget += Math.min(mid, budget[i]);
+//     }
+
+//     if (totalBudget <= M) {
+//       start = mid + 1;
+//       result = mid;
+//     } else {
+//       end = mid - 1;
+//     }
+//   }
+
+//   return result;
+// };
 
 // 2차 풀이
 // const solution = () => {
@@ -119,4 +150,4 @@ const solution = () => {
 //   return result;
 // };
 
-console.log(solution());
+// console.log(solution());
