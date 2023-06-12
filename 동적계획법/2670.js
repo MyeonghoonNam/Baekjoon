@@ -18,19 +18,18 @@ const input = (() => {
   return () => stdin[line++];
 })();
 
+// 2차 해결
 const solution = () => {
   const N = Number(input());
-  const DP = [];
-  const numbers = [];
+  const DP = [0];
+  const numbers = [0];
 
   for (let i = 0; i < N; i++) {
     numbers.push(Number(input()));
   }
 
-  DP[0] = numbers[0];
-
-  for (let i = 1; i < N; i++) {
-    DP[i] = Math.max(numbers[i], numbers[i] * DP[i - 1]);
+  for (let i = 1; i <= N; i++) {
+    DP[i] = Math.max(numbers[i], DP[i - 1] * numbers[i]);
   }
 
   const result = Math.max(...DP).toFixed(3);
@@ -39,3 +38,26 @@ const solution = () => {
 };
 
 console.log(solution());
+
+// 1차 해결
+// const solution = () => {
+//   const N = Number(input());
+//   const DP = [];
+//   const numbers = [];
+
+//   for (let i = 0; i < N; i++) {
+//     numbers.push(Number(input()));
+//   }
+
+//   DP[0] = numbers[0];
+
+//   for (let i = 1; i < N; i++) {
+//     DP[i] = Math.max(numbers[i], numbers[i] * DP[i - 1]);
+//   }
+
+//   const result = Math.max(...DP).toFixed(3);
+
+//   return result;
+// };
+
+// console.log(solution());
