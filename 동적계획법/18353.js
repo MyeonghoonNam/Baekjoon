@@ -11,20 +11,42 @@ const input = (() => {
   return () => stdin[line++];
 })();
 
+// 2차 해결
 const solution = () => {
   const N = Number(input());
-  const soldier = input().split(" ").map(Number).reverse();
+  const soldiers = input().split(" ").map(Number);
   const DP = new Array(N).fill(1);
 
   for (let i = 1; i < N; i++) {
     for (let j = 0; j < i; j++) {
-      if (soldier[j] < soldier[i]) {
+      if (soldiers[j] > soldiers[i]) {
         DP[i] = Math.max(DP[i], DP[j] + 1);
       }
     }
   }
 
-  return N - Math.max(...DP);
+  const result = N - Math.max(...DP);
+
+  return result;
 };
 
 console.log(solution());
+
+// 1차 해결
+// const solution = () => {
+//   const N = Number(input());
+//   const soldier = input().split(" ").map(Number).reverse();
+//   const DP = new Array(N).fill(1);
+
+//   for (let i = 1; i < N; i++) {
+//     for (let j = 0; j < i; j++) {
+//       if (soldier[j] < soldier[i]) {
+//         DP[i] = Math.max(DP[i], DP[j] + 1);
+//       }
+//     }
+//   }
+
+//   return N - Math.max(...DP);
+// };
+
+// console.log(solution());
