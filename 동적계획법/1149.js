@@ -2,10 +2,15 @@ const fs = require("fs");
 const stdin = (
   process.platform === "linux"
     ? fs.readFileSync("/dev/stdin").toString()
-    : `3
-26 40 83
-49 60 57
-13 89 99`
+    : `8
+71 39 44
+32 83 55
+51 37 63
+89 29 100
+83 58 11
+65 13 15
+47 25 29
+60 66 19`
 ).split("\n");
 
 const input = (() => {
@@ -13,18 +18,15 @@ const input = (() => {
   return () => stdin[line++];
 })();
 
-// 2차 해결
+// 3차 해결
 const solution = () => {
   const N = Number(input());
-  const cost = Array.from(new Array(N + 1), () => new Array(3).fill(0));
-
-  for (let i = 1; i <= N; i++) {
-    cost[i] = input().split(" ").map(Number);
-  }
-
   const DP = Array.from(new Array(N + 1), () => new Array(3).fill(0));
+  const cost = [[]];
 
-  DP[0] = cost[0];
+  for (let i = 0; i < N; i++) {
+    cost.push(input().split(" ").map(Number));
+  }
 
   for (let i = 1; i <= N; i++) {
     DP[i][0] = Math.min(DP[i - 1][1], DP[i - 1][2]) + cost[i][0];
@@ -32,10 +34,36 @@ const solution = () => {
     DP[i][2] = Math.min(DP[i - 1][0], DP[i - 1][1]) + cost[i][2];
   }
 
-  return Math.min(...DP[N]);
+  const result = Math.min(...DP[N]);
+
+  return result;
 };
 
 console.log(solution());
+
+// 2차 해결
+// const solution = () => {
+//   const N = Number(input());
+//   const cost = Array.from(new Array(N + 1), () => new Array(3).fill(0));
+
+//   for (let i = 1; i <= N; i++) {
+//     cost[i] = input().split(" ").map(Number);
+//   }
+
+//   const DP = Array.from(new Array(N + 1), () => new Array(3).fill(0));
+
+//   DP[0] = cost[0];
+
+//   for (let i = 1; i <= N; i++) {
+//     DP[i][0] = Math.min(DP[i - 1][1], DP[i - 1][2]) + cost[i][0];
+//     DP[i][1] = Math.min(DP[i - 1][0], DP[i - 1][2]) + cost[i][1];
+//     DP[i][2] = Math.min(DP[i - 1][0], DP[i - 1][1]) + cost[i][2];
+//   }
+
+//   return Math.min(...DP[N]);
+// };
+
+// console.log(solution());
 
 // 1차 해결
 // const readline = require('readline');
