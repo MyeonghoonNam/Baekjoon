@@ -11,23 +11,48 @@ const input = (() => {
   return () => stdin[line++];
 })();
 
+// 2차 해결
 const solution = () => {
   const N = Number(input());
-  const times = input()
+  const P = input()
     .split(" ")
     .map(Number)
     .sort((a, b) => a - b);
 
   let result = 0;
 
-  times.reduce((acc, cur) => {
+  const reduceCallback = (acc, cur) => {
     acc += cur;
     result += acc;
 
     return acc;
-  }, 0);
+  };
+
+  P.reduce(reduceCallback, 0);
 
   return result;
 };
 
 console.log(solution());
+
+// 1차 해결
+// const solution = () => {
+//   const N = Number(input());
+//   const times = input()
+//     .split(" ")
+//     .map(Number)
+//     .sort((a, b) => a - b);
+
+//   let result = 0;
+
+//   times.reduce((acc, cur) => {
+//     acc += cur;
+//     result += acc;
+
+//     return acc;
+//   }, 0);
+
+//   return result;
+// };
+
+// console.log(solution());
