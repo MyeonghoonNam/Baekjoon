@@ -10,14 +10,19 @@ const input = (() => {
   return () => stdin[line++];
 })();
 
+// 2차 해결
 const solution = () => {
   let [A, B] = input().split(" ").map(Number);
   let result = 1;
 
   while (true) {
-    if (A > B) return -1;
+    if (A > B) {
+      return -1;
+    }
 
-    if (A === B) return result;
+    if (A === B) {
+      return result;
+    }
 
     if (B % 2 === 0) {
       B /= 2;
@@ -27,8 +32,34 @@ const solution = () => {
       return -1;
     }
 
-    result++;
+    result += 1;
   }
+
+  return result;
 };
 
 console.log(solution());
+
+// 1차 해결
+// const solution = () => {
+//   let [A, B] = input().split(" ").map(Number);
+//   let result = 1;
+
+//   while (true) {
+//     if (A > B) return -1;
+
+//     if (A === B) return result;
+
+//     if (B % 2 === 0) {
+//       B /= 2;
+//     } else if (B % 10 === 1) {
+//       B = parseInt(B / 10);
+//     } else {
+//       return -1;
+//     }
+
+//     result++;
+//   }
+// };
+
+// console.log(solution());
