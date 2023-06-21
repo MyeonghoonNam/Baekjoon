@@ -34,8 +34,6 @@ const solution = () => {
 
     result += 1;
   }
-
-  return result;
 };
 
 console.log(solution());
