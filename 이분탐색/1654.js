@@ -14,7 +14,7 @@ const input = (() => {
   return () => stdin[line++];
 })();
 
-// 3차해결
+// 4차 해결
 const solution = () => {
   const [K, N] = input().split(" ").map(Number);
   const lines = [];
@@ -23,19 +23,19 @@ const solution = () => {
     lines.push(Number(input()));
   }
 
-  let start = 1;
+  let start = 0;
   let end = Math.max(...lines);
   let result = 0;
 
   while (start <= end) {
     const mid = parseInt((start + end) / 2);
-    let cutLineSum = 0;
+    let count = 0;
 
     for (let i = 0; i < K; i++) {
-      cutLineSum += parseInt(lines[i] / mid);
+      count += parseInt(lines[i] / mid);
     }
 
-    if (cutLineSum < N) {
+    if (count < N) {
       end = mid - 1;
     } else {
       result = mid;
@@ -45,6 +45,40 @@ const solution = () => {
 
   return result;
 };
+
+console.log(solution());
+
+// 3차해결
+// const solution = () => {
+//   const [K, N] = input().split(" ").map(Number);
+//   const lines = [];
+
+//   for (let i = 0; i < K; i++) {
+//     lines.push(Number(input()));
+//   }
+
+//   let start = 1;
+//   let end = Math.max(...lines);
+//   let result = 0;
+
+//   while (start <= end) {
+//     const mid = parseInt((start + end) / 2);
+//     let cutLineSum = 0;
+
+//     for (let i = 0; i < K; i++) {
+//       cutLineSum += parseInt(lines[i] / mid);
+//     }
+
+//     if (cutLineSum < N) {
+//       end = mid - 1;
+//     } else {
+//       result = mid;
+//       start = mid + 1;
+//     }
+//   }
+
+//   return result;
+// };
 
 // 2차 해결
 // const solution = () => {
@@ -77,7 +111,7 @@ const solution = () => {
 //   return high;
 // };
 
-console.log(solution());
+// console.log(solution());
 
 // 1차 해결
 // const fs = require('fs');
