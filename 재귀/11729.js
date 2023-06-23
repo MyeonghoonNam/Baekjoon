@@ -1,32 +1,36 @@
-const readline = require('readline');
+const fs = require("fs");
+const stdin = (
+  process.platform === "linux" ? fs.readFileSync("/dev/stdin").toString() : `3`
+).split("\n");
 
-const rl = readline.createInterface({
-  input:process.stdin,
-  output:process.stdout
-});
+const input = (() => {
+  let line = 0;
+  return () => stdin[line++];
+})();
 
-rl.on('line', line => {
-  const N = parseInt(line);
-  Hanoi(N, 1, 3, 2);
-  console.log(moveCount);
-  console.log(move);
-  rl.close();
-})
-  .on('close', () => {
-    process.exit();
-  });
+const solution = () => {
+  const N = Number(input());
+  const print = [];
+  let move = 0;
 
-let moveCount = 0;
-let move = '';
-function Hanoi(num, start, end, help){
-  if(num === 1){
-    move += `${start} ${end}\n`;
-    moveCount++;
-    return;
-  }
+  const hanoi = (N, start, end, sub) => {
+    if (N === 1) {
+      print.push(`${start} ${end}`);
+      move += 1;
+      return;
+    } else {
+      hanoi(N - 1, start, sub, end);
+      print.push(`${start} ${end}`);
+      move += 1;
+      hanoi(N - 1, sub, end, start);
+    }
+  };
 
-  Hanoi(num - 1, start, help, end);
-  move += `${start} ${end}\n`;
-  moveCount++;
-  Hanoi(num - 1, help, end, start);
-}
+  hanoi(N, 1, 3, 2);
+
+  const result = [move, ...print].join("\n");
+
+  return result;
+};
+
+console.log(solution());
