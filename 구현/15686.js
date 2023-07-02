@@ -32,7 +32,7 @@ const input = (() => {
 //  2-2. 도출한 치킨거리를 모두 더해 도시의 치킨거리 도출
 //  2-3. 도출한 도시의 치킨거리를 기존 도시의 치킨거리와 비교하여 최솟값 갱신
 
-// 2차 해결
+// 3차 해결
 const solution = () => {
   const [N, M] = input().split(" ").map(Number);
   const house = [];
@@ -93,6 +93,70 @@ const solution = () => {
 
   return result;
 };
+
+console.log(solution());
+
+// 2차 해결
+// const solution = () => {
+//   const [N, M] = input().split(" ").map(Number);
+//   const house = [];
+//   const chicken = [];
+//   let result = Number.MAX_SAFE_INTEGER;
+
+//   for (let i = 0; i < N; i++) {
+//     const row = input().split(" ").map(Number);
+
+//     for (let j = 0; j < N; j++) {
+//       const value = row[j];
+
+//       if (value === 1) {
+//         house.push([i, j]);
+//       } else if (value === 2) {
+//         chicken.push([i, j]);
+//       }
+//     }
+//   }
+
+//   const selected = [];
+//   const visited = new Array(chicken.length).fill(false);
+
+//   const dfs = (idx, cnt) => {
+//     if (cnt === M) {
+//       let chickenDist = 0;
+
+//       for (let i = 0; i < house.length; i++) {
+//         const [hx, hy] = house[i];
+//         let dist = Number.MAX_SAFE_INTEGER;
+
+//         for (let j = 0; j < selected.length; j++) {
+//           const [cx, cy] = selected[j];
+
+//           dist = Math.min(dist, Math.abs(hx - cx) + Math.abs(hy - cy));
+//         }
+
+//         chickenDist += dist;
+//       }
+
+//       result = Math.min(result, chickenDist);
+
+//       return;
+//     }
+
+//     for (let i = idx; i < chicken.length; i++) {
+//       if (!visited[i]) {
+//         visited[i] = true;
+//         selected.push(chicken[i]);
+//         dfs(i + 1, cnt + 1);
+//         selected.pop();
+//         visited[i] = false;
+//       }
+//     }
+//   };
+
+//   dfs(0, 0);
+
+//   return result;
+// };
 
 // 1차 해결
 // const combination = (arr, max_count) => {
