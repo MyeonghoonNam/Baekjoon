@@ -1,32 +1,38 @@
-const readline = require('readline');
+const fs = require("fs");
+const stdin = (
+  process.platform === "linux"
+    ? fs.readFileSync("/dev/stdin").toString()
+    : `4 7
+6 13
+4 8
+3 6
+5 12`
+).split("\n");
 
-const rl = readline.createInterface({
-  input:process.stdin,
-  output:process.stdout
-});
+const input = (() => {
+  let line = 0;
+  return () => stdin[line++];
+})();
 
-const input = [];
-rl.on('line', line => {
-  input.push(line.split(' ').map(el => parseInt(el)));
-})
-  .on('close', () => {
-    const N = input[0][0];
-    const K = input[0][1];
+const solution = () => {
+  const [N, K] = input().split(" ").map(Number);
+  const DP = new Array(K + 1).fill(0);
+  const products = [{}];
 
-    const products = input.slice(1);
-    products.unshift("0");
-        
-    const dp = new Array(K+1).fill(0);
+  for (let i = 0; i < N; i += 1) {
+    const [W, V] = input().split(" ").map(Number);
+    products.push({ weight: W, value: V });
+  }
 
+  for (let i = 1; i <= N; i += 1) {
+    const { weight, value } = products[i];
 
-    for(let i = 1; i <= N; i++){
-        
-      for(let j = K; j - products[i][0] >= 0; j--){
-        dp[j] = Math.max(dp[j], dp[j - products[i][0]] + products[i][1]);
-      }
+    for (let j = K; j - weight >= 0; j -= 1) {
+      DP[j] = Math.max(DP[j], DP[j - weight] + value);
     }
-        
-    console.log(dp[K]);
-    process.exit();
-})
+  }
 
+  return DP[K];
+};
+
+console.log(solution());
