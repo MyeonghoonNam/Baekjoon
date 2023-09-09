@@ -17,7 +17,7 @@ const input = (() => {
   return () => stdin[line++];
 })();
 
-// 2차 해결
+// 3차 해결 - dfs
 const solution = () => {
   const N = Number(input());
   const K = Number(input());
@@ -53,6 +53,43 @@ const solution = () => {
 };
 
 console.log(solution());
+
+// 2차 해결
+// const solution = () => {
+//   const N = Number(input());
+//   const K = Number(input());
+//   const graph = Array.from(new Array(N + 1), () => []);
+//   const visited = new Array(N + 1).fill(false);
+//   let count = 0;
+
+//   for (let i = 0; i < K; i += 1) {
+//     const [start, end] = input().split(" ").map(Number);
+
+//     graph[start].push(end);
+//     graph[end].push(start);
+//   }
+
+//   const dfs = (node) => {
+//     visited[node] = true;
+//     count += 1;
+
+//     for (let i = 0; i < graph[node].length; i += 1) {
+//       const next = graph[node][i];
+
+//       if (!visited[next]) {
+//         dfs(next);
+//       }
+//     }
+//   };
+
+//   dfs(1);
+
+//   const result = count - 1;
+
+//   return result;
+// };
+
+// console.log(solution());
 
 // 1차 해결
 // const solution = () => {
