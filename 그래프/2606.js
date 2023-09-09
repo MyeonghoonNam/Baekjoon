@@ -17,7 +17,53 @@ const input = (() => {
   return () => stdin[line++];
 })();
 
-// 3차 해결 - dfs
+// 4차 해결 bfs
+class Node {
+  constructor(value) {
+    this.value = value;
+    this.next = null;
+  }
+}
+
+class Queue {
+  constructor() {
+    this.head = this.tail = null;
+    this.size = 0;
+  }
+
+  enqueue(value) {
+    const new_node = new Node(value);
+
+    if (this.isEmpty()) {
+      this.head = this.tail = new_node;
+    } else {
+      this.tail.next = new_node;
+      this.tail = new_node;
+    }
+
+    this.size++;
+  }
+
+  dequeue() {
+    if (this.isEmpty()) return;
+
+    const pop_node = this.head;
+    this.head = pop_node.next;
+
+    if (this.size === 1) {
+      this.tail = this.head;
+    }
+
+    this.size--;
+
+    return pop_node.value;
+  }
+
+  isEmpty() {
+    return this.size === 0 ? true : false;
+  }
+}
+
 const solution = () => {
   const N = Number(input());
   const K = Number(input());
@@ -32,27 +78,70 @@ const solution = () => {
     graph[end].push(start);
   }
 
-  const dfs = (node) => {
-    visited[node] = true;
-    count += 1;
+  const bfs = (start) => {
+    const queue = new Queue();
 
-    for (let i = 0; i < graph[node].length; i += 1) {
-      const next = graph[node][i];
+    queue.enqueue(start);
+    visited[start] = true;
 
-      if (!visited[next]) {
-        dfs(next);
+    while (!queue.isEmpty()) {
+      const current = queue.dequeue();
+
+      for (let i = 0; i < graph[current].length; i += 1) {
+        const end = graph[current][i];
+
+        if (!visited[end]) {
+          queue.enqueue(end);
+          count += 1;
+          visited[end] = true;
+        }
       }
     }
   };
 
-  dfs(1);
+  bfs(1);
 
-  const result = count - 1;
-
-  return result;
+  return count;
 };
 
 console.log(solution());
+
+// 3차 해결 - dfs
+// const solution = () => {
+//   const N = Number(input());
+//   const K = Number(input());
+//   const graph = Array.from(new Array(N + 1), () => []);
+//   const visited = new Array(N + 1).fill(false);
+//   let count = 0;
+
+//   for (let i = 0; i < K; i += 1) {
+//     const [start, end] = input().split(" ").map(Number);
+
+//     graph[start].push(end);
+//     graph[end].push(start);
+//   }
+
+//   const dfs = (node) => {
+//     visited[node] = true;
+//     count += 1;
+
+//     for (let i = 0; i < graph[node].length; i += 1) {
+//       const next = graph[node][i];
+
+//       if (!visited[next]) {
+//         dfs(next);
+//       }
+//     }
+//   };
+
+//   dfs(1);
+
+//   const result = count - 1;
+
+//   return result;
+// };
+
+// console.log(solution());
 
 // 2차 해결
 // const solution = () => {
