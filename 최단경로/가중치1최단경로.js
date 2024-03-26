@@ -77,6 +77,11 @@ const solution = () => {
     new Array(N + 1).fill(false)
   );
 
+  const factorial = (n) => {
+    if (n === 0) return 1;
+    return n !== 1 ? n * factorial(n - 1) : 1;
+  };
+
   const checkMapRange = (x, y) => {
     if (x < 0 || y < 0 || x > N || y > N) return false;
     else return true;
@@ -87,14 +92,11 @@ const solution = () => {
     queue.enqueue([x, y, 0]);
     visited[x][y] = true;
 
-    let result = 0;
-
     while (!queue.isEmpty()) {
       const [x, y, distance] = queue.dequeue();
 
       if (x === N && y === N) {
-        result += 1;
-        continue;
+        return distance;
       }
 
       for (let i = 0; i < 4; i++) {
@@ -107,8 +109,6 @@ const solution = () => {
         visited[nx][ny] = true;
       }
     }
-
-    return result;
   };
 
   // 특정 위치로 먼저 이동 후 특정 위치에서의 최단 경로
@@ -123,9 +123,16 @@ const solution = () => {
     y += my;
   }
 
-  const result = bfs(x, y);
+  // 최단경로
+  const shortDistance = bfs(x, y);
 
-  return result;
+  // 최단경로의 경우의 수, 순열의 수 활용
+  // (x와y의 총 수)! / (x의 개수)! * (y의 개수)!
+  // 2 * N - x - y 동류항 결합
+  const shortDistanceCases =
+    factorial(2 * N - x - y) / (factorial(N - x) * factorial(N - y));
+
+  return `${shortDistance} ${shortDistanceCases}`;
 };
 
 console.log(solution());
